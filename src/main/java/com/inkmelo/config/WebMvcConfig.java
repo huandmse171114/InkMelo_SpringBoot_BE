@@ -13,6 +13,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	public void configurePathMatch(PathMatchConfigurer configurer) {
 		// TODO Auto-generated method stub
 		WebMvcConfigurer.super.configurePathMatch(configurer);
-		configurer.addPathPrefix("inkmelo/api/v1", HandlerTypePredicate.forAnnotation(RestController.class));
+		configurer.addPathPrefix("api/v1", HandlerTypePredicate.forAnnotation(RestController.class));
 	}
 }
