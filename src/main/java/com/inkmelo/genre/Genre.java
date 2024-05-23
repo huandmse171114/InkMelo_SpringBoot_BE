@@ -30,7 +30,11 @@ public class Genre {
 	@GeneratedValue
 	private Integer id;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			unique = true,
+			length = 100
+	)
 	private String name;
 	
 	private String description;
@@ -44,16 +48,20 @@ public class Genre {
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 100
+	)
 	private String lastChangedBy;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private GenreStatus status;
 	
 	@ManyToMany(mappedBy = "genres")
 	private List<Book> books;
-	
-	
 	
 }

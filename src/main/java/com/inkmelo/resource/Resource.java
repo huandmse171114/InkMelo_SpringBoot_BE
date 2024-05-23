@@ -35,7 +35,10 @@ public class Resource {
 	private Integer id;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private ResourceType type;
 	
 	private String source;
@@ -49,16 +52,21 @@ public class Resource {
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 100
+	)
 	private String lastChangedBy;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private ResourceStatus status;
 	
 	@ManyToOne
 	@JoinColumn(name = "book_id")
-	@JsonBackReference
 	private Book book;
 	
 	@ManyToMany(mappedBy = "resources")

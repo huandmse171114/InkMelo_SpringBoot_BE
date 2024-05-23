@@ -32,7 +32,10 @@ public class BookCombo {
 	@GeneratedValue
 	private Integer id;
 	
-	@Column(nullable = false)
+	@Column(
+			length = 150,
+			nullable = false
+	)
 	private String title;
 	
 	private String description;
@@ -52,18 +55,24 @@ public class BookCombo {
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
 	
-	@Column(nullable = false)
+	@Column(
+			length = 100,
+			nullable = false
+	)
 	private String lastChangedBy;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private BookComboStatus status;
 	
 	@ManyToMany
 	@JoinTable(
 			name = "bookcombo_resource",
-			joinColumns = @JoinColumn(name = "bookcombo_id"),
-			inverseJoinColumns = @JoinColumn(name = "resource_id")
+			joinColumns = @JoinColumn(name = "bookcombo_id", nullable = false),
+			inverseJoinColumns = @JoinColumn(name = "resource_id", nullable = false)
 	)
 	private List<Resource> resources;
 	

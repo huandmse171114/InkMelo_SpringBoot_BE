@@ -3,6 +3,7 @@ package com.inkmelo.cart;
 import java.util.List;
 
 import com.inkmelo.cartdetail.CartDetail;
+import com.inkmelo.customer.Customer;
 import com.inkmelo.user.User;
 
 import jakarta.persistence.Entity;
@@ -29,7 +30,7 @@ public class Cart {
 	private Integer id;
 	
 	@OneToOne(mappedBy = "cart")
-	private User user;
+	private Customer customer;
 	
 	@OneToMany(mappedBy = "cart")
 	private List<CartDetail> cartDetails;

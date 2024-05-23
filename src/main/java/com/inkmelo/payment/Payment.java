@@ -2,7 +2,7 @@ package com.inkmelo.payment;
 
 import java.sql.Date;
 
-import com.inkmelo.user.User;
+import com.inkmelo.customer.Customer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +30,10 @@ public class Payment {
 	@GeneratedValue
 	private Integer id;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 100
+	)
 	@Enumerated(EnumType.STRING)
 	private PaymentMethod paymentMethod;
 	
@@ -47,7 +50,7 @@ public class Payment {
 	private PaymentStatus status;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "customer_id")
+	private Customer customer;
 	
 }

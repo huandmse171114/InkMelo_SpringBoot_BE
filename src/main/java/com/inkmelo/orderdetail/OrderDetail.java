@@ -37,11 +37,17 @@ public class OrderDetail {
 	private float itemPrice;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private OrderDetailType type;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private OrderDetailStatus status;
 	
 	@ManyToOne
@@ -53,7 +59,10 @@ public class OrderDetail {
 	private BookCombo bookCombo;
 	
 	@ManyToOne
-	@JoinColumn(name = "order_id")
+	@JoinColumn(
+			name = "order_id",
+			nullable = false
+	)
 	private Order order;
 	
 }
