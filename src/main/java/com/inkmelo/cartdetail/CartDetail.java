@@ -1,7 +1,5 @@
 package com.inkmelo.cartdetail;
 
-import java.util.List;
-
 import com.inkmelo.bookcombo.BookCombo;
 import com.inkmelo.cart.Cart;
 import com.inkmelo.resource.Resource;
@@ -36,7 +34,10 @@ public class CartDetail {
 	private int quantity;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private CartDetailType type;
 	
 	@ManyToOne
@@ -44,11 +45,24 @@ public class CartDetail {
 	private Cart cart;
 	
 	@ManyToOne
-	@JoinColumn(name = "resource_id")
+	@JoinColumn(
+			name = "resource_id",
+			nullable = false
+	)
 	private Resource resource;
 	
 	@ManyToOne
-	@JoinColumn(name = "bookcombo_id")
+	@JoinColumn(
+			name = "bookcombo_id",
+			nullable = false
+	)
 	private BookCombo bookCombo;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(
+			length = 50,
+			nullable = false
+	)
+	private CartDetailStatus status;
 	
 }

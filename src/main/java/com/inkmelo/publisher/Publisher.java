@@ -30,13 +30,19 @@ public class Publisher {
 	@GeneratedValue
 	private Integer id;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			unique = true,
+			length = 100
+	)
 	private String name;
 	
 	private String address;
 	
+	@Column(length = 100)
 	private String email;
 	
+	@Column(length = 12)
 	private String phone;
 	
 	@Column(
@@ -48,11 +54,17 @@ public class Publisher {
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 100
+	)
 	private String lastChangedBy;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private PublisherStatus status;
 	
 	@OneToMany(mappedBy = "publisher")

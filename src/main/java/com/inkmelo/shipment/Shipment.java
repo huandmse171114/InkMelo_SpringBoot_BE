@@ -2,7 +2,7 @@ package com.inkmelo.shipment;
 
 import java.sql.Date;
 
-import com.inkmelo.user.User;
+import com.inkmelo.customer.Customer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,13 +30,19 @@ public class Shipment {
 	@GeneratedValue
 	private Integer id;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 100
+	)
 	private String name;
 	
 	@Column(nullable = false)
 	private String address;
 	
-	@Column(nullable = false, length = 10)
+	@Column(
+			nullable = false,
+			length = 12
+	)
 	private String phone;
 	
 	private String description;
@@ -51,11 +57,14 @@ public class Shipment {
 	private Date createdAt;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private ShipmentStatus status;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "customer_id")
+	private Customer customer;
 	
 }

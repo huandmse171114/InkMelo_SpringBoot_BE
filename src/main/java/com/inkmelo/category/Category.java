@@ -30,7 +30,10 @@ public class Category {
 	@GeneratedValue
 	private Integer id;
 	
-	@Column(nullable = false)
+	@Column(
+			unique = true,
+			nullable = false
+	)
 	private String name;
 	
 	private String description;
@@ -44,16 +47,20 @@ public class Category {
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
 	
-	@Column(nullable = false)
+	@Column(
+			length = 100,
+			nullable = false
+	)
 	private String lastChangedBy;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			length = 50,
+			nullable = false
+	)
 	private CategoryStatus status;
 	
 	@ManyToMany(mappedBy = "categories")
 	private List<Book> books;
-	
-	
 	
 }

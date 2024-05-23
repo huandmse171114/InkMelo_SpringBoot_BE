@@ -45,6 +45,12 @@ public class Book {
 	)
 	private String ISBN;
 	
+	@Column(
+			length = 100,
+			nullable = false
+	)
+	private String title;
+	
 	@Column(nullable = false)
 	private float price;
 	
@@ -60,21 +66,30 @@ public class Book {
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
 	
-	@Column(nullable = false)
+	@Column(
+			length = 100,
+			nullable = false
+	)
 	private String lastChangedBy;
 	
+	@Column(length = 100)
 	private String author;
 	
 	private String description;
 	
 	private String bookCoverImg;
 	
+	@Column(nullable = false)
 	private float averageStar;
 	
+	@Column(nullable = false)
 	private int totalRating;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			length = 50,
+			nullable = false
+	)
 	private BookStatus status;
 	
 	@OneToMany(mappedBy = "book")
@@ -86,8 +101,8 @@ public class Book {
 	@ManyToMany
 	@JoinTable(
 			name = "book_category",
-			joinColumns = @JoinColumn(name = "book_id"),
-			inverseJoinColumns = @JoinColumn(name = "category_id")
+			joinColumns = @JoinColumn(name = "book_id", nullable = false),
+			inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false)
 	)
 	private List<Category> categories;
 	
@@ -98,8 +113,8 @@ public class Book {
 	@ManyToMany
 	@JoinTable(
 			name = "book_genre",
-			joinColumns = @JoinColumn(name = "book_id"),
-			inverseJoinColumns = @JoinColumn(name = "genre_id")
+			joinColumns = @JoinColumn(name = "book_id", nullable = false),
+			inverseJoinColumns = @JoinColumn(name = "genre_id", nullable = false)
 	)
 	private List<Genre> genres;
 	

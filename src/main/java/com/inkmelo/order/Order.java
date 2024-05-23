@@ -3,9 +3,9 @@ package com.inkmelo.order;
 import java.sql.Date;
 import java.util.List;
 
+import com.inkmelo.customer.Customer;
 import com.inkmelo.orderdetail.OrderDetail;
 import com.inkmelo.payment.Payment;
-import com.inkmelo.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,11 +39,20 @@ public class Order {
 	@Column(nullable = false)
 	private float totalPrice;
 	
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 100
+	)
 	private String shipmentName;
 	
 	@Column(nullable = false)
 	private String shipmentAddress;
+	
+	@Column(
+			length = 12,
+			nullable = false
+	)
+	private String phone;
 	
 	@Column(
 			updatable = false,
@@ -52,18 +61,27 @@ public class Order {
 	private Date createdAt;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
+	@Column(
+			nullable = false,
+			length = 50
+	)
 	private OrderStatus status;
 	
 	@OneToMany(mappedBy = "order")
 	private List<OrderDetail> orderDetails;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(
+			name = "customer_id",
+			nullable = false
+	)
+	private Customer customer;
 	
 	@ManyToOne
-	@JoinColumn(name = "payment_id")
+	@JoinColumn(
+			name = "payment_id",
+			nullable = false
+	)
 	private Payment payment;
 	
 }
