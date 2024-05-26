@@ -34,6 +34,7 @@ public class BookRating {
 	@Column(nullable = false)
 	private int star;
 	
+	@Column(length = 100)
 	private String comment;
 	
 	@Column(

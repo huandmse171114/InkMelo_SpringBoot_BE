@@ -52,9 +52,6 @@ public class Book {
 	private String title;
 	
 	@Column(nullable = false)
-	private float price;
-	
-	@Column(nullable = false)
 	private int stock;
 	
 	@Column(
