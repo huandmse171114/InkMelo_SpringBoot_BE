@@ -43,6 +43,9 @@ public class Resource {
 	
 	private String source;
 	
+	@Column(nullable = false)
+	private float price;
+	
 	@Column(
 			updatable = false,
 			nullable = false
