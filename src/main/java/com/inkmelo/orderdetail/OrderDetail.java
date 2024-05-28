@@ -1,8 +1,7 @@
 package com.inkmelo.orderdetail;
 
-import com.inkmelo.bookcombo.BookCombo;
+import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.order.Order;
-import com.inkmelo.resource.Resource;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,12 +50,8 @@ public class OrderDetail {
 	private OrderDetailStatus status;
 	
 	@ManyToOne
-	@JoinColumn(name = "resource_id")
-	private Resource resource;
-	
-	@ManyToOne
-	@JoinColumn(name = "bookcombo_id")
-	private BookCombo bookCombo;
+	@JoinColumn(name = "bookpackage_id")
+	private BookPackage bookPackage;
 	
 	@ManyToOne
 	@JoinColumn(
