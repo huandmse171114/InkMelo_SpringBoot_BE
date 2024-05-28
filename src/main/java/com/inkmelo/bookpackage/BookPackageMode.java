@@ -1,6 +1,6 @@
-package com.inkmelo.bookcombo;
+package com.inkmelo.bookpackage;
 
-public enum BookComboMode {
+public enum BookPackageMode {
 	AUDIO(8),
 	PDF(4),
 	PAPER(1),
@@ -11,12 +11,11 @@ public enum BookComboMode {
 	
 	public final int value;
 	
-	private BookComboMode(int value) {
+	private BookPackageMode(int value) {
 		this.value = value;
 	}
 
 	public int getValue() {
 		return value;
 	}
-	
 }

@@ -1,8 +1,7 @@
 package com.inkmelo.cartdetail;
 
-import com.inkmelo.bookcombo.BookCombo;
+import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.cart.Cart;
-import com.inkmelo.resource.Resource;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,30 +32,16 @@ public class CartDetail {
 	@Column(nullable = false)
 	private int quantity;
 	
-	@Enumerated(EnumType.STRING)
-	@Column(
-			nullable = false,
-			length = 50
-	)
-	private CartDetailType type;
-	
 	@ManyToOne
 	@JoinColumn(name = "cart_id")
 	private Cart cart;
 	
 	@ManyToOne
 	@JoinColumn(
-			name = "resource_id",
+			name = "bookpackage_id",
 			nullable = false
 	)
-	private Resource resource;
-	
-	@ManyToOne
-	@JoinColumn(
-			name = "bookcombo_id",
-			nullable = false
-	)
-	private BookCombo bookCombo;
+	private BookPackage bookPackage;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(
