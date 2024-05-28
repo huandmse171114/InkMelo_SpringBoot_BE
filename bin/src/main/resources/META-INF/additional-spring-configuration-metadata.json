@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "inkmelo.address",
+  "type": "java.lang.String",
+  "description": "A description for 'inkmelo.address'"
+}]}

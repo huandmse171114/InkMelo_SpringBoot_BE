@@ -3,6 +3,7 @@ package com.inkmelo.book;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,6 +18,11 @@ public class BookController {
 	@GetMapping("/books")
 	public List<BookResponseDTO> getAllBooks() {
 		return service.findAllBooks();
+	}
+	
+	@GetMapping("/searchBook")
+	public List<BookResponseDTO> searchBook(@RequestParam("keyword") String keyword){
+		return service.searchBook(keyword);
 	}
 	
 	
