@@ -37,11 +37,14 @@ public class Payment {
 	@Enumerated(EnumType.STRING)
 	private PaymentMethod paymentMethod;
 	
-	@Column(nullable = false)
-	private Date paymentDate;
+	@Column(
+			nullable = false,
+			updatable = false
+	)
+	private Date createdDate;
 	
 	@Column(nullable = false)
-	private float amount;
+	private boolean isActive;
 	
 	private String thirdPartyCode;
 	

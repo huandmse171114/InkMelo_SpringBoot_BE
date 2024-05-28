@@ -1,9 +1,9 @@
-package com.inkmelo.bookcombo;
+package com.inkmelo.bookitem;
 
 import java.sql.Date;
 import java.util.List;
 
-import com.inkmelo.resource.Resource;
+import com.inkmelo.bookpackage.BookPackage;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,8 +11,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,30 +19,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BookCombo {
-	
+public class BookItem {
 	@Id
 	@GeneratedValue
 	private Integer id;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(
-			length = 150,
-			nullable = false
+			nullable = false,
+			length = 50
 	)
-	private String title;
+	private BookItemType type;
 	
-	private String description;
-	
-	@Column(nullable = false)
-	private float price;
-	
-	@Column(nullable = false)
-	private int mode;
+	private String source;
 	
 	@Column(
 			updatable = false,
@@ -56,8 +48,8 @@ public class BookCombo {
 	private Date lastUpdatedTime;
 	
 	@Column(
-			length = 100,
-			nullable = false
+			nullable = false,
+			length = 100
 	)
 	private String lastChangedBy;
 	
@@ -66,15 +58,8 @@ public class BookCombo {
 			nullable = false,
 			length = 50
 	)
-	private BookComboStatus status;
+	private BookItemStatus status;
 	
-	@ManyToMany
-	@JoinTable(
-			name = "bookcombo_resource",
-			joinColumns = @JoinColumn(name = "bookcombo_id", nullable = false),
-			inverseJoinColumns = @JoinColumn(name = "resource_id", nullable = false)
-	)
-	private List<Resource> resources;
-	
-	
+	@ManyToMany(mappedBy = "items")
+	private List<BookPackage> bookPackages;
 }

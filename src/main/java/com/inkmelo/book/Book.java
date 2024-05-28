@@ -3,11 +3,11 @@ package com.inkmelo.book;
 import java.sql.Date;
 import java.util.List;
 
+import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookrating.BookRating;
 import com.inkmelo.category.Category;
 import com.inkmelo.genre.Genre;
 import com.inkmelo.publisher.Publisher;
-import com.inkmelo.resource.Resource;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -90,7 +90,7 @@ public class Book {
 	private BookStatus status;
 	
 	@OneToMany(mappedBy = "book")
-	private List<Resource> resources;
+	private List<BookPackage> packages;
 	
 	@OneToMany(mappedBy = "book")
 	private List<BookRating> ratings;

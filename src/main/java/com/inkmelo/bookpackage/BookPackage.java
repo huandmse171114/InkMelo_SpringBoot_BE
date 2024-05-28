@@ -1,11 +1,10 @@
-package com.inkmelo.resource;
+package com.inkmelo.bookpackage;
 
 import java.sql.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.inkmelo.book.Book;
-import com.inkmelo.bookcombo.BookCombo;
+import com.inkmelo.bookitem.BookItem;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -28,23 +28,24 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Resource {
-	
+public class BookPackage {
 	@Id
 	@GeneratedValue
 	private Integer id;
 	
-	@Enumerated(EnumType.STRING)
 	@Column(
-			nullable = false,
-			length = 50
+			length = 150,
+			nullable = false
 	)
-	private ResourceType type;
+	private String title;
 	
-	private String source;
+	private String description;
 	
 	@Column(nullable = false)
 	private float price;
+	
+	@Column(nullable = false)
+	private int mode;
 	
 	@Column(
 			updatable = false,
@@ -56,8 +57,8 @@ public class Resource {
 	private Date lastUpdatedTime;
 	
 	@Column(
-			nullable = false,
-			length = 100
+			length = 100,
+			nullable = false
 	)
 	private String lastChangedBy;
 	
@@ -66,12 +67,17 @@ public class Resource {
 			nullable = false,
 			length = 50
 	)
-	private ResourceStatus status;
+	private BookPackageStatus status;
+	
+	@ManyToMany
+	@JoinTable(
+			name = "bookpackage_bookitem",
+			joinColumns = @JoinColumn(name = "bookpackage_id", nullable = false),
+			inverseJoinColumns = @JoinColumn(name = "bookitem_id", nullable = false)
+	)
+	private List<BookItem> items;
 	
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
-	
-	@ManyToMany(mappedBy = "resources")
-	private List<BookCombo> bookCombos;
 }
