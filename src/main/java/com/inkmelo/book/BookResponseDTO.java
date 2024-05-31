@@ -8,7 +8,8 @@ public record BookResponseDTO(
 			String title,
 			float price,
 			String author,
-			String description
+			String description, 
+			BookStatus status
 		) {
 
 }
