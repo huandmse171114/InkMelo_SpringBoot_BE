@@ -21,7 +21,6 @@ public class BookService {
 				.stream()
 				.map(book -> BookResponseDTO.builder()
 						.author(book.getAuthor())
-						.ISBN(book.getISBN())
 						.build())
 				.collect(Collectors.toList());
 	}
@@ -31,7 +30,6 @@ public class BookService {
 				.stream()
 				.map(book -> BookResponseDTO.builder()
 						.author(book.getAuthor())
-						.ISBN(book.getISBN())
 						.title(book.getTitle())
 						.build())
 				.collect(Collectors.toList());

@@ -3,10 +3,10 @@ package com.inkmelo.publisher;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class PublisherController {
-	private PublisherService service;
+public class PublishController {
+	private PublishService service;
 
-	public PublisherController(PublisherService service) {
+	public PublishController(PublishService service) {
 		this.service = service;
 	}
 	

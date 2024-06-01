@@ -13,10 +13,12 @@ public class GenreService {
 		this.repository = repository;
 	}
 	
-	public List<Genre> findAllGenre() {
+	public List<GenreResponseDTO> findAllGenre() {
 		return repository.findAll()
 				.stream()
-				.map(genre -> Genre.builder()
+				.map(genre -> GenreResponseDTO.builder()
+						.name(genre.getName())
+						.description(genre.getDescription())
 						.build())
 				.collect(Collectors.toList());
 	}

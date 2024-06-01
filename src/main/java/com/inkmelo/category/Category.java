@@ -3,7 +3,7 @@ package com.inkmelo.category;
 import java.sql.Date;
 import java.util.List;
 
-import com.inkmelo.book.Book;
+import com.inkmelo.bookpackage.BookPackage;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -61,6 +61,6 @@ public class Category {
 	private CategoryStatus status;
 	
 	@ManyToMany(mappedBy = "categories")
-	private List<Book> books;
+	private List<BookPackage> bookPackages;
 	
 }
