@@ -17,14 +17,15 @@ public class SecurityConfig {
 	@Bean
 	@Profile(value = "dev")
 	SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated())
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests((requests) -> requests.anyRequest().permitAll())
 //			.formLogin(withDefaults())
 //		when we are not using formLogin authentication, the session id is maintain throughout the session
 //		which made our server is statefull, which is wrong to RestAPI principles.
-			.sessionManagement(session -> session.sessionCreationPolicy(
-						SessionCreationPolicy.STATELESS
-					))
-			.httpBasic(withDefaults());
+                .sessionManagement(session -> session.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS
+                ))
+                .httpBasic(withDefaults());
 		return http.build();
 		
 	}

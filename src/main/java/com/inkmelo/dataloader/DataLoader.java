@@ -18,9 +18,9 @@ import com.inkmelo.category.CategoryStatus;
 import com.inkmelo.genre.Genre;
 import com.inkmelo.genre.GenreRepository;
 import com.inkmelo.genre.GenreStatus;
-import com.inkmelo.publisher.Publish;
-import com.inkmelo.publisher.PublishRepository;
-import com.inkmelo.publisher.PublishStatus;
+import com.inkmelo.publisher.Publisher;
+import com.inkmelo.publisher.PublisherRepository;
+import com.inkmelo.publisher.PublisherStatus;
 
 @Component
 @Profile(value = "dev")
@@ -29,16 +29,16 @@ public class DataLoader implements CommandLineRunner {
 	private final GenreRepository genreRepository;
 	private final CategoryRepository categoryRepository;
 	private final BookRepository bookRepository;
-	private final PublishRepository publishRepository;
+	private final PublisherRepository publisherRepository;
 	private Collection<String> searchList = new ArrayList<>(); 
 
 	public DataLoader(GenreRepository genreRepository, CategoryRepository categoryRepository,
-			BookRepository bookRepository, PublishRepository publishRepository) {
+			BookRepository bookRepository, PublisherRepository publisherRepository) {
 		super();
 		this.genreRepository = genreRepository;
 		this.categoryRepository = categoryRepository;
 		this.bookRepository = bookRepository;
-		this.publishRepository = publishRepository;
+		this.publisherRepository = publisherRepository;
 	}
 
 
@@ -947,21 +947,55 @@ public class DataLoader implements CommandLineRunner {
 				.status(GenreStatus.ACTIVE)
 				.build());	
 		
+//		========================================= Load initial data into the Publisher database ============================================
+		
+		publisherRepository.save(Publisher.builder()
+				.name("Huy Hoàng")
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(PublisherStatus.ACTIVE)
+				.build());
+		
+		publisherRepository.save(Publisher.builder()
+				.name("NHÀ XUẤT BẢN TRI THỨC")
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(PublisherStatus.ACTIVE)
+				.build());
+		
+		publisherRepository.save(Publisher.builder()
+				.name("Nhà xuất bản Trẻ")
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(PublisherStatus.ACTIVE)
+				.build());
+		
+		publisherRepository.save(Publisher.builder()
+				.name("NHÀ XUẤT BẢN THÔNG TIN VÀ TRUYỀN THÔNG")
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(PublisherStatus.ACTIVE)
+				.build());
+		
+		publisherRepository.save(Publisher.builder()
+				.name("Nguyễn Phương Chi")
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(PublisherStatus.ACTIVE)
+				.build());
+		
+		
 //		========================================= Load initial data into the Book database ============================================
 		
 //		--------------------- Book 1 -----------------
 		searchList.clear();
 		searchList.add("Sức khỏe & Dinh dưỡng");
 		searchList.add("Y học");
-		
-		publishRepository.save(Publish.builder()
-				.publisherName("Huy Hoàng")
-				.ISBN("978-604-1-24659-2")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
 		
 		bookRepository.save(Book.builder()
 				.title("Khúc Tráng Ca Về Những Vết Thương")
@@ -971,11 +1005,12 @@ public class DataLoader implements CommandLineRunner {
 						+ "Cuốn sách cho người đọc hiểu biết toàn diện về cơ thể con người, về ảnh hưởng của những cơn đau đến cuộc sống của chúng ta, cách ta nhìn nhận ý nghĩa của nó và chế ngự nó trong suốt chiều dài lịch sử. Từ đó, chúng ta nắm bắt được bản chất của nỗi đau, cũng như mối liên kết chặt chẽ giữa cơ thể với tâm trí, và nhận ra rằng không thể lờ đi vai trò của chủng tộc, giới tính và quyền lực đối với sự tồn tại của con người.\r\n"
 						+ "\r\n"
 						+ "Mạnh mẽ và sâu sắc, Khúc Tráng Ca Về Những Vết Thương vừa là bản cáo trạng về một hệ thống y tế đã bị phá vỡ, vừa là mong muốn tha thiết cho một thế giới mà nỗi đau của con người được quan tâm và thấu hiểu toàn diện hơn.")
-				.publish(publishRepository.findByISBN("978-604-1-24659-2"))
+				.publisher(publisherRepository.findByName("Huy Hoàng"))
+				.ISBN("978-604-1-24659-2")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -987,26 +1022,18 @@ public class DataLoader implements CommandLineRunner {
 		searchList.add("Văn học");
 		searchList.add("Tiểu thuyết Lịch sử");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("Huy Hoàng")
-				.ISBN("978-604-1-24659-3")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Hai Số Phận")
 				.author("Jeffrey Archer")
 				.description("Jeffrey Archer viết cuốn tiểu thuyết này dựa theo câu chuyện của anh em Cain và Abel trong Kinh Thánh Cựu Ước. Truyện kể về William Kane, con một triệu phú nổi tiếng trên đất Mỹ, lớn lên trong nhung lụa, người kia là Abel Rosnovski, đứa trẻ không rõ xuất thân, được gia đình người bẫy thú nhặt về nuôi. Một người được ấn định để trở thành chủ ngân hàng khi lớn lên, người kia nhập cư vào Mỹ cùng đoàn người nghèo khổ. \r\n"
 						+ "\r\n"
 						+ "Sinh ra cùng một ngày gần đầu thế kỷ ở hai phía đối diện nhau trên quả địa cầu, hai người đàn ông gặp nhau bởi số phận và hành trình tìm kiếm giấc mơ. Họ đầy tham vọng, quyền lực, tàn nhẫn - mắc kẹt trong một cuộc đấu tranh không ngừng nghỉ trên hành trình xây dựng một đế chế, với động lực là lòng căm thù tột độ trong họ. Hơn 60 năm và ba thế hệ sau, trải qua chiến tranh, hôn nhân, vận may và thảm họa, Kane và Abel chiến đấu để giành lấy thành công và chiến thắng mà chỉ một người có thể có được.")
-				.publish(publishRepository.findByISBN("978-604-1-24659-3"))
+				.publisher(publisherRepository.findByName("Huy Hoàng"))
+				.ISBN("978-604-1-24659-3")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1017,18 +1044,6 @@ public class DataLoader implements CommandLineRunner {
 		searchList.clear();
 		searchList.add("Kỹ năng");
 		searchList.add("Kỹ năng Làm việc");
-		
-		publishRepository.save(Publish.builder()
-				.publisherName("NHÀ XUẤT BẢN TRI THỨC & Fonos")
-				.ISBN("978-604-484-131-1")
-				.publicationDecisionNumber("19/QĐLK-XBSĐT-NXBTrT ngày 28 tháng 02 năm 2024")
-				.publicationRegistConfirmNum("552-2024/CXBIPH/1-14/TrT")
-				.depositCopy("Tờ khai lưu chiểu số 19/LC-NXBTrT ngày 29 tháng 02 năm 2024")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
 		
 		bookRepository.save(Book.builder()
 				.title("Chấm Dứt Thói Trì Hoãn")
@@ -1047,11 +1062,15 @@ public class DataLoader implements CommandLineRunner {
 						+ "Copyright © 2013 by Petr Ludwig\r\n"
 						+ "arranged with: New Leaf Literary & Media, Inc. 110 West 40th Street, Suite 2201, New York, NY 10018, USA\r\n"
 						+ "through Bridge Communications Co., Ltd.")
-				.publish(publishRepository.findByISBN("978-604-484-131-1"))
+				.publisher(publisherRepository.findByName("NHÀ XUẤT BẢN TRI THỨC"))
+				.ISBN("978-604-484-131-1")
+				.publicationDecisionNumber("19/QĐLK-XBSĐT-NXBTrT ngày 28 tháng 02 năm 2024")
+				.publicationRegistConfirmNum("552-2024/CXBIPH/1-14/TrT")
+				.depositCopy("Tờ khai lưu chiểu số 19/LC-NXBTrT ngày 29 tháng 02 năm 2024")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1063,29 +1082,21 @@ public class DataLoader implements CommandLineRunner {
 		searchList.add("Tâm lý học");
 		searchList.add("Tâm lý học hành vi");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("Nhà xuất bản Trẻ")
-				.ISBN("978-604-1-24659-1")
-				.publicationDecisionNumber("12/QĐ-NXBT ngày 01 tháng 03 năm 2024")
-				.publicationRegistConfirmNum("174-2024/CXBIPH/1-18/Tre")
-				.depositCopy("Tờ khai lưu chiểu số 15/LC-NXBT ngày 22 tháng 03 năm 2024")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Nghệ Thuật Quyến Rũ")
 				.author("Robert Greene")
 				.description("Từ tác giả của cuốn sách bán chạy hàng triệu bản 48 Nguyên Tắc Chủ Chốt Của Quyền Lực và Những Quy Luật Của Bản Chất Con Người, cuốn sách này là một cẩm nang hấp dẫn về sự quyến rũ - hình thức quyền lực tinh tế và hiệu quả nhất. Sự quyến rũ thực ra không chỉ liên quan đến tình dục. Định nghĩa chính xác của quyến rũ là: thao túng điểm yếu lớn nhất của con người - ham muốn niềm vui và sự sảng khoái.\r\n"
 						+ " \r\n"
 						+ "Khi được nâng lên tầm nghệ thuật, sự quyến rũ, một dạng quyền lực gián tiếp và tinh vi, đã lật đổ các đế chế, giành chiến thắng trong các cuộc bầu cử và nô lệ hóa cả những bộ óc vĩ đại. Tất cả chúng ta đều có sức hấp dẫn, lôi cuốn người khác nhưng không phải ai cũng ý thức được khả năng tiềm tàng này. Cuốn sách này sẽ giúp bạn khám phá và phát huy những lợi điểm vốn có để tạo ảnh hưởng đối với người khác thông qua kiến thức về con người từ các nhà tư tưởng lớn như Freud, Diderot, Nietzsche và Einstein, đồng thời cung cấp một số phương pháp và kỹ năng cụ thể. Tác giả cũng giới thiệu và phân tích minh họa những mẫu người quyến rũ và không quyến rũ điển hình trong lịch sử cũng như trong các tác phẩm văn học để bạn có thể đối chứng và học hỏi thêm từ họ. ")
-				.publish(publishRepository.findByISBN("978-604-1-24659-1"))
+				.publisher(publisherRepository.findByName("Nhà xuất bản Trẻ"))
+				.ISBN("978-604-1-24659-1")
+				.publicationDecisionNumber("12/QĐ-NXBT ngày 01 tháng 03 năm 2024")
+				.publicationRegistConfirmNum("174-2024/CXBIPH/1-18/Tre")
+				.depositCopy("Tờ khai lưu chiểu số 15/LC-NXBT ngày 22 tháng 03 năm 2024")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1097,24 +1108,16 @@ public class DataLoader implements CommandLineRunner {
 		searchList.add("Sức khỏe & Dinh dưỡng");
 		searchList.add("Phòng & chữa bệnh");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("Huy Hoàng")
-				.ISBN("978-674-1-24859-9")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Cơ Thể Tự Chữa Lành - Tập 7")
 				.author("Anthony William")
 				.description("Cuốn sách thứ 7 của loạt sách nổi tiếng đi sâu vào các vấn đề liên quan đến não bộ - từ các loại virus, vi khuẩn gây hại cho não, tới kim loại nặng độc hại, dược phẩm lưu cữu, các chất gây ô nhiễm, thậm chí cả phóng xạ/bức xạ hiện rất phổ biến trong cuộc sống hiện đại. Không chỉ thế, tác giả còn căn cứ vào các vấn đề nêu trên để lý giải nhiều vấn đề, triệu chứng và bệnh trạng tâm thần hiện đang khiến nhiều y bác sĩ bối rối và hàng ngàn người bệnh khốn khổ.")
-				.publish(publishRepository.findByISBN("978-674-1-24859-9"))
+				.publisher(publisherRepository.findByName("Huy Hoàng"))
+				.ISBN("978-674-1-24859-9")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1126,18 +1129,6 @@ public class DataLoader implements CommandLineRunner {
 		searchList.add("Tư duy thành công");
 		searchList.add("Tư duy");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("Nhà xuất bản Trẻ")
-				.ISBN("978-604-1-25676-7")
-				.publicationDecisionNumber("13/QĐ-NXBT ngày 22 tháng 04 năm 2024")
-				.publicationDecisionNumber("1286-2024/CXBIPH/1-74/Tre")
-				.depositCopy("Tờ khai lưu chiểu số: 16/LC-NXBT ngày 08 tháng 05 năm 2024")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Không Có Đỉnh Quá Cao - Từ Làng Quê Bước Ra Chinh Phục Thế Giới")
 				.author("Phan Văn Trường")
@@ -1148,11 +1139,15 @@ public class DataLoader implements CommandLineRunner {
 						+ "Các bạn trẻ hãy tự tin khi thấy mình khác mọi người, mọi người khác mình, vì chính sự khác biệt mới tạo nên giá trị thực.\r\n"
 						+ "Hãy cứ chăm chỉ, đạo đức và tươi tắn thì vận may chẳng bao giờ vắng!\r\n"
 						+ "Hãy tự tin mà tiến bước, vì chính sự tự tin cùng với nội lực và trí tuệ sẽ cho mình sức mạnh mà không chướng ngại nào có thể cản.”")
-				.publish(publishRepository.findByISBN("978-604-1-25676-7"))
+				.publisher(publisherRepository.findByName("Nhà xuất bản Trẻ"))
+				.ISBN("978-604-1-25676-7")
+				.publicationDecisionNumber("13/QĐ-NXBT ngày 22 tháng 04 năm 2024")
+				.publicationDecisionNumber("1286-2024/CXBIPH/1-74/Tre")
+				.depositCopy("Tờ khai lưu chiểu số: 16/LC-NXBT ngày 08 tháng 05 năm 2024")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1164,18 +1159,6 @@ public class DataLoader implements CommandLineRunner {
 		searchList.add("Kỹ năng");
 		searchList.add("Kỹ năng Làm việc");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("NHÀ XUẤT BẢN TRI THỨC & Alpphabooks")
-				.ISBN("978-604-340-345-9")
-				.publicationDecisionNumber("32/QĐLK-XBSĐT-NXB ngày 23 tháng 5 năm 2022")
-				.publicationDecisionNumber("1604-2022/CXBIPH/14-20/TrT")
-				.depositCopy("Tờ khai lưu chiểu số 150/LCSĐT-NXBTrT ngày 26 tháng 5 năm 2022")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Sức Mạnh Của Toàn Tâm Toàn Ý")
 				.author("Jim Loehr & Tony Schwartz")
@@ -1183,11 +1166,15 @@ public class DataLoader implements CommandLineRunner {
 						+ "\r\n"
 						+ "Trong cuốn sách New York Times Best Seller này, Jim Loehr và Tony Schwartz đã chứng minh rằng không phải quản trị thời gian mà chính quản trị năng lượng mới là then chốt để duy trì cả hiệu suất cao lẫn sức khỏe, hạnh phúc và cân bằng cuộc sống. Phương pháp rèn luyện Toàn tâm toàn ý của họ dựa trên cơ sở 25 năm kinh nghiệm làm việc với những vận động viên thể thao hàng đầu thế giới. Hai người trong số đó là vận động viên tennis vô địch thế giới Monica Seles và nhà trượt tuyết tốc độ Dan Jansen, từng đạt huy chương vàng Thế vận hội. Phương pháp Rèn luyện Toàn tâm toàn ý đã giúp họ thi đấu hiệu quả hơn dưới áp lực khốc liệt của thể thao đỉnh cao.\r\n"
 						+ "")
-				.publish(publishRepository.findByISBN("978-604-340-345-9"))
+				.publisher(publisherRepository.findByName("NHÀ XUẤT BẢN TRI THỨC"))
+				.ISBN("978-604-340-345-9")
+				.publicationDecisionNumber("32/QĐLK-XBSĐT-NXB ngày 23 tháng 5 năm 2022")
+				.publicationDecisionNumber("1604-2022/CXBIPH/14-20/TrT")
+				.depositCopy("Tờ khai lưu chiểu số 150/LCSĐT-NXBTrT ngày 26 tháng 5 năm 2022")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1199,15 +1186,6 @@ public class DataLoader implements CommandLineRunner {
 		searchList.clear();
 		searchList.add("Nuôi dạy con");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("Huy Hoàng")
-				.ISBN("978-004-390-355-1")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Nghe Thổ Dân Kể Chuyện Dạy Con - Săn Bắt, Hái Lượm & Nghệ Thuật Làm Cha Mẹ")
 				.author("Michaeleen Doucleff")
@@ -1217,11 +1195,12 @@ public class DataLoader implements CommandLineRunner {
 						+ "Liệu khen ngợi có phải cách tốt nhất để khích lệ trẻ nhỏ? Cha mẹ có cần thường xuyên khơi dậy sự hào hứng và chơi đùa cùng con trẻ không? Ngôn từ có phải cách tốt nhất để giao tiếp với các con hay không?\r\n"
 						+ "\r\n"
 						+ "Theo chân nhà báo Michaeleen Doucleff, chúng ta sẽ được chứng kiến cách nuôi dạy con ấn tượng của các gia đình thuộc ba cộng đồng cổ xưa đáng kính nhất thế giới: Người Maya ở Mexico, người Inuit ở Bắc Cực, và người Hadzabe ở Tanzania. Những đứa trẻ nơi đây lớn lên với sự hiểu biết, tự tin, tự chủ, điềm tĩnh, có ích cho gia đình và xã hội mà không cần cha mẹ la hét, cằn nhằn hay kiểm soát. Hãy mở rộng tầm mắt, tìm kiếm sự khôn ngoan và sáng tạo trong các kỹ thuật xa xưa để giải quyết những tình huống khó xử nhất trên hành trình nuôi dạy con của ta.")
-				.publish(publishRepository.findByISBN("978-004-390-355-1"))
+				.publisher(publisherRepository.findByName("Huy Hoàng"))
+				.ISBN("978-004-390-355-1")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1233,18 +1212,6 @@ public class DataLoader implements CommandLineRunner {
 		searchList.add("Tâm lý học");
 		searchList.add("Tâm lý học nhận thức");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("NHÀ XUẤT BẢN THÔNG TIN VÀ TRUYỀN THÔNG & Alphabooks")
-				.ISBN("978-604-80-6050-3")
-				.publicationDecisionNumber("14/QĐ - NXB TTTT ngày 20 tháng 01 năm 2022")
-				.publicationRegistConfirmNum("13-2022/CXBIPH/18-02/TTTT")
-				.depositCopy("Quý I năm 2022")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Tư Duy Nhanh Và Chậm")
 				.author("Daniel Kahneman")
@@ -1253,11 +1220,15 @@ public class DataLoader implements CommandLineRunner {
 						+ "Chúng ta thường tự cho rằng con người là sinh vật có lý trí mạnh mẽ, khi quyết định hay đánh giá vấn đề luôn kỹ lưỡng và lý tính. Nhưng sự thật là, dù bạn có cẩn trọng tới mức nào, thì trong cuộc sống hàng ngày hay trong vấn đề liên quan đến kinh tế, bạn vẫn có những quyết định dựa trên cảm tính chủ quan của mình. Trong sách nói Tư Duy Nhanh Và Chậm, cuốn sách nổi tiếng tổng hợp tất cả nghiên cứu được tiến hành qua nhiều thập kỷ của nhà tâm lý học từng đoạt giải Nobel Kinh tế Daniel Kahneman, bạn sẽ thấy những sự hợp lý và phi lý trong tư duy của chính bạn. Cuốn sách được đánh giá là “kiệt tác” trong việc thay đổi hành vi của con người. \r\n"
 						+ "\r\n"
 						+ "Đây là một cuốn sách hàn lâm dành cho tất cả mọi người. ")
-				.publish(publishRepository.findByISBN("978-604-80-6050-3"))
+				.publisher(publisherRepository.findByName("NHÀ XUẤT BẢN THÔNG TIN VÀ TRUYỀN THÔNG"))
+				.ISBN("978-604-80-6050-3")
+				.publicationDecisionNumber("14/QĐ - NXB TTTT ngày 20 tháng 01 năm 2022")
+				.publicationRegistConfirmNum("13-2022/CXBIPH/18-02/TTTT")
+				.depositCopy("Quý I năm 2022")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1269,15 +1240,6 @@ public class DataLoader implements CommandLineRunner {
 		searchList.add("Lối sống");
 		searchList.add("Lối sống tối giản");
 		
-		publishRepository.save(Publish.builder()
-				.publisherName("Nguyễn Phương Chi")
-				.ISBN("978-614-80-6059-0")
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(PublishStatus.ACTIVE)
-				.build());
-		
 		bookRepository.save(Book.builder()
 				.title("Một Cuốn Sách Về Chủ Nghĩa Tối Giản")
 				.author("Chi Nguyễn - The Present Writer")
@@ -1288,11 +1250,12 @@ public class DataLoader implements CommandLineRunner {
 						+ "Cuốn sách này không cho bạn một “công thức chuẩn” để đánh giá thế nào là tối giản và thế nào là không tối giản, hay sống như thế nào mới là hạnh phúc, là đáng sống. Cũng sẽ không có điều gì hoàn toàn đúng và hoàn toàn sai áp đặt lên bạn. Thay vào đó, cuốn sách giới thiệu những khái niệm mở, truyền cảm hứng để bạn thay đổi tư duy và tự đưa ra quyết định đâu là lối sống phù hợp nhất với mình.\r\n"
 						+ "\r\n"
 						+ "Vậy nên, chính xác thì, đây không-chỉ-là một cuốn sách về Chủ nghĩa tối giản. Đây là một cuốn sách về Sự-Thay-Đổi.")
-				.publish(publishRepository.findByISBN("978-614-80-6059-0"))
+				.publisher(publisherRepository.findByName("Nguyễn Phương Chi"))
+				.ISBN("978-614-80-6059-0")
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByNameIn(searchList))
+				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")

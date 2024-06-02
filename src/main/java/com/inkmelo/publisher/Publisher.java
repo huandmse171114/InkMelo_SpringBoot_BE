@@ -24,7 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Publish {
+public class Publisher {
 	
 	@Id
 	@GeneratedValue
@@ -32,25 +32,15 @@ public class Publish {
 	
 	@Column(
 			nullable = false,
+			unique = true,
 			length = 100
 	)
-	private String publisherName;
+	private String name;
 	
-	@Column(
-			length = 17, // ISBN13 format,
-			unique = true,
-			nullable = false
-	)
-	private String ISBN;
+	@Column(length = 1000)
+	private String description;
 	
-	@Column(length = 150)
-	private String publicationDecisionNumber;
-	
-	@Column(length = 150)
-	private String publicationRegistConfirmNum;
-	
-	@Column(length = 150)
-	private String depositCopy;
+	private String logoImg;
 	
 	@Column(
 			updatable = false,
@@ -72,8 +62,8 @@ public class Publish {
 			nullable = false,
 			length = 50
 	)
-	private PublishStatus status;
+	private PublisherStatus status;
 	
-	@OneToMany(mappedBy = "publish")
+	@OneToMany(mappedBy = "publisher")
 	private List<Book> books;
 }

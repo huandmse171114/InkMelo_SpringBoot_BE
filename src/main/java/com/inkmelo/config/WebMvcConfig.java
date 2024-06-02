@@ -3,6 +3,7 @@ package com.inkmelo.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerTypePredicate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -15,4 +16,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		WebMvcConfigurer.super.configurePathMatch(configurer);
 		configurer.addPathPrefix("api/v1", HandlerTypePredicate.forAnnotation(RestController.class));
 	}
+	
 }

@@ -3,7 +3,7 @@ package com.inkmelo.book;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,14 +16,18 @@ public class BookController {
 	}
 	
 	@GetMapping("/books")
-	public List<BookResponseDTO> getAllBooks() {
-		return service.findAllBooks();
+	public List<BookResponseDTO> getAllActiveBooks() {
+		return service.findAllBookByStatus(BookStatus.ACTIVE);
 	}
 	
-	@GetMapping("/searchBook")
-	public List<BookResponseDTO> searchBook(@RequestParam("keyword") String keyword){
+	@GetMapping("/admin/books")
+	public List<BookAdminResponseDTO> getAllBook() {
+		return service.findAllBook();
+	}
+	
+	@GetMapping("/books/{keyword}")
+	public List<BookResponseDTO> findBookByKeyword(@PathVariable("keyword") String keyword){
 		return service.searchBook(keyword);
 	}
-	
 	
 }

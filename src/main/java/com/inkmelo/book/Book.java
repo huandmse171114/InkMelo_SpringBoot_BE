@@ -5,9 +5,8 @@ import java.util.List;
 
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookrating.BookRating;
-import com.inkmelo.category.Category;
 import com.inkmelo.genre.Genre;
-import com.inkmelo.publisher.Publish;
+import com.inkmelo.publisher.Publisher;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +42,22 @@ public class Book {
 			nullable = false
 	)
 	private String title;
+	
+	@Column(
+			length = 17, // ISBN13 format,
+			unique = true,
+			nullable = false
+	)
+	private String ISBN;
+	
+	@Column(length = 150)
+	private String publicationDecisionNumber;
+	
+	@Column(length = 150)
+	private String publicationRegistConfirmNum;
+	
+	@Column(length = 150)
+	private String depositCopy;
 	
 	@Column(
 			updatable = false,
@@ -87,8 +102,8 @@ public class Book {
 	private List<BookRating> ratings;
 	
 	@ManyToOne
-	@JoinColumn(name = "publish_id")
-	private Publish publish;
+	@JoinColumn(name = "publisher_id")
+	private Publisher publisher;
 	
 	@ManyToMany
 	@JoinTable(

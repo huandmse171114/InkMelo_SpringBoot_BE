@@ -1,38 +1,42 @@
 package com.inkmelo.book;
 
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import org.hibernate.validator.constraints.ISBN;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class BookService {
 
-	private BookRepository repository;
-
-	public BookService(BookRepository repository) {
+	private final BookRepository repository;
+	private final BookMappingService mappingService;
+	
+	
+	
+	public BookService(BookRepository repository, BookMappingService mappingService) {
+		super();
 		this.repository = repository;
+		this.mappingService = mappingService;
 	}
 
-	public List<BookResponseDTO> findAllBooks() {
+	public List<BookResponseDTO> findAllBookByStatus(BookStatus status) {
+		return repository.findAllByStatus(status)
+				.stream()
+				.map(book -> mappingService.bookToBookResponseDTO(book))
+				.toList();
+	}
+	
+	public List<BookAdminResponseDTO> findAllBook() {
 		return repository.findAll()
 				.stream()
-				.map(book -> BookResponseDTO.builder()
-						.author(book.getAuthor())
-						.build())
-				.collect(Collectors.toList());
+				.map(book -> mappingService.bookToBookAdminResponseDTO(book))
+				.toList();
 	}
 	
 	public List<BookResponseDTO> searchBook(String keyword){
 		return repository.findByAuthorContainingIgnoreCaseOrTitleContainingIgnoreCase(keyword, keyword)
 				.stream()
-				.map(book -> BookResponseDTO.builder()
-						.author(book.getAuthor())
-						.title(book.getTitle())
-						.build())
-				.collect(Collectors.toList());
+				.map(book -> mappingService.bookToBookResponseDTO(book))
+				.toList();
 
     }
 	

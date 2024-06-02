@@ -1,26 +1,32 @@
 package com.inkmelo.genre;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 @Service
 public class GenreService {
-	private GenreRepository repository;
-
-	public GenreService(GenreRepository repository) {
-		this.repository = repository;
-	}
+	private final GenreRepository repository;
+	private final GenreMappingService mappingService;
 	
-	public List<GenreResponseDTO> findAllGenre() {
+	public GenreService(GenreRepository repository, GenreMappingService mappingService) {
+		super();
+		this.repository = repository;
+		this.mappingService = mappingService;
+	}
+
+	public List<GenreResponseDTO> findAllGenreByStatus(GenreStatus status) {
+		return repository.findAllByStatus(status)
+				.stream()
+				.map(genre -> mappingService.genreToGenreResponseDTO(genre))
+				.toList();
+	}
+
+	public List<GenreAdminResponseDTO> findAllGenre() {
 		return repository.findAll()
 				.stream()
-				.map(genre -> GenreResponseDTO.builder()
-						.name(genre.getName())
-						.description(genre.getDescription())
-						.build())
-				.collect(Collectors.toList());
+				.map(genre -> mappingService.genreToGenreAdminResponseDTO(genre))
+				.toList();
 	}
 	
 }
