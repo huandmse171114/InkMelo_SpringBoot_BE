@@ -6,12 +6,14 @@ import lombok.Builder;
 
 @Builder
 public record PublisherAdminResponseDTO(
+			int id,
 			String name,
 			String description,
 			String logoImg,
 			Date createdAt,
 			Date lastUpdatedTime,
-			String lastChangedBy
+			String lastChangedBy,
+			PublisherStatus status
 		) {
 
 }
