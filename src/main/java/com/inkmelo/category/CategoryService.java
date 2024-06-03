@@ -1,11 +1,19 @@
 package com.inkmelo.category;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.exception.NoCategoryExistException;
+import com.inkmelo.exception.NoCategoryFoundException;
+
+import jakarta.validation.Valid;
 
 @Service
 public class CategoryService {
@@ -53,6 +61,51 @@ public class CategoryService {
 				})
 				.toList();
 	}
+	
+	public Set<CategoryStatus> findAllCategoryStatus() {
+		return CategoryStatus.allStatus;
+	}
+
+	public void saveCategory(@Valid CategoryCreateBodyDTO categoryDTO) throws DataIntegrityViolationException {
+		Category category = mappingService.categoryCreateBodyDTOToCategory(categoryDTO);
+		
+		repository.save(category);
+	}
+
+	public void updateCategory(CategoryUpdateBodyDTO categoryDTO) throws DataIntegrityViolationException {
+		var categoryOption = repository.findById(categoryDTO.id());
+		
+		if (categoryOption.isEmpty()) {
+			throw new NoCategoryFoundException(categoryDTO.id());
+		}
+		
+		Category category = categoryOption.get();
+		category.setName(categoryDTO.name());
+		category.setDescription(categoryDTO.description());
+		category.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
+		category.setLastChangedBy(SecurityContextHolder.getContext()
+				.getAuthentication().getName());
+		category.setStatus(categoryDTO.status());
+		
+		repository.save(category);
+	}
+	
+	public void deleteCategoryById(Integer id) {
+		var categoryOption = repository.findById(id);
+		
+		if (categoryOption.isEmpty()) {
+			throw new NoCategoryFoundException(id);
+		}
+		
+		Category category = categoryOption.get();
+		category.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
+		category.setLastChangedBy(SecurityContextHolder.getContext()
+				.getAuthentication().getName());
+		category.setStatus(CategoryStatus.INACTIVE);
+		
+		repository.save(category);
+	}
+
 	
 	
 }
