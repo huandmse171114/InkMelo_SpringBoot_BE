@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.inkmelo.book.Book;
 import com.inkmelo.bookitem.BookItem;
+import com.inkmelo.category.Category;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -80,4 +81,12 @@ public class BookPackage {
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
+	
+	@ManyToMany
+	@JoinTable(
+			name = "bookpackage_category",
+			joinColumns = @JoinColumn(name = "bookpackage_id", nullable = false),
+			inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false)
+	)
+	private List<Category> categories;
 }

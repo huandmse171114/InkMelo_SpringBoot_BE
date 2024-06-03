@@ -37,13 +37,10 @@ public class Publisher {
 	)
 	private String name;
 	
-	private String address;
+	@Column(length = 1000)
+	private String description;
 	
-	@Column(length = 100)
-	private String email;
-	
-	@Column(length = 12)
-	private String phone;
+	private String logoImg;
 	
 	@Column(
 			updatable = false,

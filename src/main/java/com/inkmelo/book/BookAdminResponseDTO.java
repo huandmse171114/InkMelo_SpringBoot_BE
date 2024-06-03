@@ -1,5 +1,6 @@
 package com.inkmelo.book;
 
+import java.sql.Date;
 import java.util.List;
 
 import com.inkmelo.bookrating.BookRatingResponseDTO;
@@ -9,7 +10,7 @@ import com.inkmelo.publisher.PublisherResponseDTO;
 import lombok.Builder;
 
 @Builder
-public record BookResponseDTO(
+public record BookAdminResponseDTO(
 			String title,
 			String ISBN,
 			String publicationDecisionNumber,
@@ -22,7 +23,11 @@ public record BookResponseDTO(
 			int totalRating,
 			PublisherResponseDTO publisher,
 			List<BookRatingResponseDTO> ratings,
-			List<GenreResponseDTO> genres
+			List<GenreResponseDTO> genres,
+			Date createdAt,
+			Date lastUpdatedTime,
+			String lastChangedBy,
+			BookStatus status
 		) {
-
+	
 }

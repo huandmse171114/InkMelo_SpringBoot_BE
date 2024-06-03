@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookrating.BookRating;
-import com.inkmelo.category.Category;
 import com.inkmelo.genre.Genre;
 import com.inkmelo.publisher.Publisher;
 
@@ -39,20 +38,26 @@ public class Book {
 	private Integer id;
 	
 	@Column(
+			length = 100,
+			nullable = false
+	)
+	private String title;
+	
+	@Column(
 			length = 17, // ISBN13 format,
 			unique = true,
 			nullable = false
 	)
 	private String ISBN;
 	
-	@Column(
-			length = 100,
-			nullable = false
-	)
-	private String title;
+	@Column(length = 150)
+	private String publicationDecisionNumber;
 	
-	@Column(nullable = false)
-	private int stock;
+	@Column(length = 150)
+	private String publicationRegistConfirmNum;
+	
+	@Column(length = 150)
+	private String depositCopy;
 	
 	@Column(
 			updatable = false,
@@ -72,6 +77,7 @@ public class Book {
 	@Column(length = 100)
 	private String author;
 	
+	@Column(length = 2000)
 	private String description;
 	
 	private String bookCoverImg;
@@ -94,14 +100,6 @@ public class Book {
 	
 	@OneToMany(mappedBy = "book")
 	private List<BookRating> ratings;
-	
-	@ManyToMany
-	@JoinTable(
-			name = "book_category",
-			joinColumns = @JoinColumn(name = "book_id", nullable = false),
-			inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false)
-	)
-	private List<Category> categories;
 	
 	@ManyToOne
 	@JoinColumn(name = "publisher_id")
