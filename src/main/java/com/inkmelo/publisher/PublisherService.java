@@ -2,13 +2,12 @@ package com.inkmelo.publisher;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.exception.NoPublisherExistException;
@@ -85,7 +84,8 @@ public class PublisherService {
 		publisher.setDescription(publisherDTO.description());
 		publisher.setLogoImg(publisherDTO.logoImg());
 		publisher.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
-		publisher.setLastChangedBy("HuanDM");
+		publisher.setLastChangedBy(SecurityContextHolder.getContext()
+				.getAuthentication().getName());
 		publisher.setStatus(publisherDTO.status());
 		
 		repository.save(publisher);
@@ -99,10 +99,12 @@ public class PublisherService {
 			throw new NoPublisherFoundException(id);
 		}
 		
-		System.out.println(publisherOption.get().getName());
-		
 		Publisher publisher = publisherOption.get();
 		publisher.setStatus(PublisherStatus.INACTIVE);
+		publisher.setLastChangedBy(SecurityContextHolder.getContext()
+				.getAuthentication().getName());
+		publisher.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
+		
 		repository.save(publisher);
 		
 	}

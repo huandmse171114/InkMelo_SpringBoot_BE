@@ -60,7 +60,7 @@ public class PublisherController {
 	
 	@Operation(summary = "Delete Publisher By Id",
 			description = "This endpoint will soft delete publisher with the given id | (Authority) ADMIN, MANAGER")
-	@DeleteMapping("/publishers/{id}")
+	@DeleteMapping("/admin/publishers/{id}")
 	public ResponseEntity<?> deletePublisherById(@PathVariable("id") Integer id){
 		System.out.println(id);
 		var response = new HashMap<String, Object>();
@@ -74,7 +74,7 @@ public class PublisherController {
 	
 	@Operation(summary = "Create new Publisher",
 			description = "This endpoint will create new publisher with the given information | (Authority) ADMIN, MANAGER.")
-	@PostMapping("/publishers")
+	@PostMapping("/admin/publishers")
 	public ResponseEntity<?> savePublisher(@Valid @RequestBody PublisherCreateBodyDTO publisher){
 		
 		var response = new HashMap<String, Object>();
@@ -88,7 +88,7 @@ public class PublisherController {
 	
 	@Operation(summary = "Update Publisher data",
 			description = "This endpoint will update publisher with the given information | (Authority) ADMIN, MANAGER.")
-	@PutMapping("/publishers")
+	@PutMapping("/admin/publishers")
 	public ResponseEntity<?> updatePublisher(@Valid @RequestBody PublisherUpdateBodyDTO publisher) {
 		
 		var response = new HashMap<String, Object>();
