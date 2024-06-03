@@ -62,6 +62,7 @@ public class PublisherService {
 		publisher.setLogoImg(publisherDTO.logoImg());
 		publisher.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
 		publisher.setLastChangedBy("HuanDM");
+		publisher.setStatus(publisherDTO.status());
 		
 		repository.save(publisher);
 		

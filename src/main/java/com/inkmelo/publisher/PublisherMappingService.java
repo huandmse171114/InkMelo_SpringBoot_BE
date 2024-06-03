@@ -10,6 +10,7 @@ public class PublisherMappingService {
 	
 	public PublisherResponseDTO publisherToPublisherResponseDTO(Publisher publisher) {
 		return PublisherResponseDTO.builder()
+				.id(publisher.getId())
 				.name(publisher.getName())
 				.description(publisher.getDescription())
 				.logoImg(publisher.getLogoImg())
@@ -18,6 +19,7 @@ public class PublisherMappingService {
 	
 	public PublisherAdminResponseDTO publisherToPublisherAdminResponseDTO(Publisher publisher) {
 		return PublisherAdminResponseDTO.builder()
+				.id(publisher.getId())
 				.name(publisher.getName())
 				.description(publisher.getDescription())
 				.logoImg(publisher.getLogoImg())

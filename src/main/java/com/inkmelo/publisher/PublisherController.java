@@ -45,9 +45,11 @@ public class PublisherController {
 	@DeleteMapping("/publishers/{id}")
 	public ResponseEntity<?> deletePublisherById(@PathVariable("id") Integer id){
 		
-		var response = new HashMap<String, String>();
+		var response = new HashMap<String, Object>();
 		service.deletePublisherById(id);
 		response.put("message", "Delete publisher with id " + id + " successfully!");
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.OK.value());
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -55,9 +57,11 @@ public class PublisherController {
 	@PostMapping("/publishers")
 	public ResponseEntity<?> savePublisher(@Valid @RequestBody PublisherCreateBodyDTO publisher){
 		
-		var response = new HashMap<String, String>();
+		var response = new HashMap<String, Object>();
 		service.savePublisher(publisher);
 		response.put("message", "Create new publisher successfully!");
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.CREATED.value());
 		
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
@@ -65,8 +69,11 @@ public class PublisherController {
 	@PutMapping("/publishers")
 	public ResponseEntity<?> updatePublisher(@Valid @RequestBody PublisherUpdateBodyDTO publisher) {
 		
-		var response = new HashMap<String, String>();
+		var response = new HashMap<String, Object>();
 		service.updatePublisher(publisher);
+		response.put("message", "Update publisher successfully!");
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.OK.value());
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
