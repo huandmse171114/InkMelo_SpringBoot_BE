@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -19,14 +18,18 @@ public class BookController {
 	}
 	
 	@GetMapping("/books")
-	public List<BookResponseDTO> getAllBooks() {
-		return service.findAllBooks();
+	public List<BookResponseDTO> getAllActiveBooks() {
+		return service.findAllBookByStatus(BookStatus.ACTIVE);
 	}
 	
-	@GetMapping("/books/search/{keyword}")
-	public List<BookResponseDTO> searchBooks(@PathVariable("keyword") String keywordRequest) {
-        return service.findBooksByKeyword(keywordRequest);
-    }
+	@GetMapping("/admin/books")
+	public List<BookAdminResponseDTO> getAllBook() {
+		return service.findAllBook();
+	}
 	
+	@GetMapping("/books/{keyword}")
+	public List<BookResponseDTO> findBookByKeyword(@PathVariable("keyword") String keyword){
+		return service.searchBook(keyword);
+	}
 	
 }
