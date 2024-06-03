@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record PublisherResponseDTO(
-			int id,
+			Integer id,
 			String name,
 			String description,
 			String logoImg

@@ -2,15 +2,17 @@ package com.inkmelo.publisher;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.exc.InvalidNullException;
+import com.inkmelo.exception.NoPublisherExistException;
 import com.inkmelo.exception.NoPublisherFoundException;
-
-import jakarta.validation.Valid;
 
 @Service
 public class PublisherService {
@@ -24,20 +26,42 @@ public class PublisherService {
 	}
 
 	public List<PublisherResponseDTO> findAllPublisherByStatus(PublisherStatus status) {
-		return repository.findAllByStatus(status)
-				.stream()
+		var publishers = repository.findAllByStatus(status);
+		
+		if (publishers.isEmpty()) {
+			throw new NoPublisherExistException("Publisher data is empty.");
+		}
+		 
+		return publishers.stream()
 				.map(publisher -> 
 					mappingService
 						.publisherToPublisherResponseDTO(publisher))
+				.sorted(new Comparator<PublisherResponseDTO>() {
+					@Override
+					public int compare(PublisherResponseDTO o1, PublisherResponseDTO o2) {
+						return o1.id().compareTo(o2.id());
+					}
+				})
 				.toList();
 	}
 	
 	public List<PublisherAdminResponseDTO> findAllPublisher() {
-		return repository.findAll()
-				.stream()
+		var publishers = repository.findAll();
+		
+		if (publishers.isEmpty()) {
+			throw new NoPublisherExistException("Publisher data is empty.");
+		}
+		
+		return publishers.stream()
 				.map(publisher -> 
 					mappingService
 						.publisherToPublisherAdminResponseDTO(publisher))
+				.sorted(new Comparator<PublisherAdminResponseDTO>() {
+					@Override
+					public int compare(PublisherAdminResponseDTO o1, PublisherAdminResponseDTO o2) {
+						return o1.id().compareTo(o2.id());
+					}
+				})
 				.toList();
 	}
 
@@ -71,15 +95,20 @@ public class PublisherService {
 	public void deletePublisherById(Integer id) throws NoPublisherFoundException {
 		
 		var publisherOption = repository.findById(id);
-		
 		if (publisherOption.isEmpty()) {
 			throw new NoPublisherFoundException(id);
 		}
+		
+		System.out.println(publisherOption.get().getName());
 		
 		Publisher publisher = publisherOption.get();
 		publisher.setStatus(PublisherStatus.INACTIVE);
 		repository.save(publisher);
 		
+	}
+
+	public Set<PublisherStatus> findAllPublisherStatus() {
+		return PublisherStatus.allStatus;
 	}
 		
 }
