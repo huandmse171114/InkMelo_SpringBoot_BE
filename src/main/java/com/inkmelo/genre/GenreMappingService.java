@@ -29,7 +29,7 @@ public class GenreMappingService {
 				.status(genre.getStatus())
 				.build();
 	}
-
+ 
 	public Genre genreCreateBodyDTOToGenre(GenreCreateBodyDTO genreDTO) {
 		return Genre.builder()
 				.name(genreDTO.name())
