@@ -1,6 +1,7 @@
 package com.inkmelo.user;
 
 public enum UserRole {
-	ADMINISTRATOR,
+	ADMIN,
+	MANAGER,
 	CUSTOMER
 }

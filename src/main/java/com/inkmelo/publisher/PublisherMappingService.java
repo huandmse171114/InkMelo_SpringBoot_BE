@@ -3,6 +3,7 @@ package com.inkmelo.publisher;
 import java.sql.Date;
 import java.time.LocalDate;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,6 +11,7 @@ public class PublisherMappingService {
 	
 	public PublisherResponseDTO publisherToPublisherResponseDTO(Publisher publisher) {
 		return PublisherResponseDTO.builder()
+				.id(publisher.getId())
 				.name(publisher.getName())
 				.description(publisher.getDescription())
 				.logoImg(publisher.getLogoImg())
@@ -18,6 +20,7 @@ public class PublisherMappingService {
 	
 	public PublisherAdminResponseDTO publisherToPublisherAdminResponseDTO(Publisher publisher) {
 		return PublisherAdminResponseDTO.builder()
+				.id(publisher.getId())
 				.name(publisher.getName())
 				.description(publisher.getDescription())
 				.logoImg(publisher.getLogoImg())
@@ -33,7 +36,8 @@ public class PublisherMappingService {
 					.description(publisher.description())
 					.logoImg(publisher.logoImg())
 					.createdAt(Date.valueOf(LocalDate.now()))
-					.lastChangedBy("HuanDM") //Change to sender username after login function finished
+					.lastChangedBy(SecurityContextHolder.getContext()
+							.getAuthentication().getName())
 					.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 					.status(PublisherStatus.ACTIVE)
 					.build();

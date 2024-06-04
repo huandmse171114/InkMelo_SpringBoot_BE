@@ -2,13 +2,17 @@ package com.inkmelo.publisher;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inkmelo.exception.NoPublisherExistException;
 import com.inkmelo.exception.NoPublisherFoundException;
 import com.inkmelo.utils.Utils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
+@Tag(name = "Publisher", description = "Publisher Management APIs")
 @RestController
 public class PublisherController {
 	private PublisherService service;
@@ -31,42 +36,66 @@ public class PublisherController {
 	public PublisherController(PublisherService service) {
 		this.service = service;
 	}
-	
+
+	@Operation(summary = "Get All Active Publishers",
+			description = "This endpoint will return all publishers that have ACTIVE status in DB | (Authority) ALL.")
 	@GetMapping("/publishers")
 	public List<PublisherResponseDTO> getAllActivePublisher() {
 		return service.findAllPublisherByStatus(PublisherStatus.ACTIVE);
 	}
 	
+	@Operation(summary = "Get All Publishers",
+			description = "This endpoint will return all publishers in DB | (Authority) ADMIN, MANAGER.")
 	@GetMapping("/admin/publishers")
 	public List<PublisherAdminResponseDTO> getAllPublisher() {
 		return service.findAllPublisher();
 	}
 	
-	@DeleteMapping("/publishers/{id}")
+	@Operation(summary = "Get All Publisher's Status",
+			description = "This endpoint will return all publisher's status in DB | (Authority) ADMIN, MANAGER.")
+	@GetMapping("/admin/publishers/status")
+	public Set<PublisherStatus> getAllPublisherStatus() {
+		return service.findAllPublisherStatus();
+	}
+	
+	@Operation(summary = "Delete Publisher By Id",
+			description = "This endpoint will soft delete publisher with the given id | (Authority) ADMIN, MANAGER")
+	@DeleteMapping("/admin/publishers/{id}")
 	public ResponseEntity<?> deletePublisherById(@PathVariable("id") Integer id){
-		
-		var response = new HashMap<String, String>();
+		System.out.println(id);
+		var response = new HashMap<String, Object>();
 		service.deletePublisherById(id);
 		response.put("message", "Delete publisher with id " + id + " successfully!");
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.OK.value());
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@PostMapping("/publishers")
+	@Operation(summary = "Create new Publisher",
+			description = "This endpoint will create new publisher with the given information | (Authority) ADMIN, MANAGER.")
+	@PostMapping("/admin/publishers")
 	public ResponseEntity<?> savePublisher(@Valid @RequestBody PublisherCreateBodyDTO publisher){
 		
-		var response = new HashMap<String, String>();
+		var response = new HashMap<String, Object>();
 		service.savePublisher(publisher);
 		response.put("message", "Create new publisher successfully!");
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.CREATED.value());
 		
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/publishers")
+	@Operation(summary = "Update Publisher data",
+			description = "This endpoint will update publisher with the given information | (Authority) ADMIN, MANAGER.")
+	@PutMapping("/admin/publishers")
 	public ResponseEntity<?> updatePublisher(@Valid @RequestBody PublisherUpdateBodyDTO publisher) {
 		
-		var response = new HashMap<String, String>();
+		var response = new HashMap<String, Object>();
 		service.updatePublisher(publisher);
+		response.put("message", "Update publisher successfully!");
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.OK.value());
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -115,6 +144,19 @@ public class PublisherController {
 		response.put("message", ex.getMessage());
 		
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoPublisherExistException.class)
+	public ResponseEntity<?> handleNoPublisherExistException(
+				NoPublisherExistException ex
+			){
+		var response = new HashMap<String, Object>();
+		
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.NO_CONTENT.value());
+		response.put("message", ex.getMessage());
+		
+		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
 	}
 	
 }
