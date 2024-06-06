@@ -43,21 +43,21 @@ public class CategoryController {
 	}
 	
 	@Operation(summary = "Get All Categories",
-			description = "This endpoint will return all categories in DB | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will return all categories in DB | (Authority) ADMIN.")
 	@GetMapping("/admin/categories")
 	public List<CategoryAdminResponseDTO> getAllCategory() {
 		return service.findAllCategory();
 	}
 	
 	@Operation(summary = "Get All Category's Status",
-			description = "This endpoint will return all category's status | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will return all category's status | (Authority) ADMIN.")
 	@GetMapping("/admin/categories/status")
 	public Set<CategoryStatus> getAllCategoryStatus() {
 		return service.findAllCategoryStatus();
 	}
 	
 	@Operation(summary = "Create new Category",
-			description = "This endpoint will create new category with the given information | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will create new category with the given information | (Authority) ADMIN.")
 	@PostMapping("/admin/categories")
 	public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryCreateBodyDTO categoryDTO) {
 		var response = new HashMap<String, Object>();
@@ -70,7 +70,7 @@ public class CategoryController {
 	}
 	
 	@Operation(summary = "Update Category data",
-			description = "This endpoint will update category with the given information | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will update category with the given information | (Authority) ADMIN.")
 	@PutMapping("/admin/categories")
 	public ResponseEntity<?> updateCategory(@Valid @RequestBody CategoryUpdateBodyDTO categoryDTO) {
 		var response = new HashMap<String, Object>();
@@ -84,7 +84,7 @@ public class CategoryController {
 	}
 	
 	@Operation(summary = "Delete Category By Id",
-			description = "This endpoint will soft delete category with the given id | (Authority) ADMIN, MANAGER")
+			description = "This endpoint will soft delete category with the given id | (Authority) ADMIN.")
 	@DeleteMapping("/admin/categories/{id}")
 	public ResponseEntity<?> deleteCategoryById(@PathVariable("id") Integer id){
 
