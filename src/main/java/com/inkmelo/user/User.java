@@ -50,6 +50,8 @@ public class User implements UserDetails {
 	@Column(unique = true)
 	private String email;
 	
+	private String resetPasswordToken;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(
 			nullable = false,
