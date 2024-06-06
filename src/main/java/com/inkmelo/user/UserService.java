@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.exception.NoPublisherExistException;
 import com.inkmelo.exception.NoUserExistException;
+import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.exception.PasswordConfirmIsDifferentException;
 import com.inkmelo.publisher.PublisherAdminResponseDTO;
 
@@ -69,6 +71,37 @@ public class UserService {
 					}
 				})
 				.toList();
+	}
+	
+	public User getByResetPasswordToken(String token) throws NoUserFoundException {
+		Optional<User> userOption = repository.findByResetPasswordToken(token);
+		
+		if (userOption.isEmpty()) {
+			throw new NoUserFoundException("User is not found.");
+		}
+
+		return userOption.get();
+	}
+	
+	public void updatePassword(User user, String newPassword) {
+		BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
+		String encodedPassword = pwdEncoder.encode(newPassword);
+		user.setPassword(encodedPassword);
+		
+		user.setResetPasswordToken(null);
+		repository.save(user);
+	}
+	
+	public void updateResetPasswordToken(String token, String username) throws NoUserFoundException {
+		Optional<User> userOption = repository.findByUsername(username);
+		
+		if (userOption.isEmpty()) {
+			throw new NoUserFoundException("User is not found.");
+		}
+		
+		User user = userOption.get();
+		user.setResetPasswordToken(token);
+		repository.save(user);
 	}
 	
 }

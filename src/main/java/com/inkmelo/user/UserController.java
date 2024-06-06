@@ -52,6 +52,11 @@ public class UserController {
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 	
+//	@PostMapping("/users/password")
+//	public ResponseEntity<?> updatePassword(@RequestBody String password) {
+//		
+//	}
+	
 //	====================================== Exception Handler ===================================
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
