@@ -69,19 +69,18 @@ public class SecurityConfig {
 	SecurityFilterChain productSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
-        		.requestMatchers(
-        				"/",
-        				"/swagger-ui/**",
-        				"/api/v1/v3/api-docs/**",
-        				"/api/v1/auth/sign-in",
-        				"/api/v1/admin/users",
-        				"/api/v1/users/register").permitAll()
-        		.requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.ADMIN.toString())
-        		.requestMatchers(
-        				"/api/v1/admin/books/**",
-						"/api/v1/admin/publishers/**").hasAuthority(UserRole.MANAGER.toString())
-                .requestMatchers("/api/v1/sign-in").permitAll()
-                .anyRequest().authenticated());
+//        		.requestMatchers(
+//        				"/",
+//        				"/swagger-ui/**",
+//        				"/api/v1/v3/api-docs/**",
+//        				"/api/v1/auth/sign-in",
+//        				"/api/v1/users/register").permitAll()
+//        		.requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.ADMIN.toString())
+//        		.requestMatchers(
+//        				"/api/v1/admin/books/**",
+//						"/api/v1/admin/publishers/**").hasAuthority(UserRole.MANAGER.toString())
+//                .requestMatchers("/api/v1/sign-in").permitAll()
+                .anyRequest().permitAll());
 		http.sessionManagement(
 		        session ->
 		                session.sessionCreationPolicy(
