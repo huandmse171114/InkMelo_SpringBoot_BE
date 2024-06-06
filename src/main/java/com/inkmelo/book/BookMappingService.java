@@ -26,6 +26,7 @@ public class BookMappingService {
 
 	public BookResponseDTO bookToBookResponseDTO(Book book) {
 		return BookResponseDTO.builder()
+				.id(book.getId())
 				.title(book.getTitle())
 				.ISBN(book.getISBN())
 				.publicationDecisionNumber(book.getPublicationDecisionNumber())
@@ -55,6 +56,7 @@ public class BookMappingService {
 
 	public BookAdminResponseDTO bookToBookAdminResponseDTO(Book book) {
 		return BookAdminResponseDTO.builder()
+				.id(book.getId())
 				.title(book.getTitle())
 				.ISBN(book.getISBN())
 				.publicationDecisionNumber(book.getPublicationDecisionNumber())

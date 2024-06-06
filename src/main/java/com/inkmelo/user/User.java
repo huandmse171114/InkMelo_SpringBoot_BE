@@ -1,13 +1,13 @@
 package com.inkmelo.user;
 
 import java.sql.Date;
+import java.util.Collection;
 import java.util.List;
 
-import com.inkmelo.bookrating.BookRating;
-import com.inkmelo.cart.Cart;
-import com.inkmelo.order.Order;
-import com.inkmelo.payment.Payment;
-import com.inkmelo.shipment.Shipment;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,9 +15,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +29,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
 	
 	@Id
 	@GeneratedValue
@@ -66,5 +63,46 @@ public class User {
 			length = 50
 	)
 	private UserStatus status;
+	
+	@Column(
+			updatable = false,
+			nullable = false
+	)
+	private Date createdAt;
+	
+	@Column(nullable = false)
+	private Date lastUpdatedTime;
+	
+	@Column(
+			nullable = false,
+			length = 100
+	)
+	private String lastChangedBy;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return List.of(new SimpleGrantedAuthority(role.toString()));
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return status == UserStatus.ACTIVE;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return status == UserStatus.ACTIVE;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return status == UserStatus.ACTIVE;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return status == UserStatus.ACTIVE;
+	}
 	
 }

@@ -43,21 +43,21 @@ public class GenreController {
 	}
 	
 	@Operation(summary = "Get All Genres",
-			description = "This endpoint will return all genres in DB | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will return all genres in DB | (Authority) ADMIN.")
 	@GetMapping("/admin/genres")
 	public List<GenreAdminResponseDTO> getAllGenres() {
 		return service.findAllGenre();
 	}
 	
 	@Operation(summary = "Get All Genre's Status",
-			description = "This endpoint will return all genre's status | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will return all genre's status | (Authority) ADMIN.")
 	@GetMapping("/admin/genres/status")
 	public Set<GenreStatus> getAllGenreStatus() {
 		return service.findAllGenreStatus();
 	}
 	
 	@Operation(summary = "Create new Genre",
-			description = "This endpoint will create new genre with the given information | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will create new genre with the given information | (Authority) ADMIN.")
 	@PostMapping("/admin/genres")
 	public ResponseEntity<?> saveGenre(@Valid @RequestBody GenreCreateBodyDTO genreDTO) {
 		var response = new HashMap<String, Object>();
@@ -70,7 +70,7 @@ public class GenreController {
 	}
 	
 	@Operation(summary = "Update Genre data",
-			description = "This endpoint will update genre with the given information | (Authority) ADMIN, MANAGER.")
+			description = "This endpoint will update genre with the given information | (Authority) ADMIN.")
 	@PutMapping("/admin/genres")
 	public ResponseEntity<?> updateGenre(@Valid @RequestBody GenreUpdateBodyDTO genreDTO) {
 		var response = new HashMap<String, Object>();
@@ -84,7 +84,7 @@ public class GenreController {
 	}
 	
 	@Operation(summary = "Delete Genre By Id",
-			description = "This endpoint will soft delete genre with the given id | (Authority) ADMIN, MANAGER")
+			description = "This endpoint will soft delete genre with the given id | (Authority) ADMIN.")
 	@DeleteMapping("/admin/genres/{id}")
 	public ResponseEntity<?> deleteGenreById(@PathVariable("id") Integer id){
 
