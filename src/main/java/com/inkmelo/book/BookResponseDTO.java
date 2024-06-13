@@ -23,7 +23,8 @@ public record BookResponseDTO(
 			int totalRating,
 			PublisherResponseDTO publisher,
 			List<BookRatingResponseDTO> ratings,
-			List<GenreResponseDTO> genres
+			List<GenreResponseDTO> genres,
+			BookStatus status
 		) {
 
 }
