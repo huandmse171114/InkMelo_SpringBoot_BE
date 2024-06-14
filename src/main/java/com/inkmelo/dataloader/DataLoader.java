@@ -23,7 +23,7 @@ import com.inkmelo.publisher.PublisherRepository;
 import com.inkmelo.publisher.PublisherStatus;
 
 @Component
-@Profile(value = "dev")
+@Profile(value = "devv")
 public class DataLoader implements CommandLineRunner {
 	
 	private final GenreRepository genreRepository;

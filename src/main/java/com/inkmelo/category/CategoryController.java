@@ -25,15 +25,13 @@ import com.inkmelo.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Category", description = "Category Management APIs")
 @RestController
+@RequiredArgsConstructor
 public class CategoryController {
-	private CategoryService service;
-
-	public CategoryController(CategoryService service) {
-		this.service = service;
-	}
+	private final CategoryService service;
 	
 	@Operation(summary = "Get All Active Categories",
 			description = "This endpoint will return all categories that have ACTIVE status in DB | (Authority) ALL.")
@@ -62,7 +60,7 @@ public class CategoryController {
 	public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryCreateBodyDTO categoryDTO) {
 		var response = new HashMap<String, Object>();
 		service.saveCategory(categoryDTO);
-		response.put("message", "Create new category successfully!");
+		response.put("message", "Tạo mới danh mục thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.CREATED.value());
 		
@@ -76,7 +74,7 @@ public class CategoryController {
 		var response = new HashMap<String, Object>();
 		
 		service.updateCategory(categoryDTO);
-		response.put("message", "Update category successfully!");
+		response.put("message", "Cập nhật danh mục thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.OK.value());
 		
@@ -90,7 +88,7 @@ public class CategoryController {
 
 		var response = new HashMap<String, Object>();
 		service.deleteCategoryById(id);
-		response.put("message", "Delete category with id " + id + " successfully!");
+		response.put("message", "Xóa danh mục với mã số " + id + " thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.OK.value());
 		
@@ -100,7 +98,7 @@ public class CategoryController {
 //	====================================== Exception Handler ===================================
 	
 	@ExceptionHandler(NoCategoryFoundException.class)
-	public ResponseEntity<?> handleNoCategoryFoundException1(
+	public ResponseEntity<?> handleNoCategoryFoundException(
 				NoCategoryFoundException ex
 			) {
 		
@@ -119,12 +117,11 @@ public class CategoryController {
 			) {
 		
 		var response = new HashMap<String, Object>();
-		
 		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NO_CONTENT.value());
+		response.put("status", HttpStatus.NOT_FOUND.value());
 		response.put("message", ex.getMessage());
 		
-		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)

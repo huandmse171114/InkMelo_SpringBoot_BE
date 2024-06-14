@@ -3,6 +3,7 @@ package com.inkmelo.category;
 import java.sql.Date;
 import java.util.List;
 
+import com.inkmelo.bookitem.BookItem;
 import com.inkmelo.bookpackage.BookPackage;
 
 import jakarta.persistence.Column;
@@ -12,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,7 +48,7 @@ public class Category {
 	
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
-	
+	 
 	@Column(
 			length = 100,
 			nullable = false

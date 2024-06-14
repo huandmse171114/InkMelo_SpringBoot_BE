@@ -10,4 +10,6 @@ public interface GenreRepository extends JpaRepository<Genre, Integer> {
 	List<Genre> findAllByStatusAndNameIn(GenreStatus status, Collection<String> names);
 	
 	List<Genre> findAllByStatus(GenreStatus status);
+	
+	List<Genre> findAllByStatusAndIdIn(GenreStatus status, Collection<Integer> ids);
 }

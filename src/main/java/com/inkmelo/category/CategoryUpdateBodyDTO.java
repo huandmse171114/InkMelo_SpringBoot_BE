@@ -6,9 +6,9 @@ import lombok.Builder;
 
 @Builder
 public record CategoryUpdateBodyDTO(
-			@NotNull
+			@NotNull(message = "Mã số của danh mục không được để trống.")
 			Integer id,
-			@NotEmpty
+			@NotEmpty(message = "Tên của danh mục không được để trống.")
 			String name,
 			String description,
 			CategoryStatus status

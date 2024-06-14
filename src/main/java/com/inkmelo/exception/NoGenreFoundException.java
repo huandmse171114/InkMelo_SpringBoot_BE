@@ -11,7 +11,7 @@ public class NoGenreFoundException extends RuntimeException {
 	}
 	
 	public NoGenreFoundException(Integer id) {
-		super("Genre with id " + id + " is not found.");
+		super("Thể loại sách với mã số " + id + " không tìm thấy trong cơ sở dữ liệu.");
 	}
 	
 }

@@ -62,7 +62,7 @@ public class GenreController {
 	public ResponseEntity<?> saveGenre(@Valid @RequestBody GenreCreateBodyDTO genreDTO) {
 		var response = new HashMap<String, Object>();
 		service.saveGenre(genreDTO);
-		response.put("message", "Create new genre successfully!");
+		response.put("message", "Tạo mới thể loại sách thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.CREATED.value());
 		
@@ -76,7 +76,7 @@ public class GenreController {
 		var response = new HashMap<String, Object>();
 		
 		service.updateGenre(genreDTO);
-		response.put("message", "Update genre successfully!");
+		response.put("message", "Cập nhật thể loại sách thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.OK.value());
 		
@@ -90,7 +90,7 @@ public class GenreController {
 
 		var response = new HashMap<String, Object>();
 		service.deleteGenreById(id);
-		response.put("message", "Delete genre with id " + id + " successfully!");
+		response.put("message", "Xóa thể loại sách với mã số " + id + " thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.OK.value());
 		
@@ -121,10 +121,10 @@ public class GenreController {
 		var response = new HashMap<String, Object>();
 		
 		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NO_CONTENT.value());
+		response.put("status", HttpStatus.NOT_FOUND.value());
 		response.put("message", ex.getMessage());
 		
-		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
