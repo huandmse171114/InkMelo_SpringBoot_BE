@@ -28,7 +28,7 @@ public class PublisherService {
 		var publishers = repository.findAllByStatus(status);
 		
 		if (publishers.isEmpty()) {
-			throw new NoPublisherExistException("Publisher data is empty.");
+			throw new NoPublisherExistException("Dữ liệu về nhà xuất bản hiện đang rỗng.");
 		}
 		 
 		return publishers.stream()
@@ -48,7 +48,7 @@ public class PublisherService {
 		var publishers = repository.findAll();
 		
 		if (publishers.isEmpty()) {
-			throw new NoPublisherExistException("Publisher data is empty.");
+			throw new NoPublisherExistException("Dữ liệu về nhà xuất bản hiện đang rỗng.");
 		}
 		
 		return publishers.stream()

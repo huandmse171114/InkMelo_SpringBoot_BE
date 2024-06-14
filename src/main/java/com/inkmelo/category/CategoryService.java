@@ -30,7 +30,8 @@ public class CategoryService {
 		var categories = repository.findAll();
 		
 		if (categories.isEmpty()) {
-			throw new NoCategoryExistException("Category data is empty.");
+			System.out.println("nahhhhhhhhhhhhhhhhhhhhhhhhhhh");
+			throw new NoCategoryExistException("Dữ liệu về danh mục hiện đang rỗng.");
 		}
 		
 		return categories.stream()
@@ -44,11 +45,12 @@ public class CategoryService {
 				.toList();
 	}
 
-	public List<CategoryResponseDTO> findAllCategoryByStatus(CategoryStatus status) {
+	public List<CategoryResponseDTO> findAllCategoryByStatus(CategoryStatus status)
+		throws NoCategoryExistException {
 		var categories = repository.findAllByStatus(status);
 		
 		if (categories.isEmpty()) {
-			throw new NoCategoryExistException("Category data is empty.");
+			throw new NoCategoryExistException("Dữ liệu về danh mục hiện đang rỗng.");
 		}
 		
 		return categories.stream()
@@ -66,13 +68,15 @@ public class CategoryService {
 		return CategoryStatus.allStatus;
 	}
 
-	public void saveCategory(@Valid CategoryCreateBodyDTO categoryDTO) throws DataIntegrityViolationException {
+	public void saveCategory(CategoryCreateBodyDTO categoryDTO) 
+			throws DataIntegrityViolationException {
 		Category category = mappingService.categoryCreateBodyDTOToCategory(categoryDTO);
 		
 		repository.save(category);
 	}
 
-	public void updateCategory(CategoryUpdateBodyDTO categoryDTO) throws DataIntegrityViolationException {
+	public void updateCategory(CategoryUpdateBodyDTO categoryDTO) 
+			throws DataIntegrityViolationException {
 		var categoryOption = repository.findById(categoryDTO.id());
 		
 		if (categoryOption.isEmpty()) {
@@ -90,7 +94,8 @@ public class CategoryService {
 		repository.save(category);
 	}
 	
-	public void deleteCategoryById(Integer id) {
+	public void deleteCategoryById(Integer id) 
+		throws NoCategoryFoundException {
 		var categoryOption = repository.findById(id);
 		
 		if (categoryOption.isEmpty()) {

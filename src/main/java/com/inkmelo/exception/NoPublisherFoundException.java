@@ -11,7 +11,7 @@ public class NoPublisherFoundException extends RuntimeException {
 	}
 	
 	public NoPublisherFoundException(Integer id) {
-		super("Publisher with id " + id + " is not found.");
+		super("Nhà xuất bản với mã số " + id + " không tìm thấy trong cơ sở dữ liệu.");
 	}
 	
 }

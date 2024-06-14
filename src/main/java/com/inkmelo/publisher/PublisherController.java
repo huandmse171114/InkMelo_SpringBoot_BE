@@ -65,7 +65,7 @@ public class PublisherController {
 		System.out.println(id);
 		var response = new HashMap<String, Object>();
 		service.deletePublisherById(id);
-		response.put("message", "Delete publisher with id " + id + " successfully!");
+		response.put("message", "Xóa nhà xuất bản với mã số " + id + " thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.OK.value());
 		
@@ -79,7 +79,7 @@ public class PublisherController {
 		
 		var response = new HashMap<String, Object>();
 		service.savePublisher(publisher);
-		response.put("message", "Create new publisher successfully!");
+		response.put("message", "Tạo mới nhà xuất bản thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.CREATED.value());
 		
@@ -93,7 +93,7 @@ public class PublisherController {
 		
 		var response = new HashMap<String, Object>();
 		service.updatePublisher(publisher);
-		response.put("message", "Update publisher successfully!");
+		response.put("message", "Cập nhật nhà xuất bản thành công!");
 		response.put("timestamp", Utils.getCurrentTimestamp());
 		response.put("status", HttpStatus.OK.value());
 		
@@ -153,10 +153,10 @@ public class PublisherController {
 		var response = new HashMap<String, Object>();
 		
 		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NO_CONTENT.value());
+		response.put("status", HttpStatus.NOT_FOUND.value());
 		response.put("message", ex.getMessage());
 		
-		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 	
 }

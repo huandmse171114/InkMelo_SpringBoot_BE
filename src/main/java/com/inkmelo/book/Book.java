@@ -3,6 +3,7 @@ package com.inkmelo.book;
 import java.sql.Date;
 import java.util.List;
 
+import com.inkmelo.bookitem.BookItem;
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookrating.BookRating;
 import com.inkmelo.genre.Genre;
@@ -113,6 +114,7 @@ public class Book {
 	)
 	private List<Genre> genres;
 	
-	
+	@OneToMany(mappedBy = "book")
+	private List<BookItem> items;
 	
 }

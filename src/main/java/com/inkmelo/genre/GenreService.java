@@ -31,7 +31,7 @@ public class GenreService {
 		var genres = repository.findAllByStatus(status);
 		
 		if (genres.isEmpty()) {
-			throw new NoGenreExistException("Genre data is not exist.");
+			throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
 		}
 		
 		return genres.stream()
@@ -50,7 +50,7 @@ public class GenreService {
 		var genres = repository.findAll();
 		
 		if (genres.isEmpty()) {
-			throw new NoGenreExistException("Genre data is not exist.");
+			throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
 		}
 		
 		return genres.stream()

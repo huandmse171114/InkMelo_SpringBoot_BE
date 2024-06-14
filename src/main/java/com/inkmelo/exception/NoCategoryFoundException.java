@@ -11,6 +11,6 @@ public class NoCategoryFoundException extends RuntimeException {
 		}
 		
 		public NoCategoryFoundException(Integer id) {
-			super("Category with id " + id + " is not found.");
+			super("Danh mục với mã số " + id + " không tìm thấy trong cơ sở dữ liệu.");
 		}
 }
