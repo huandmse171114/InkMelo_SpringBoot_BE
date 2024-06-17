@@ -1,23 +1,65 @@
 package com.inkmelo.ghn;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/ghn")
 public class GHNController {
 
     @Autowired
-    private GHNService ghnService;
+    private GHNApis ghnApis;
 
-    @PostMapping("/create-order")
-    public Mono<CreateOrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
-        return ghnService.createOrder(request);
+    @GetMapping("/delivery-time")
+    public Date calculateExpectedDeliveryTime(@RequestParam String toDistrictId, @RequestParam String toWardCode) {
+        return ghnApis.calculateExpectedDeliveryTime(toDistrictId, toWardCode);
     }
 
+    @PostMapping("/cancel-order")
+    public String cancelOrder(@RequestParam String orderCode) {
+        return ghnApis.cancelOrder(orderCode);
+    }
+
+    @PostMapping("/create-order")
+    public String createOrder(@RequestParam String toDistrictId,
+                              @RequestParam String toWardCode,
+                              @RequestParam int quantity,
+                              @RequestParam String toName,
+                              @RequestParam String toPhone,
+                              @RequestParam String toAddress) {
+        return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress);
+    }
+
+    @GetMapping("/wards")
+    public String getWardList(@RequestParam String districtId) {
+        return ghnApis.getWardList(districtId);
+    }
+
+    @PostMapping("/districts")
+    public String getDistrictList(@RequestParam String provinceId) {
+        return ghnApis.getDistrictList(provinceId);
+    }
+
+    @GetMapping("/provinces")
+    public String getProvinceList() {
+        return ghnApis.getProvinceList();
+    }
+
+    @PostMapping("/calculate-fee")
+    public String calculateFee(@RequestParam String toDistrictId, 
+                               @RequestParam String toWardCode, 
+                               @RequestParam int quantity) {
+        return ghnApis.calculateFee(toDistrictId, toWardCode, quantity);
+    }
+    
     @GetMapping("/track-order")
-    public Mono<String> trackOrder(@RequestParam String orderCode) {
-        return ghnService.trackOrder(orderCode);
+    public String trackOrder(@RequestParam String orderCode) {
+        return GHNApis.trackOrder(orderCode);
     }
 }
