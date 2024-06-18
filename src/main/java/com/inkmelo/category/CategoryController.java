@@ -40,6 +40,13 @@ public class CategoryController {
 		return service.findAllCategoryByStatus(CategoryStatus.ACTIVE);
 	}
 	
+	@Operation(summary = "Get All Active Categories",
+			description = "This endpoint will return all categories that have ACTIVE status in DB | (Authority) ALL.")
+	@GetMapping("/api/store/v1/categories")
+	public List<CategoryResponseDTO> getAllActiveCategory2() {
+		return service.findAllCategoryByStatus(CategoryStatus.ACTIVE);
+	}
+	
 	@Operation(summary = "Get All Categories",
 			description = "This endpoint will return all categories in DB | (Authority) ADMIN.")
 	@GetMapping("/admin/api/v1/categories")
