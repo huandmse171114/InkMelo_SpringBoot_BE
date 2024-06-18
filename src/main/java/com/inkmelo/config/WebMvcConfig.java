@@ -13,8 +13,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Override
 	public void configurePathMatch(PathMatchConfigurer configurer) {
 		// TODO Auto-generated method stub
-		WebMvcConfigurer.super.configurePathMatch(configurer);
-		configurer.addPathPrefix("api/v1", HandlerTypePredicate.forAnnotation(RestController.class));
+//		WebMvcConfigurer.super.configurePathMatch(configurer);
+//		configurer.addPathPrefix("/store/api/v1", HandlerTypePredicate.forAnnotation(RestController.class));
 	}
 	
 	@Override

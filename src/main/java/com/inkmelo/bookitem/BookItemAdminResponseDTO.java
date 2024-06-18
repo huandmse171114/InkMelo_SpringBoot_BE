@@ -13,6 +13,7 @@ public record BookItemAdminResponseDTO(
 			BookItemType type,
 			String source,
 			int duration,
+			int stock,
 			Date createdAt,
 			Date lastUpdatedTime,
 			String lastChangedBy,

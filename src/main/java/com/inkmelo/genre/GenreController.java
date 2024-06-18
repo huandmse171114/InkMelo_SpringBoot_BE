@@ -37,64 +37,56 @@ public class GenreController {
 	
 	@Operation(summary = "Get All Active Genres",
 			description = "This endpoint will return all genres that have ACTIVE status in DB | (Authority) ALL.")
-	@GetMapping("/genres")
+	@GetMapping("/store/api/v1/genres")
 	public List<GenreResponseDTO> getAllActiveGenres() {
 		return service.findAllGenreByStatus(GenreStatus.ACTIVE);
 	}
 	
 	@Operation(summary = "Get All Genres",
 			description = "This endpoint will return all genres in DB | (Authority) ADMIN.")
-	@GetMapping("/admin/genres")
+	@GetMapping("/admin/api/v1/genres")
 	public List<GenreAdminResponseDTO> getAllGenres() {
 		return service.findAllGenre();
 	}
 	
 	@Operation(summary = "Get All Genre's Status",
 			description = "This endpoint will return all genre's status | (Authority) ADMIN.")
-	@GetMapping("/admin/genres/status")
+	@GetMapping("/admin/api/v1/genres/status")
 	public Set<GenreStatus> getAllGenreStatus() {
 		return service.findAllGenreStatus();
 	}
 	
 	@Operation(summary = "Create new Genre",
 			description = "This endpoint will create new genre with the given information | (Authority) ADMIN.")
-	@PostMapping("/admin/genres")
+	@PostMapping("/admin/api/v1/genres")
 	public ResponseEntity<?> saveGenre(@Valid @RequestBody GenreCreateBodyDTO genreDTO) {
-		var response = new HashMap<String, Object>();
 		service.saveGenre(genreDTO);
-		response.put("message", "Tạo mới thể loại sách thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.CREATED.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return Utils.generateMessageResponseEntity(
+				"Tạo mới thể loại sách thành công!", 
+				HttpStatus.CREATED);
 	}
 	
 	@Operation(summary = "Update Genre data",
 			description = "This endpoint will update genre with the given information | (Authority) ADMIN.")
-	@PutMapping("/admin/genres")
+	@PutMapping("/admin/api/v1/genres")
 	public ResponseEntity<?> updateGenre(@Valid @RequestBody GenreUpdateBodyDTO genreDTO) {
-		var response = new HashMap<String, Object>();
-		
 		service.updateGenre(genreDTO);
-		response.put("message", "Cập nhật thể loại sách thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return Utils.generateMessageResponseEntity(
+				"Cập nhật thể loại sách thành công!", 
+				HttpStatus.OK);
 	}
 	
 	@Operation(summary = "Delete Genre By Id",
 			description = "This endpoint will soft delete genre with the given id | (Authority) ADMIN.")
-	@DeleteMapping("/admin/genres/{id}")
+	@DeleteMapping("/admin/api/v1/genres/{id}")
 	public ResponseEntity<?> deleteGenreById(@PathVariable("id") Integer id){
-
-		var response = new HashMap<String, Object>();
 		service.deleteGenreById(id);
-		response.put("message", "Xóa thể loại sách với mã số " + id + " thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return Utils.generateMessageResponseEntity(
+				"Xóa thể loại sách với mã số " + id + " thành công!", 
+				HttpStatus.OK);
 	}
 	
 //	====================================== Exception Handler ===================================
@@ -104,13 +96,9 @@ public class GenreController {
 				NoGenreFoundException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoGenreExistException.class)
@@ -118,25 +106,19 @@ public class GenreController {
 				NoGenreExistException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> handleDataIntegrityViolationException(
 			DataIntegrityViolationException ex
 			) {
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)

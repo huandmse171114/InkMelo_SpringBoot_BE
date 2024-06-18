@@ -34,22 +34,20 @@ public class UserController {
 	@Operation(summary = "Get All Users",
 			description = "This endpoint will return all users in DB | (Authority) ADMIN.")
 	
-	@GetMapping("/admin/users")
+	@GetMapping("/admin/api/v1/users")
 	public List<UserAdminResponseDTO> getAllUsers() {
 		return service.findAllUsers();
 	}
 	
 	@Operation(summary = "Register new User",
 			description = "This endpoint will create new user | (Authority) ALL.")
-	@PostMapping("/users/register")
+	@PostMapping("store/api/v1/users/register")
 	public ResponseEntity<?> saveUser(@Valid @RequestBody UserCreateBodyDTO userDTO) {
-		var response = new HashMap<String, Object>();
 		service.saveUser(userDTO);
-		response.put("message", "Register new account successfully!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.CREATED.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return Utils.generateMessageResponseEntity(
+				"Register new account successfully!", 
+				HttpStatus.CREATED);
 	}
 	
 //	@PostMapping("/users/password")
@@ -81,50 +79,40 @@ public class UserController {
 	public ResponseEntity<?> handleDataIntegrityViolationException(
 			DataIntegrityViolationException ex
 			) {
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(NoUserFoundException.class)
 	public ResponseEntity<?> handleNoUserFoundException(
 				NoUserFoundException ex
 			){
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoUserExistException.class)
 	public ResponseEntity<?> handleNoUserExistException(
 				NoUserExistException ex
 			){
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NO_CONTENT.value());
-		response.put("message", ex.getMessage());
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 		
-		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
 	}
 	
 	@ExceptionHandler(PasswordConfirmIsDifferentException.class)
 	public ResponseEntity<?> handlePasswordConfirmIsDifferentException(
 				PasswordConfirmIsDifferentException ex
 			) {
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NO_CONTENT.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 }

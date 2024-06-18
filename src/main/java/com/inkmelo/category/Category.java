@@ -62,7 +62,7 @@ public class Category {
 	)
 	private CategoryStatus status;
 	
-	@ManyToMany(mappedBy = "categories")
+	@OneToMany(mappedBy = "category")
 	private List<BookPackage> bookPackages;
 	
 }

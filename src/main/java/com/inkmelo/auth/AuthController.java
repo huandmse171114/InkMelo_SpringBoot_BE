@@ -35,7 +35,7 @@ public class AuthController {
 	}
 
 	@Operation(summary = "Authentication User", description = "This endpoint is used for user to sign in. Return JWT Token in response")
-	@PostMapping("/auth/sign-in")
+	@PostMapping("/store/api/v1/auth/sign-in")
 	public ResponseEntity<?> authenticateUser(@RequestBody LoginBodyDTO loginRequest) {
         Authentication authentication;
         try {

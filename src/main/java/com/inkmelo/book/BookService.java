@@ -127,9 +127,9 @@ public class BookService {
 		
 		if (!oldGenreIds.containsAll(bookDTO.genreIds()) |
 				!bookDTO.genreIds().containsAll(oldGenreIds)) {
-			var newGenres = genreRepository.findAllByStatusAndIdIn(GenreStatus.ACTIVE, bookDTO.genreIds());
-			if (newGenres.isEmpty()) {
-				throw new NoGenreFoundException("Cập nhật sách thất bại. Thể loại sách không tồn tại.");
+			var newGenres = genreRepository.findAllByIdIn(bookDTO.genreIds());
+			if (newGenres.size() < bookDTO.genreIds().size()) {
+				throw new NoGenreFoundException("Cập nhật sách thất bại. Một số thể loại sách không tồn tại.");
 			}
 			
 			book.setGenres(newGenres);
