@@ -21,11 +21,6 @@ public class GHNController {
         return ghnApis.calculateExpectedDeliveryTime(toDistrictId, toWardCode);
     }
 
-    @PostMapping("/cancel-order")
-    public String cancelOrder(@RequestParam String orderCode) {
-        return ghnApis.cancelOrder(orderCode);
-    }
-
     @PostMapping("/create-order")
     public String createOrder(@RequestParam String toDistrictId,
                               @RequestParam String toWardCode,

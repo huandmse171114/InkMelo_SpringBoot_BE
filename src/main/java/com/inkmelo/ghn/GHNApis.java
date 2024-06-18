@@ -76,42 +76,6 @@ public class GHNApis {
         return new Date(expectedTimeInSeconds * 1000);
     }
 
-    public String cancelOrder(String order_code) {
-        String output = "";
-        try {
-            URL url = new URL(ghnUrl + "/public-api/v2/switch-status/cancel");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");  // Changed to POST
-            conn.setRequestProperty("Content-Type", "application/json; utf-8");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("ShopId", shopId);
-            conn.setRequestProperty("token", token);
-            conn.setDoOutput(true);
-
-            String requestBody = "{\"order_codes\":[\"" + order_code + "\"]}";
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(requestBody.getBytes(StandardCharsets.UTF_8));
-                os.flush();
-            }
-
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + conn.getResponseCode());
-            }
-
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    output += line;
-                }
-            }
-            conn.disconnect();
-        } catch (IOException | RuntimeException e) {
-            e.printStackTrace();
-        }
-        return output;
-    }
-
     public String createOrder(String to_district_id,
                               String to_ward_code,
                               int quantity,
