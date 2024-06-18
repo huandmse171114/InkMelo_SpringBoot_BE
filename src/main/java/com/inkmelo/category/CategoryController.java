@@ -35,64 +35,56 @@ public class CategoryController {
 	
 	@Operation(summary = "Get All Active Categories",
 			description = "This endpoint will return all categories that have ACTIVE status in DB | (Authority) ALL.")
-	@GetMapping("/categories")
+	@GetMapping("/store/api/v1/categories")
 	public List<CategoryResponseDTO> getAllActiveCategory() {
 		return service.findAllCategoryByStatus(CategoryStatus.ACTIVE);
 	}
 	
 	@Operation(summary = "Get All Categories",
 			description = "This endpoint will return all categories in DB | (Authority) ADMIN.")
-	@GetMapping("/admin/categories")
+	@GetMapping("/admin/api/v1/categories")
 	public List<CategoryAdminResponseDTO> getAllCategory() {
 		return service.findAllCategory();
 	}
 	
 	@Operation(summary = "Get All Category's Status",
 			description = "This endpoint will return all category's status | (Authority) ADMIN.")
-	@GetMapping("/admin/categories/status")
+	@GetMapping("/admin/api/v1/categories/status")
 	public Set<CategoryStatus> getAllCategoryStatus() {
 		return service.findAllCategoryStatus();
 	}
 	
 	@Operation(summary = "Create new Category",
 			description = "This endpoint will create new category with the given information | (Authority) ADMIN.")
-	@PostMapping("/admin/categories")
+	@PostMapping("/admin/api/v1/categories")
 	public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryCreateBodyDTO categoryDTO) {
-		var response = new HashMap<String, Object>();
 		service.saveCategory(categoryDTO);
-		response.put("message", "Tạo mới danh mục thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.CREATED.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return Utils.generateMessageResponseEntity(
+				"Tạo mới danh mục thành công!", 
+				HttpStatus.CREATED);
 	}
 	
 	@Operation(summary = "Update Category data",
 			description = "This endpoint will update category with the given information | (Authority) ADMIN.")
-	@PutMapping("/admin/categories")
+	@PutMapping("/admin/api/v1/categories")
 	public ResponseEntity<?> updateCategory(@Valid @RequestBody CategoryUpdateBodyDTO categoryDTO) {
-		var response = new HashMap<String, Object>();
-		
 		service.updateCategory(categoryDTO);
-		response.put("message", "Cập nhật danh mục thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
-		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+
+		return Utils.generateMessageResponseEntity(
+				"Cập nhật danh mục thành công!", 
+				HttpStatus.OK);
 	}
 	
 	@Operation(summary = "Delete Category By Id",
 			description = "This endpoint will soft delete category with the given id | (Authority) ADMIN.")
-	@DeleteMapping("/admin/categories/{id}")
+	@DeleteMapping("/admin/api/v1/categories/{id}")
 	public ResponseEntity<?> deleteCategoryById(@PathVariable("id") Integer id){
-
-		var response = new HashMap<String, Object>();
 		service.deleteCategoryById(id);
-		response.put("message", "Xóa danh mục với mã số " + id + " thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
-		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+
+		return Utils.generateMessageResponseEntity(
+				"Xóa danh mục với mã số " + id + " thành công!", 
+				HttpStatus.OK);
 	}
 	
 //	====================================== Exception Handler ===================================
@@ -102,13 +94,9 @@ public class CategoryController {
 				NoCategoryFoundException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoCategoryExistException.class)
@@ -116,24 +104,19 @@ public class CategoryController {
 				NoCategoryExistException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> handleDataIntegrityViolationException(
 			DataIntegrityViolationException ex
 			) {
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)

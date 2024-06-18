@@ -41,71 +41,66 @@ public class BookController {
 	
 	@Operation(summary = "Get All Active Books", 
 			description = "This endpoint will return all books that have ACTIVE status in DB | (Authority) ALL")
-	@GetMapping("/books")
+	@GetMapping("/store/api/v1/books")
 	public List<BookResponseDTO> getAllActiveBooks() {
 		return service.findAllBookByStatus(BookStatus.ACTIVE);
 	}
 	
 	@Operation(summary = "Get All Books", 
 			description = "This endpoint will return all books in DB | (Authority) ADMIN, MANAGER")
-	@GetMapping("/admin/books")
+	@GetMapping("/admin/api/v1/books")
 	public List<BookAdminResponseDTO> getAllBook() {
 		return service.findAllBook();
 	}
 	
 	@Operation(summary = "Get All Book's Status",
 			description = "This endpoint will return all book's status | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/books/status")
+	@GetMapping("/admin/api/v1/books/status")
 	public Set<BookStatus> getAllBookStatus() {
 		return service.findAllBookStatus();
 	}
 	
 	@Operation(summary = "Search Book By Keyword", 
 			description = "This endpoint will return all books that have the keyword first in name, and then returns all books that have keyword in author name  | (Authority) ALL")
-	@GetMapping("/books/{keyword}")
+	@GetMapping("/store/api/v1/books/{keyword}")
 	public List<BookResponseDTO> findBookByKeyword(@PathVariable("keyword") String keyword){
 		return service.searchBook(keyword);
 	}
 	
 	@Operation(summary = "Create new Book", 
 			description = "This endpoint will create new book with the given information  | (Authority) ADMIN, MANAGER")
-	@PostMapping("/admin/books")
+	@PostMapping("/admin/api/v1/books")
 	public ResponseEntity<?> saveBook(@Valid @RequestBody BookCreateBodyDTO bookDTO) {
-		var response = new HashMap<String, Object>();
 		service.saveBook(bookDTO);
-		response.put("message", "Tạo cuốn sách mới thành công.");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.CREATED.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return Utils.generateMessageResponseEntity(
+				"Tạo cuốn sách mới thành công.", 
+				HttpStatus.CREATED);
 	}
 	
 	@Operation(summary = "Update Book data", 
 			description = "This endpoint will update book with the given information  | (Authority) ADMIN, MANAGER")
-	@PutMapping("/admin/books")
+	@PutMapping("/admin/api/v1/books")
 	public ResponseEntity<?> updateBook(@Valid @RequestBody BookUpdateBodyDTO bookDTO) {
 		var response = new HashMap<String, Object>();
 		
 		service.updateBook(bookDTO);
-		response.put("message", "Cập nhật cuốn sách thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
-		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+
+		return Utils.generateMessageResponseEntity(
+				"Cập nhật cuốn sách thành công!", 
+				HttpStatus.OK);
 	}
 	
 	@Operation(summary = "Delete Book By Id", 
 			description = "This endpoint will soft delete book with the given id | (Authority) ADMIN, MANAGER")
-	@DeleteMapping("/admin/books/{id}")
+	@DeleteMapping("/admin/api/v1/books/{id}")
 	public ResponseEntity<?> deleteBookById(@PathVariable("id") Integer id) {
-		var response = new HashMap<String, Object>();
-		
+
 		service.deleteBookById(id);
-		response.put("message", "Xóa cuốn sách với mã số " + id + " thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return Utils.generateMessageResponseEntity(
+				"Xóa cuốn sách với mã số " + id + " thành công!", 
+				HttpStatus.OK);
 	}
 	
 //	====================================== Exception Handler ===================================
@@ -115,13 +110,9 @@ public class BookController {
 			NoBookFoundException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoBookExistException.class)
@@ -129,13 +120,9 @@ public class BookController {
 				NoBookExistException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoGenreFoundException.class)
@@ -149,7 +136,9 @@ public class BookController {
 		response.put("status", HttpStatus.NOT_FOUND.value());
 		response.put("message", ex.getMessage());
 		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoPublisherFoundException.class)
@@ -157,25 +146,19 @@ public class BookController {
 			NoPublisherFoundException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> handleDataIntegrityViolationException(
 			DataIntegrityViolationException ex
 			) {
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)

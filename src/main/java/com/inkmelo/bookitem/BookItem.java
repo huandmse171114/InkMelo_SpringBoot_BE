@@ -73,4 +73,9 @@ public class BookItem {
 	@ManyToOne
 	@JoinColumn(name = "book_id")
 	private Book book;
+	
+	@Override
+	public String toString() {
+		return this.type + "-" + this.id;
+	}
 }

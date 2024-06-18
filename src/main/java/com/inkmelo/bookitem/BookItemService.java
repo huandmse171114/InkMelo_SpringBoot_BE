@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.inkmelo.book.BookRepository;
 import com.inkmelo.exception.DuplicatedBookItemException;
+import com.inkmelo.exception.InvalidBookItemFieldValueException;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoBookItemExistException;
 import com.inkmelo.exception.NoBookItemFoundException;
@@ -88,11 +89,50 @@ public class BookItemService {
 					+ " đã tồn tại. Vui lòng thực hiện chỉnh sửa thay cho hành động tạo mới.");
 		}
 		
+		// If new item is audio type, must check duration value
+		try {
+			if (bookItem.getType() == BookItemType.AUDIO) {
+				if (bookItemDTO.duration() == null | bookItemDTO.duration() <= 0) {
+					throw new InvalidBookItemFieldValueException(
+						"Tạo mới tài nguyên sách thất bại. Thời lượng tệp audio không thể bé hơn hoặc bằng 0.");
+				}
+				
+				bookItem.setDuration(bookItemDTO.duration());
+			}
+			
+			
+		} catch (NullPointerException e) {
+			throw new InvalidBookItemFieldValueException(
+					"Tạo mới tài nguyên sách thất bại. Thời lượng tệp audio không thể rỗng.");
+		}
+		
+		// If new item is paper type, must check stock value
+		try {
+			if (bookItem.getType() == BookItemType.PAPER) {
+				if (bookItemDTO.stock() <= 0) {
+					throw new InvalidBookItemFieldValueException(
+						"Tạo mới tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng hiện đang bé hơn hoặc bằng 0.");
+				}
+				
+				bookItem.setStock(bookItemDTO.stock());
+			}
+			
+		} catch (NullPointerException e) {
+			throw new InvalidBookItemFieldValueException(
+					"Tạo mới tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng hiện đang rỗng.");
+		}
+		
+		
+		// default stock value for audio and pdf are 1
+		if (bookItem.getType() == BookItemType.AUDIO | bookItem.getType() == BookItemType.PDF) {
+			bookItem.setStock(1); 
+		}
+		
 		repository.save(bookItem);
 		
 	}
 
-	public void updateBookItem(@Valid BookItemUpdateBodyDTO bookItemDTO) 
+	public void updateBookItem(BookItemUpdateBodyDTO bookItemDTO) 
 		throws DataIntegrityViolationException {
 		
 		var bookItemOption = repository.findById(bookItemDTO.id());
@@ -103,12 +143,58 @@ public class BookItemService {
 		
 		BookItem bookItem = bookItemOption.get();
 		bookItem.setSource(bookItemDTO.source());
-		bookItem.setDuration(bookItemDTO.duration());
 		bookItem.setCreatedAt(Date.valueOf(LocalDate.now()));
 		bookItem.setLastChangedBy(SecurityContextHolder.getContext()
 				.getAuthentication().getName());
 		bookItem.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
 		bookItem.setStatus(bookItemDTO.status());
+		
+		if (bookItem.getType() != bookItemDTO.type()) {
+			Optional<BookItem> bookItemDB = repository.findByBookAndType(bookItem.getBook(), bookItem.getType());
+			
+			if (bookItemDB.isPresent()) {
+				if (bookItemDB.get().getId() != bookItemDTO.id()) {
+					throw new DuplicatedBookItemException("Cập nhật tài nguyên sách thất bại. Tài nguyên sách loại " 
+							+ bookItem.getType() 
+							+ " đã tồn tại. Vui lòng thực hiện chỉnh sửa thay cho hành động tạo mới.");
+				}
+			}
+			
+			bookItem.setType(bookItemDTO.type());
+		}
+		
+		// Only paper item can update stock, audio and pdf cannot change default stock value
+		try {
+			if (bookItem.getType() == BookItemType.PAPER) {
+				if (bookItemDTO.stock() < 0) {
+					throw new InvalidBookItemFieldValueException(
+							"Cập nhật tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng không thể là số âm.");
+				}
+				
+				bookItem.setStock(bookItemDTO.stock());
+			}
+		} catch (NullPointerException e) {
+			throw new InvalidBookItemFieldValueException(
+					"Cập nhật tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng không được để trống.");
+		
+		}
+		
+		try {
+			if (bookItem.getType() == BookItemType.AUDIO) {
+				if (bookItemDTO.duration() <= 0) {
+					throw new InvalidBookItemFieldValueException(
+							"Cập nhật tài nguyên sách thất bại. Thời lượng tệp audio không thể bé hơn hoặc bằng 0.");
+				
+				}
+				
+				bookItem.setDuration(bookItemDTO.duration());
+			}
+		} catch (NullPointerException e) {
+			throw new InvalidBookItemFieldValueException(
+					"Cập nhật tài nguyên sách thất bại. Thời lượng tệp audio không thể để trống.");
+		
+		}
+		
 		
 		if (bookItemDTO.bookId() != bookItem.getBook().getId()) {
 			var bookOption = bookRepository.findById(bookItemDTO.bookId());

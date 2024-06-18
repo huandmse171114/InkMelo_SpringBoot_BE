@@ -12,10 +12,9 @@ public record BookItemUpdateBodyDTO(
 			Integer bookId,
 			@NotEmpty(message = "Dữ liệu của tài nguyên sách không được để trống.")
 			String source,
-			int duration,
-			@NotEmpty(message = "Phân loại tài nguyên sách không được để trống.")
+			Integer duration,
+			Integer stock,
 			BookItemType type,
-			@NotEmpty(message = "Trạng thái của tài nguyên sách không được để trống.")
 			BookItemStatus status
 		) {
 

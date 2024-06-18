@@ -28,6 +28,7 @@ public class BookItemMappingService {
 				.type(bookItem.getType())
 				.source(bookItem.getSource())
 				.duration(bookItem.getDuration())
+				.stock(bookItem.getStock())
 				.build();
 	}
 
@@ -40,6 +41,7 @@ public class BookItemMappingService {
 				.type(bookItem.getType())
 				.source(bookItem.getSource())
 				.duration(bookItem.getDuration())
+				.stock(bookItem.getStock())
 				.createdAt(bookItem.getCreatedAt())
 				.lastUpdatedTime(bookItem.getLastUpdatedTime())
 				.lastChangedBy(bookItem.getLastChangedBy())
@@ -59,7 +61,6 @@ public class BookItemMappingService {
 		return BookItem.builder()
 				.book(bookOption.get())
 				.source(bookItemDTO.source())
-				.duration(bookItemDTO.duration())
 				.type(bookItemDTO.type())
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))

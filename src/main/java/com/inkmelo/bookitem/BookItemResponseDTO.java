@@ -11,7 +11,8 @@ public record BookItemResponseDTO(
 			String bookCoverImg,
 			BookItemType type,
 			String source,
-			int duration
+			int duration,
+			int stock
 		) {
 
 }

@@ -1,5 +1,6 @@
 package com.inkmelo.bookitem;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,8 @@ public interface BookItemRepository extends JpaRepository<BookItem, Integer> {
 	List<BookItem> findAllByStatus(BookItemStatus status);
 	
 	Optional<BookItem> findByBookAndType(Book book, BookItemType type);
+	
+	List<BookItem> findAllByIdIn(Collection<Integer> id);
+	
+	
 }

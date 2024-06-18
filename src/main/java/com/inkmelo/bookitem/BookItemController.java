@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.DuplicatedBookItemException;
+import com.inkmelo.exception.InvalidBookItemFieldValueException;
 import com.inkmelo.exception.NoBookExistException;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoBookItemExistException;
@@ -38,71 +39,63 @@ public class BookItemController {
 	
 	@Operation(summary = "Get All Active Book Items",
 			description = "This endpoint will return all book items that have ACTIVE status in DB | (Authority) ALL.")
-	@GetMapping("/book-items")
+	@GetMapping("/store/api/v1/book-items")
 	public List<BookItemResponseDTO> getAllActiveBookItem() {
 		return service.findAllBookItemByStatus(BookItemStatus.ACTIVE);
 	}
 	
 	@Operation(summary = "Get All Book Items",
 			description = "This endpoint will return all book items in DB | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/book-items")
+	@GetMapping("/admin/api/v1/book-items")
 	public List<BookItemAdminResponseDTO> getAllBookItem() {
 		return service.findAllBookItem();
 	}
 	
 	@Operation(summary = "Get All Book Item Type",
 			description = "This endpoint will return all book item type | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/book-items/type")
+	@GetMapping("/admin/api/v1/book-items/type")
 	public Set<BookItemType> getAllBookItemType() {
 		return service.findAllBookItemType();
 	}
 	
 	@Operation(summary = "Get Book Item Status",
 			description = "This endpoint will return all book item status | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/book-items/status")
+	@GetMapping("/admin/api/v1/book-items/status")
 	public Set<BookItemStatus> getAllBookItemStatus() {
 		return service.findAllBookItemStatus();
 	}
 	
 	@Operation(summary = "Create new Book Item",
 			description = "This endpoint will create new book item with the given information | (Authority) ADMIN, MANAGER.")
-	@PostMapping("/admin/book-items")
+	@PostMapping("/admin/api/v1/book-items")
 	public ResponseEntity<?> saveBookItem(@Valid @RequestBody BookItemCreateBodyDTO bookItemDTO) {
-		var response = new HashMap<String, Object>();
-		
 		service.saveBookItem(bookItemDTO);
-		response.put("message", "Tạo mới tài nguyên sách thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.CREATED.value());
-		
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+		return Utils.generateMessageResponseEntity(
+				"Tạo mới tài nguyên sách thành công!", 
+				HttpStatus.CREATED);
 	}
 	
 	@Operation(summary = "Update Book Item data",
 			description = "This endpoint will update book item with the given information | (Authority) ADMIN, MANAGER.")
-	@PutMapping("/admin/book-items")
+	@PutMapping("/admin/api/v1/book-items")
 	public ResponseEntity<?> updateBookItem(@Valid @RequestBody BookItemUpdateBodyDTO bookItemDTO) {
-		var response = new HashMap<String, Object>();
-		
 		service.updateBookItem(bookItemDTO);
-		response.put("message", "Cập nhật tài nguyên sách thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
-		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+
+		return Utils.generateMessageResponseEntity(
+				"Cập nhật tài nguyên sách thành công!", 
+				HttpStatus.OK);
 	}
 	
 	@Operation(summary = "Delete Book Item By Id",
 			description = "This endpoint will soft delete book item with the given id | (Authority) ADMIN, MANAGER.")
-	@DeleteMapping("/admin/book-items/{id}")
+	@DeleteMapping("/admin/api/v1/book-items/{id}")
 	public ResponseEntity<?> deleteBookItemById(@PathVariable("id") Integer id) {
-		var response = new HashMap<String, Object>();
-		
 		service.deleteBookItemById(id);
-		response.put("message", "Xóa tài nguyên sách với mã số " + id + " thành công!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		
+		return Utils.generateMessageResponseEntity(
+				"Xóa tài nguyên sách với mã số " + id + " thành công!", 
+				HttpStatus.OK);
 	}
 	
 //	====================================== Exception Handler ===================================
@@ -112,41 +105,29 @@ public class BookItemController {
 			NoBookItemFoundException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoBookItemExistException.class)
 	public ResponseEntity<?> handleNoBookItemExistException(
 			NoBookItemExistException ex
 			) {
-		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoBookFoundException.class)
 	public ResponseEntity<?> handleNoBookFoundException(
 			NoBookFoundException ex
 			) {
-		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(DuplicatedBookItemException.class)
@@ -154,25 +135,29 @@ public class BookItemController {
 				DuplicatedBookItemException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> handleDataIntegrityViolationException(
 			DataIntegrityViolationException ex
 			) {
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(InvalidBookItemFieldValueException.class)
+	public ResponseEntity<?> handleInvalidBookItemFieldValueException(
+			InvalidBookItemFieldValueException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
