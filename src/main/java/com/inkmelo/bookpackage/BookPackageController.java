@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoBookFoundException;
@@ -44,14 +45,14 @@ public class BookPackageController {
 	}
 	
 	@Operation(summary = "Get All Book Packages",
-			description = "This endpoint will return all book packages in DB | (Authority) ADMIN.")
+			description = "This endpoint will return all book packages in DB | (Authority) ADMIN, MANAGER.")
 	@GetMapping("/admin/api/v1/book-packages")
 	public List<BookPackageAdminResponseDTO> getAllBookPackage() {
 		return service.findAllBookPackage();
 	}
 	
 	@Operation(summary = "Get All Book Package Status",
-			description = "This endpoint will return all book package status | (Authority) ADMIN.")
+			description = "This endpoint will return all book package status | (Authority) ADMIN, MANAGER.")
 	@GetMapping("/admin/api/v1/book-packages/status")
 	public Set<BookPackageStatus> getAllBookPackageStatus() {
 		return service.findAllBookPackageStatus();
@@ -63,6 +64,17 @@ public class BookPackageController {
 	@GetMapping("/admin/api/v1/book-packages/mode")
 	public List<BookPackageModeResponseDTO> getAllBookPackageMode() {
 		return service.findAllBookPackageMode();
+	}
+	
+	@Operation(summary = "Search all Book Packages",
+			description = "This endpoint will return all book packages that have ACTIVE status and corresponding search value in DB | (Authority) ALL.")
+	@GetMapping("/store/api/v1/book-packages/search")
+	public List<BookPackageResponseDTO> findAllBookPackageByCategory(
+				@RequestParam(name = "category", required = false) Integer categoryId,
+				@RequestParam(name = "mode", required = false) Integer modeId,
+				@RequestParam(name = "query", required = false) String keyword
+			) {
+		return service.findAllBookPackageByCriteria(categoryId, modeId, keyword);
 	}
 	
 	@Operation(summary = "Create new Book Package",
