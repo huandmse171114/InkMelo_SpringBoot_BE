@@ -3,6 +3,8 @@ package com.inkmelo.bookpackage;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -181,6 +183,171 @@ public class BookPackageService {
 		
 		repository.save(bookPackage);
 		
+	}
+
+	public List<BookPackageResponseDTO> findAllBookPackageByCriteria(Integer categoryId, Integer modeId, String keyword) {
+		if (categoryId != null & modeId == null & keyword.isEmpty()) {
+			return findAllBookPackageByCategory(categoryId);
+		}else if (categoryId == null & modeId != null & keyword.isEmpty()) {
+			return findAllBookPackageByMode(modeId);
+		}else if (categoryId == null & modeId == null & !keyword.isEmpty()) {
+			return findAllBookPackageByBookTitleOrAuthor(keyword);
+		}else if (categoryId != null & modeId == null & !keyword.isEmpty()) {
+			return findAllBookPackageByBookTitleOrAuthorAndCategory(keyword, categoryId);
+		}else if (categoryId == null & modeId != null & !keyword.isEmpty()) {
+			return findAllBookPackageByBookTitleOrAuthorAndMode(keyword, modeId);
+		}else if (categoryId != null & modeId != null & !keyword.isEmpty()) {
+			return findAllBookPackageByBookTitleOrAuthorAndCategoryAndMode(keyword, categoryId, modeId);
+		}else {
+			return repository.findAllByStatus(BookPackageStatus.ACTIVE).stream()
+					.map(bookPackage -> mappingService.bookPackageToBookPackageResponseDTO(bookPackage))
+					.toList();
+		}
+	}
+	
+	private List<BookPackageResponseDTO> findAllBookPackageByCategory(Integer categoryId) {
+		Optional<Category> category = categoryRepository.findById(categoryId);
+		
+		if (category.isEmpty()) {
+			throw new NoCategoryFoundException("Tìm kiếm tài nguyên sách theo danh mục thất bại. Danh mục không tồn tại.");
+		}
+		
+		var bookPackages = repository.findAllByCategoryAndStatus(category.get(), BookPackageStatus.ACTIVE);
+		
+		if (bookPackages.isEmpty()) {
+			throw new NoBookPackageFoundException("Không có tài nguyên sách phù hợp với tìm kiếm.");
+		}
+		
+		return bookPackages.stream()
+				.map(bookPackage -> mappingService.bookPackageToBookPackageResponseDTO(bookPackage))
+				.toList();
+	}
+	
+	private List<BookPackageResponseDTO> findAllBookPackageByMode(Integer modeId) {
+		
+		BookPackageMode mode = BookPackageMode.fromValue(modeId);
+		
+		var bookPackages = repository.findAllByModeAndStatus(mode.getValue(), BookPackageStatus.ACTIVE);
+		
+		if (bookPackages.isEmpty()) {
+			throw new NoBookPackageFoundException("Không có tài nguyên sách phù hợp với tìm kiếm");
+		}
+		
+		return bookPackages.stream()
+				.map(bookPackage -> mappingService.bookPackageToBookPackageResponseDTO(bookPackage))
+				.toList();
+	}
+	
+	private List<BookPackageResponseDTO> findAllBookPackageByBookTitleOrAuthor(String keyword) {
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		
+		var bookPackagesByBookTitle = repository.findAllByBookIn(booksByTitle);
+		
+		var bookPackagesByBookAuthor = repository.findAllByBookIn(booksByAuthor);
+		
+		Set<BookPackage> response = new LinkedHashSet<>();
+		
+		response.addAll(bookPackagesByBookTitle);
+		response.addAll(bookPackagesByBookAuthor);
+		
+		if (response.isEmpty()) {
+			throw new NoBookPackageFoundException("Không có tài nguyên sách phù hợp với tìm kiếm.");
+		}
+		
+		return response.stream()
+				.map(item -> mappingService.bookPackageToBookPackageResponseDTO(item))
+				.toList();
+	}
+	
+	private List<BookPackageResponseDTO> findAllBookPackageByBookTitleOrAuthorAndCategory(String keyword, Integer categoryId) {
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		
+		Optional<Category> categoryOption = categoryRepository.findById(categoryId);
+		
+		if (categoryOption.isEmpty()) {
+			throw new NoCategoryFoundException("Tìm kiếm tài nguyên sách theo danh mục thất bại. Danh mục không tồn tại.");
+		}
+		
+		Category category = categoryOption.get();
+		
+		var bookPackagesByBookTitle = repository.findAllByCategoryAndBookIn(category, booksByTitle);
+		
+		var bookPackagesByBookAuthor = repository.findAllByCategoryAndBookIn(category, booksByAuthor);
+		
+		Set<BookPackage> response = new LinkedHashSet<>();
+		
+		response.addAll(bookPackagesByBookTitle);
+		response.addAll(bookPackagesByBookAuthor);
+		
+		if (response.isEmpty()) {
+			throw new NoBookPackageFoundException("Không có tài nguyên sách phù hợp với tìm kiếm.");
+		}
+		
+		return response.stream()
+				.map(item -> mappingService.bookPackageToBookPackageResponseDTO(item))
+				.toList();
+	}
+	
+	private List<BookPackageResponseDTO> findAllBookPackageByBookTitleOrAuthorAndMode(String keyword, Integer modeId) {
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		
+		BookPackageMode mode = BookPackageMode.fromValue(modeId);
+		
+		var bookPackagesByBookTitle = repository.findAllByModeAndBookIn(mode.getValue(), booksByTitle);
+		
+		var bookPackagesByBookAuthor = repository.findAllByModeAndBookIn(mode.getValue(), booksByAuthor);
+		
+		Set<BookPackage> response = new LinkedHashSet<>();
+		
+		response.addAll(bookPackagesByBookTitle);
+		response.addAll(bookPackagesByBookAuthor);
+		
+		if (response.isEmpty()) {
+			throw new NoBookPackageFoundException("Không có tài nguyên sách phù hợp với tìm kiếm.");
+		}
+		
+		return response.stream()
+				.map(item -> mappingService.bookPackageToBookPackageResponseDTO(item))
+				.toList();
+	}
+	
+	private List<BookPackageResponseDTO> findAllBookPackageByBookTitleOrAuthorAndCategoryAndMode(String keyword, Integer categoryId, Integer modeId) {
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		
+		BookPackageMode mode = BookPackageMode.fromValue(modeId);
+		
+		Optional<Category> categoryOption = categoryRepository.findById(categoryId);
+		
+		if (categoryOption.isEmpty()) {
+			throw new NoCategoryFoundException("Tìm kiếm tài nguyên sách theo danh mục thất bại. Danh mục không tồn tại.");
+		}
+		
+		Category category = categoryOption.get();
+		
+		var bookPackagesByBookTitle = repository.findAllByModeAndCategoryAndBookIn(mode.getValue(), category, booksByTitle);
+		
+		var bookPackagesByBookAuthor = repository.findAllByModeAndCategoryAndBookIn(mode.getValue(), category, booksByAuthor);
+		
+		Set<BookPackage> response = new LinkedHashSet<>();
+		
+		response.addAll(bookPackagesByBookTitle);
+		response.addAll(bookPackagesByBookAuthor);
+		
+		if (response.isEmpty()) {
+			throw new NoBookPackageFoundException("Không có tài nguyên sách phù hợp với tìm kiếm.");
+		}
+		
+		return response.stream()
+				.map(item -> mappingService.bookPackageToBookPackageResponseDTO(item))
+				.toList();
 	}
 	
 }
