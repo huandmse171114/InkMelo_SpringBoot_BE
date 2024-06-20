@@ -57,7 +57,6 @@ public class BookPackageController {
 	public Set<BookPackageStatus> getAllBookPackageStatus() {
 		return service.findAllBookPackageStatus();
 	}
-	
 
 	@Operation(summary = "Get Book Package Modes",
 			description = "This endpoint will return all book package modes | (Authority) ADMIN, MANAGER.")
@@ -74,6 +73,7 @@ public class BookPackageController {
 				@RequestParam(name = "mode", required = false) Integer modeId,
 				@RequestParam(name = "query", required = false) String keyword
 			) {
+		if (keyword == null) keyword = "";
 		return service.findAllBookPackageByCriteria(categoryId, modeId, keyword);
 	}
 	

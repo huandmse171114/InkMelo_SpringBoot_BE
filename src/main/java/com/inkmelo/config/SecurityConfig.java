@@ -96,13 +96,12 @@ public class SecurityConfig {
 		http.addFilterBefore(authenticationJwtTokenFilter(),
 		        UsernamePasswordAuthenticationFilter.class);
 		
-		
 		return http.build();
 		
 	}
 	
 	@Bean
-	@Profile(value = "devv")
+	@Profile(value = "dev")
     CommandLineRunner initData(UserService userService) {
         return args -> {
             User user = User.builder()
