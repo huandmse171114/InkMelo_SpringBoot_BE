@@ -104,11 +104,13 @@ public class SecurityConfig {
  
 	
 	@Bean
-	@Profile(value = "devv")
+	@Profile(value = "dev")
     CommandLineRunner initData(UserService userService) {
         return args -> {
             User user = User.builder()
             		.username("user1")
+            		.fullname("Nguyen Thi Khach Hang")
+            		.email("user@gmail.com")
             		.password(passwordEncoder().encode("password1"))
             		.role(UserRole.CUSTOMER)
             		.status(UserStatus.ACTIVE)
@@ -119,6 +121,8 @@ public class SecurityConfig {
             
             User admin = User.builder()
             		.username("admin1")
+            		.email("admin@gmail.com")
+            		.fullname("Nguyen Van Muoi")
             		.password(passwordEncoder().encode("password1"))
             		.role(UserRole.ADMIN)
             		.status(UserStatus.ACTIVE)
@@ -129,6 +133,8 @@ public class SecurityConfig {
             
             User manager = User.builder()
             		.username("manager1")
+            		.fullname("Nguyen Van A")
+            		.email("manager@gmail.com")
             		.password(passwordEncoder().encode("password1"))
             		.role(UserRole.MANAGER)
             		.status(UserStatus.ACTIVE)

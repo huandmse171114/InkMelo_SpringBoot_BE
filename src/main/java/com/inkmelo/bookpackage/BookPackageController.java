@@ -23,6 +23,7 @@ import com.inkmelo.exception.NoBookItemFoundException;
 import com.inkmelo.exception.NoBookPackageExistException;
 import com.inkmelo.exception.NoBookPackageFoundException;
 import com.inkmelo.exception.NoCategoryFoundException;
+import com.inkmelo.exception.NoGenreFoundException;
 import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,18 +38,38 @@ public class BookPackageController {
 	private final BookPackageService service;
 	
 	
-	@Operation(summary = "Get All Active Book Packages",
+	@Operation(summary = "Get Active Book Packages Only",
 			description = "This endpoint will return all book packages that have ACTIVE status in DB | (Authority) ALL.")
 	@GetMapping("/store/api/v1/book-packages")
-	public List<BookPackageResponseDTO> getAllActiveBookPackage() {
-		return service.findAllBookPackageByStatus(BookPackageStatus.ACTIVE);
+	public ResponseEntity<?> getAllActiveBookPackage(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "category") Integer categoryId,
+				@RequestParam(required = false, name = "genre") Integer genreId,
+				@RequestParam(required = false, name = "mode") Integer modeId,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllBookPackageByStatus(BookPackageStatus.ACTIVE, page, size, categoryId, genreId, modeId, keyword);
 	}
 	
-	@Operation(summary = "Get All Book Packages",
-			description = "This endpoint will return all book packages in DB | (Authority) ADMIN, MANAGER.")
+	@Operation(summary = "Get Book Packages",
+			description = "This endpoint will return all book packages in DB, with paging option and search with corresponding value | (Authority) ADMIN, MANAGER.")
 	@GetMapping("/admin/api/v1/book-packages")
-	public List<BookPackageAdminResponseDTO> getAllBookPackage() {
-		return service.findAllBookPackage();
+	public ResponseEntity<?> getAllBookPackage(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "category") Integer categoryId,
+				@RequestParam(required = false, name = "genre") Integer genreId,
+				@RequestParam(required = false, name = "mode") Integer modeId,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllBookPackage(page, size, categoryId, genreId, modeId, keyword);
 	}
 	
 	@Operation(summary = "Get All Book Package Status",
@@ -65,16 +86,17 @@ public class BookPackageController {
 		return service.findAllBookPackageMode();
 	}
 	
-	@Operation(summary = "Search all Book Packages",
-			description = "This endpoint will return all book packages that have ACTIVE status and corresponding search value in DB | (Authority) ALL.")
+	@Operation(summary = "Search Book Packages",
+			description = "This endpoint will return book packages that have ACTIVE status and corresponding search value in DB | (Authority) ALL.")
 	@GetMapping("/store/api/v1/book-packages/search")
 	public List<BookPackageResponseDTO> findAllBookPackageByCategory(
 				@RequestParam(name = "category", required = false) Integer categoryId,
+				@RequestParam(name = "genre", required = false) Integer genreId,
 				@RequestParam(name = "mode", required = false) Integer modeId,
 				@RequestParam(name = "query", required = false) String keyword
 			) {
 		if (keyword == null) keyword = "";
-		return service.findAllBookPackageByCriteria(categoryId, modeId, keyword);
+		return service.findAllBookPackageByCriteria(categoryId, genreId, modeId, keyword);
 	}
 	
 	@Operation(summary = "Create new Book Package",
@@ -167,6 +189,16 @@ public class BookPackageController {
 	@ExceptionHandler(NoCategoryFoundException.class)
 	public ResponseEntity<?> handleNoCategoryFoundException(
 			NoCategoryFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoGenreFoundException.class)
+	public ResponseEntity<?> handleNoGenreFoundException(
+			NoGenreFoundException ex
 			) {
 		
 		return Utils.generateMessageResponseEntity(

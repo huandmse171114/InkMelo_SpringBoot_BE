@@ -4,10 +4,16 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +26,7 @@ import com.inkmelo.exception.NoPublisherFoundException;
 import com.inkmelo.genre.GenreRepository;
 import com.inkmelo.genre.GenreStatus;
 import com.inkmelo.publisher.PublisherRepository;
+import com.inkmelo.utils.Utils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,43 +39,133 @@ public class BookService {
 	private final BookMappingService mappingService;
 	private final GenreRepository genreRepository;
 	private final PublisherRepository publisherRepository;
+	private final int DEFAULT_PAGE = 0;
+	private final int DEFAULT_VALUE = 5;
 
-	public List<BookResponseDTO> findAllBookByStatus(BookStatus status) 
+	public ResponseEntity<?> findAllBookByStatus(BookStatus status, Integer page, Integer size, String keyword) 
 			throws NoBookExistException{
-		var books = repository.findAllByStatus(status);
-				
-		if (books.isEmpty()) {
-			throw new NoBookExistException("Dữ liệu về sách hiện đang rỗng.");
+		
+//		Get books, without paging
+		if (page == null & size == null) {
+			var books = repository
+					.findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
+							status, 
+							keyword, 
+							keyword);
+			
+			if (books.isEmpty()) {
+				throw new NoBookExistException("Dữ liệu về sách hiện đang rỗng.");
+			}
+			
+			return new ResponseEntity<>(books.stream()
+					.map(book -> mappingService.bookToBookResponseDTO(book))
+					.sorted(new Comparator<BookResponseDTO>() {
+						@Override
+						public int compare(BookResponseDTO o1, BookResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList(), HttpStatus.OK);
+			
+//		Get books , with paging
+		}else {
+			
+			if (page == null) page = DEFAULT_PAGE;
+			if (size == null) size = DEFAULT_VALUE;
+			
+			Pageable paging = PageRequest.of(page, size);
+			
+			Page<Book> pageBooks = repository
+					.findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
+							status, 
+							keyword, 
+							keyword,
+							paging);
+			
+			var books = pageBooks.getContent();
+			
+			if (books.isEmpty()) {
+				throw new NoBookExistException("Dữ liệu về sách hiện đang rỗng.");
+			}
+			
+			var response = books.stream()
+					.map(book -> mappingService.bookToBookResponseDTO(book))
+					.sorted(new Comparator<BookResponseDTO>() {
+						@Override
+						public int compare(BookResponseDTO o1, BookResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList();
+			
+			return Utils.generatePagingListResponseEntity(
+					pageBooks.getTotalElements(),
+					response, 
+					pageBooks.getTotalPages(), 
+					pageBooks.getNumber(), 
+					HttpStatus.OK);
+			
 		}
 		
-		return books.stream()
-				.map(book -> mappingService.bookToBookResponseDTO(book))
-				.sorted(new Comparator<BookResponseDTO>() {
-					@Override
-					public int compare(BookResponseDTO o1, BookResponseDTO o2) {
-						return o1.id().compareTo(o2.id());
-					}
-				})
-				.toList();
 	}
 	
-	public List<BookAdminResponseDTO> findAllBook() 
+	public ResponseEntity<?> findAllBook(Integer page, Integer size, String keyword) 
 			throws NoBookExistException{
-		var books = repository.findAll();
 		
-		if (books.isEmpty()) {
-			throw new NoBookExistException("Dữ liệu về sách hiện đang rỗng.");
+//		Get books, without paging
+		if (page == null & size == null) {
+			var books = repository
+					.findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
+			
+			if (books.isEmpty()) {
+				throw new NoBookExistException("Dữ liệu về sách hiện đang rỗng.");
+			}
+			
+			return new ResponseEntity<>(books.stream()
+					.map(book -> mappingService.bookToBookAdminResponseDTO(book))
+					.sorted(new Comparator<BookAdminResponseDTO>() {
+						@Override
+						public int compare(BookAdminResponseDTO o1, BookAdminResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList(), HttpStatus.OK);
+//		Get books, with paging
+		}else {
+			
+			if (page == null) page = DEFAULT_PAGE;
+			if (size == null) size = DEFAULT_VALUE;
+			
+			Pageable paging = PageRequest.of(page, size);
+			
+			var pageBooks = repository
+					.findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, paging);
+			
+			var books = pageBooks.getContent();
+			
+			if (books.isEmpty()) {
+				throw new NoBookExistException("Dữ liệu về sách hiện đang rỗng.");
+			}
+			
+			var response = books.stream()
+					.map(book -> mappingService.bookToBookAdminResponseDTO(book))
+					.sorted(new Comparator<BookAdminResponseDTO>() {
+						@Override
+						public int compare(BookAdminResponseDTO o1, BookAdminResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList();
+			
+			return Utils.generatePagingListResponseEntity(
+					pageBooks.getTotalElements(), 
+					response, 
+					pageBooks.getTotalPages(), 
+					pageBooks.getNumber(), 
+					HttpStatus.OK);
+			
 		}
-
-		return books.stream()
-				.map(book -> mappingService.bookToBookAdminResponseDTO(book))
-				.sorted(new Comparator<BookAdminResponseDTO>() {
-					@Override
-					public int compare(BookAdminResponseDTO o1, BookAdminResponseDTO o2) {
-						return o1.id().compareTo(o2.id());
-					}
-				})
-				.toList();
+		
 	}
 	
 	public List<BookResponseDTO> searchBook(String keyword) 
@@ -169,6 +266,26 @@ public class BookService {
 
 	public Set<BookStatus> findAllBookStatus() {
 		return BookStatus.allStatus;
+	}
+
+	public BookResponseDTO findBookById(Integer id) {
+		Optional<Book> book = repository.findById(id);
+		
+		if (book.isEmpty()) {
+			throw new NoBookFoundException(id);
+		}
+		
+		return mappingService.bookToBookResponseDTO(book.get());
+	}
+	
+	public BookAdminResponseDTO findAdminBookById(Integer id) {
+		Optional<Book> book = repository.findById(id);
+		
+		if (book.isEmpty()) {
+			throw new NoBookFoundException(id);
+		}
+		
+		return mappingService.bookToBookAdminResponseDTO(book.get());
 	}
 	
 }

@@ -1,13 +1,23 @@
 package com.inkmelo.user;
 
+import java.lang.StackWalker.Option;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.inkmelo.cart.Cart;
+import com.inkmelo.cart.CartRepository;
+import com.inkmelo.customer.Customer;
+import com.inkmelo.customer.CustomerMappingService;
+import com.inkmelo.customer.CustomerRepository;
+import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoPublisherExistException;
 import com.inkmelo.exception.NoUserExistException;
 import com.inkmelo.exception.NoUserFoundException;
@@ -15,18 +25,17 @@ import com.inkmelo.exception.PasswordConfirmIsDifferentException;
 import com.inkmelo.publisher.PublisherAdminResponseDTO;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 	private final UserRepository repository;
 	private final UserMappingService mappingService;
-	
-	public UserService(UserRepository repository, UserMappingService mappingService) {
-		super();
-		this.repository = repository;
-		this.mappingService = mappingService;
-	}
+	private final CustomerRepository customerRepository;
+	private final CustomerMappingService customerMappingService;
+	private final CartRepository cartRepository;
 
 	public User loadUserByUsername(String username) {
 		Optional<User> userOptional = repository.findByUsername(username);
@@ -40,6 +49,32 @@ public class UserService {
 
 	public void createUser(User user) {
 		repository.save(user);
+		
+		if (user.getRole() == UserRole.CUSTOMER) {
+			Customer customer = Customer.builder()
+					.fullname(user.getFullname())
+					.email(user.getEmail())
+					.user(user)
+					.createdAt(Date.valueOf(LocalDate.now()))
+					.lastChangedBy("HUANDM")
+					.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+					.build();
+			
+			customerRepository.save(customer);
+			
+			Optional<Customer> customerDB = customerRepository.findByUser(user);
+			
+			if (customerDB.isEmpty()) {
+				throw new NoCustomerFoundException("Đăng ký tài khoản thất bại. Tạo mới thông tin khách hàng không thành công.");
+			}
+			
+			Cart cart = Cart.builder()
+					.customer(customerDB.get())
+					.build();
+			
+			cartRepository.save(cart);
+			
+		}
 	}
 
 	public void saveUser(UserCreateBodyDTO userDTO) throws DataIntegrityViolationException,
@@ -50,6 +85,24 @@ public class UserService {
 		User user = mappingService.userCreateBodyDTOToUser(userDTO);
 		
 		repository.save(user);
+		
+		if (user.getRole() == UserRole.CUSTOMER) {
+			Customer customer = customerMappingService.userToCustomer(user);
+			customerRepository.save(customer);
+			
+			Optional<Customer> customerDB = customerRepository.findByUser(user);
+			
+			if (customerDB.isEmpty()) {
+				throw new NoCustomerFoundException("Đăng ký tài khoản thất bại. Tạo mới thông tin khách hàng không thành công.");
+			}
+			
+			Cart cart = Cart.builder()
+					.customer(customerDB.get())
+					.build();
+			
+			cartRepository.save(cart);
+			
+		}
 		
 	}
 

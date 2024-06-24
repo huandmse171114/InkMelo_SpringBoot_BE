@@ -86,5 +86,20 @@ public class Customer {
 	)
 	private User user;
 	
+	@Column(
+			updatable = false,
+			nullable = false
+	)
+	private Date createdAt;
+	
+	@Column(nullable = false)
+	private Date lastUpdatedTime;
+	
+	@Column(
+			nullable = false,
+			length = 100
+	)
+	private String lastChangedBy;
+	
 	
 }
