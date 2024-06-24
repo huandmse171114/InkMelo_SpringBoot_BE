@@ -16,13 +16,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoCategoryExistException;
 import com.inkmelo.exception.NoCategoryFoundException;
+import com.inkmelo.utils.MessageResponseDTO;
+import com.inkmelo.utils.PagingListResposneDTO;
 import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,25 +40,66 @@ import lombok.RequiredArgsConstructor;
 public class CategoryController {
 	private final CategoryService service;
 	
-	@Operation(summary = "Get All Active Categories",
-			description = "This endpoint will return all categories that have ACTIVE status in DB | (Authority) ALL.")
+	@Operation(summary = "Get Active Categories Only",
+			description = "This endpoint will return categories that have ACTIVE status in DB with paging option and search by category's name | (Authority) ALL.")
+	@ApiResponse(responseCode = "200", description = "Found the Categories, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
 	@GetMapping("/store/api/v1/categories")
-	public List<CategoryResponseDTO> getAllActiveCategory() {
-		return service.findAllCategoryByStatus(CategoryStatus.ACTIVE);
+	public ResponseEntity<?> getAllActiveCategory(
+				@RequestParam(required = false ) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllCategoryByStatus(CategoryStatus.ACTIVE, page, size, keyword);
 	}
 	
-	@Operation(summary = "Get All Active Categories",
-			description = "This endpoint will return all categories that have ACTIVE status in DB | (Authority) ALL.")
-	@GetMapping("/api/store/v1/categories")
-	public List<CategoryResponseDTO> getAllActiveCategory2() {
-		return service.findAllCategoryByStatus(CategoryStatus.ACTIVE);
-	}
-	
-	@Operation(summary = "Get All Categories",
-			description = "This endpoint will return all categories in DB | (Authority) ADMIN.")
+	@Operation(summary = "Get Categories",
+			description = "This endpoint will return all categories in DB, with paging option and search by category's name | (Authority) ADMIN.")
+	@ApiResponse(responseCode = "200", description = "Found the Categories, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
 	@GetMapping("/admin/api/v1/categories")
-	public List<CategoryAdminResponseDTO> getAllCategory() {
-		return service.findAllCategory();
+	public ResponseEntity<?> getAllCategory(
+				@RequestParam(required = false ) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		if (keyword == null) keyword = "";
+		return service.findAllCategory(page, size, keyword);
 	}
 	
 	@Operation(summary = "Get All Category's Status",

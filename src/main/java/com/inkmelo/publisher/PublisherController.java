@@ -4,11 +4,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoPublisherExistException;
 import com.inkmelo.exception.NoPublisherFoundException;
+import com.inkmelo.utils.MessageResponseDTO;
+import com.inkmelo.utils.PagingListResposneDTO;
 import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Tag(name = "Publisher", description = "Publisher Management APIs")
@@ -37,18 +45,68 @@ public class PublisherController {
 		this.service = service;
 	}
 
-	@Operation(summary = "Get All Active Publishers",
-			description = "This endpoint will return all publishers that have ACTIVE status in DB | (Authority) ALL.")
+	@Operation(summary = "Get Active Publishers Only",
+			description = "This endpoint will return publishers that have ACTIVE status in DB, with paging option and search by publisher's name | (Authority) ALL.")
+	@ApiResponse(responseCode = "200", description = "Found the Publishers, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
 	@GetMapping("/store/api/v1/publishers")
-	public List<PublisherResponseDTO> getAllActivePublisher() {
-		return service.findAllPublisherByStatus(PublisherStatus.ACTIVE);
+	public ResponseEntity<?> getAllActivePublisher(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllPublisherByStatus(PublisherStatus.ACTIVE, page, size, keyword);
 	}
 	
-	@Operation(summary = "Get All Publishers",
-			description = "This endpoint will return all publishers in DB | (Authority) ADMIN, MANAGER.")
+	@Operation(summary = "Get Publishers",
+			description = "This endpoint will return all publishers in DB, with paging option and search by publisher's name | (Authority) ADMIN, MANAGER.")
+	@ApiResponse(responseCode = "200", description = "Found the Publishers, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
 	@GetMapping("/admin/api/v1/publishers")
-	public List<PublisherAdminResponseDTO> getAllPublisher() {
-		return service.findAllPublisher();
+	public ResponseEntity<?> getAllPublisher(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllPublisher(page, size, keyword);
 	}
 	
 	@Operation(summary = "Get All Publisher's Status",

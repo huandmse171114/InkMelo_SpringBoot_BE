@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.category.CategoryStatus;
@@ -23,9 +24,15 @@ import com.inkmelo.exception.NoBookExistException;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoGenreFoundException;
 import com.inkmelo.exception.NoPublisherFoundException;
+import com.inkmelo.utils.MessageResponseDTO;
+import com.inkmelo.utils.PagingListResposneDTO;
 import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -39,18 +46,78 @@ public class BookController {
 		this.service = service;
 	}
 	
-	@Operation(summary = "Get All Active Books", 
-			description = "This endpoint will return all books that have ACTIVE status in DB | (Authority) ALL")
+	@Operation(summary = "Get Active Books Only", 
+			description = "This endpoint will return books that have ACTIVE status in DB, with paging option and search by book title or author name | (Authority) ALL")
+	@ApiResponse(responseCode = "200", description = "Found the Books, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
 	@GetMapping("/store/api/v1/books")
-	public List<BookResponseDTO> getAllActiveBooks() {
-		return service.findAllBookByStatus(BookStatus.ACTIVE);
+	public ResponseEntity<?> getAllActiveBooks(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllBookByStatus(BookStatus.ACTIVE, page, size, keyword);
 	}
 	
-	@Operation(summary = "Get All Books", 
-			description = "This endpoint will return all books in DB | (Authority) ADMIN, MANAGER")
+	@Operation(summary = "Get Books", 
+			description = "This endpoint will return books in DB, with paging option and search by book title or author name | (Authority) ADMIN, MANAGER")
+	@ApiResponse(responseCode = "200", description = "Found the Books, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
 	@GetMapping("/admin/api/v1/books")
-	public List<BookAdminResponseDTO> getAllBook() {
-		return service.findAllBook();
+	public ResponseEntity<?> getAllBook(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllBook(page, size, keyword);
+	}
+	
+	@GetMapping("/store/api/v1/books/{id}")
+	public BookResponseDTO getBookById(@PathVariable("id") Integer id) {
+		return service.findBookById(id);
+	}
+	
+	@GetMapping("/admin/api/v1/books/{id}")
+	public BookAdminResponseDTO getAdminBookById(@PathVariable("id") Integer id) {
+		return service.findAdminBookById(id);
 	}
 	
 	@Operation(summary = "Get All Book's Status",
@@ -60,12 +127,12 @@ public class BookController {
 		return service.findAllBookStatus();
 	}
 	
-	@Operation(summary = "Search Book By Keyword", 
-			description = "This endpoint will return all books that have the keyword first in name, and then returns all books that have keyword in author name  | (Authority) ALL")
-	@GetMapping("/store/api/v1/books/{keyword}")
-	public List<BookResponseDTO> findBookByKeyword(@PathVariable("keyword") String keyword){
-		return service.searchBook(keyword);
-	}
+//	@Operation(summary = "Search Book By Keyword", 
+//			description = "This endpoint will return all books that have the keyword first in name, and then returns all books that have keyword in author name  | (Authority) ALL")
+//	@GetMapping("/store/api/v1/books/{keyword}")
+//	public List<BookResponseDTO> findBookByKeyword(@PathVariable("keyword") String keyword){
+//		return service.searchBook(keyword);
+//	}
 	
 	@Operation(summary = "Create new Book", 
 			description = "This endpoint will create new book with the given information  | (Authority) ADMIN, MANAGER")

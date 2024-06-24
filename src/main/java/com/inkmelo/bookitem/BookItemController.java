@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.DuplicatedBookItemException;
@@ -37,18 +38,34 @@ import lombok.RequiredArgsConstructor;
 public class BookItemController {
 	private final BookItemService service;
 	
-	@Operation(summary = "Get All Active Book Items",
+	@Operation(summary = "Get Active Book Items Only",
 			description = "This endpoint will return all book items that have ACTIVE status in DB | (Authority) ALL.")
 	@GetMapping("/store/api/v1/book-items")
-	public List<BookItemResponseDTO> getAllActiveBookItem() {
-		return service.findAllBookItemByStatus(BookItemStatus.ACTIVE);
+	public ResponseEntity<?> getAllActiveBookItem(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false) BookItemType type,
+				@RequestParam(required = false) String title
+			) {
+		
+		if (title == null) title = "";
+		
+		return service.findAllBookItemByStatus(BookItemStatus.ACTIVE, page, size, type, title);
 	}
 	
-	@Operation(summary = "Get All Book Items",
+	@Operation(summary = "Get Book Items",
 			description = "This endpoint will return all book items in DB | (Authority) ADMIN, MANAGER.")
 	@GetMapping("/admin/api/v1/book-items")
-	public List<BookItemAdminResponseDTO> getAllBookItem() {
-		return service.findAllBookItem();
+	public ResponseEntity<?> getAllBookItem(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false) BookItemType type,
+				@RequestParam(required = false) String title
+			) {
+		
+		if (title == null) title = "";
+		
+		return service.findAllBookItem(page, size, type, title);
 	}
 	
 	@Operation(summary = "Get All Book Item Type",

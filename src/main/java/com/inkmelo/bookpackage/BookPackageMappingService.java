@@ -14,6 +14,7 @@ import com.inkmelo.book.BookRepository;
 import com.inkmelo.bookitem.BookItem;
 import com.inkmelo.bookitem.BookItemMappingService;
 import com.inkmelo.bookitem.BookItemRepository;
+import com.inkmelo.bookitem.BookItemStatus;
 import com.inkmelo.category.Category;
 import com.inkmelo.category.CategoryMappingService;
 import com.inkmelo.category.CategoryRepository;
@@ -52,6 +53,7 @@ public class BookPackageMappingService {
 				.book(bookMappingService
 						.bookToBookResponseDTO(bookPackage.getBook()))
 				.items(bookPackage.getItems().stream()
+						.filter(item -> item.getStatus() == BookItemStatus.ACTIVE)
 						.map(item -> 
 							bookItemMappingService.bookItemToBookItemResponseDTO(item))
 						.toList())

@@ -8,15 +8,22 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.book.BookRepository;
+import com.inkmelo.book.BookStatus;
 import com.inkmelo.exception.DuplicatedBookItemException;
 import com.inkmelo.exception.InvalidBookItemFieldValueException;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoBookItemExistException;
 import com.inkmelo.exception.NoBookItemFoundException;
+import com.inkmelo.utils.Utils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,45 +35,165 @@ public class BookItemService {
 	private final BookItemRepository repository;
 	private final BookRepository bookRepository;
 	private final BookItemMappingService mappingService;
+	private final int DEFAULT_PAGE = 0;
+	private final int DEFAULT_VALUE = 5;
 
-	public List<BookItemResponseDTO> findAllBookItemByStatus(BookItemStatus status)
-		throws NoBookItemExistException {
+	public ResponseEntity<?> findAllBookItemByStatus(BookItemStatus status, Integer page, Integer size, 
+			BookItemType type, String title) throws NoBookItemExistException {
 		
-		var bookItems = repository.findAllByStatus(status);
-		
-		if (bookItems.isEmpty()) {
-			throw new NoBookItemExistException("Dữ liệu về tài nguyên sách hiện đang rỗng.");
+//		Get books, without paging
+		if (page == null & size == null) {
+			
+			List<BookItem> bookItems;
+			
+			var books = bookRepository.findAllByStatusAndTitleContainingIgnoreCase(BookStatus.ACTIVE, title);
+			
+			if (type != null) {
+				bookItems = repository.findAllByStatusAndTypeAndBookIn(status, type, books);				
+			} else {
+				bookItems = repository.findAllByStatusAndBookIn(status, books);
+			}
+			
+			if (bookItems.isEmpty()) {
+				throw new NoBookItemExistException("Dữ liệu về tài nguyên sách hiện đang rỗng.");
+			}
+			
+			return new ResponseEntity<>(bookItems.stream()
+					.map(item -> mappingService.bookItemToBookItemResponseDTO(item))
+					.sorted(new Comparator<BookItemResponseDTO>() {
+						@Override
+						public int compare(BookItemResponseDTO o1, BookItemResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList(), HttpStatus.OK);
+			
+//		Get books, with paging
+		}else {
+			
+			if (page == null) page = DEFAULT_PAGE;
+			if (size == null) size = DEFAULT_VALUE;
+			
+			Pageable paging = PageRequest.of(page, size);
+			
+			Page<BookItem> pageBookItems;
+			List<BookItem> bookItems;
+			
+			var books = bookRepository.findAllByStatusAndTitleContainingIgnoreCase(BookStatus.ACTIVE, title);
+			
+//			Search with type and book title
+			if (type != null) {
+				pageBookItems = repository.findAllByStatusAndTypeAndBookIn(status, type, books, paging);
+				bookItems = pageBookItems.getContent();
+				
+//			Search with book title only
+			} else {
+				pageBookItems = repository.findAllByStatusAndBookIn(status, books, paging);
+				bookItems = pageBookItems.getContent();
+			}
+			
+			if (bookItems.isEmpty()) {
+				throw new NoBookItemExistException("Dữ liệu về tài nguyên sách hiện đang rỗng.");
+			}
+			
+			var response = bookItems.stream()
+					.map(item -> mappingService.bookItemToBookItemResponseDTO(item))
+					.sorted(new Comparator<BookItemResponseDTO>() {
+						@Override
+						public int compare(BookItemResponseDTO o1, BookItemResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList();
+			
+			return Utils.generatePagingListResponseEntity(
+					pageBookItems.getTotalElements(), 
+					response, 
+					pageBookItems.getTotalPages(), 
+					pageBookItems.getNumber(), 
+					HttpStatus.OK);
+			
 		}
 		
-		return bookItems.stream()
-				.map(item -> mappingService.bookItemToBookItemResponseDTO(item))
-				.sorted(new Comparator<BookItemResponseDTO>() {
-					@Override
-					public int compare(BookItemResponseDTO o1, BookItemResponseDTO o2) {
-						return o1.id().compareTo(o2.id());
-					}
-				})
-				.toList();
 	}
 
-	public List<BookItemAdminResponseDTO> findAllBookItem() 
+	public ResponseEntity<?> findAllBookItem(Integer page, Integer size, BookItemType type, String title) 
 		throws NoBookItemExistException {
 		
-		var bookItems = repository.findAll();
-		
-		if (bookItems.isEmpty()) {
-			throw new NoBookItemExistException("Dữ liệu về tài nguyên sách hiện đang rỗng.");
+//		Get books, without paging
+		if (page == null & size == null) {
+			
+			List<BookItem> bookItems;
+			
+			var books = bookRepository.findAllByTitleContainingIgnoreCase(title);
+			
+			if (type != null) {
+				bookItems = repository.findAllByTypeAndBookIn(type, books);				
+			} else {
+				bookItems = repository.findAllByBookIn(books);
+			}
+			
+			if (bookItems.isEmpty()) {
+				throw new NoBookItemExistException("Dữ liệu về tài nguyên sách hiện đang rỗng.");
+			}
+			
+			return new ResponseEntity<>(bookItems.stream()
+					.map(item -> mappingService.bookItemToBookItemAdminResponseDTO(item))
+					.sorted(new Comparator<BookItemAdminResponseDTO>() {
+						@Override
+						public int compare(BookItemAdminResponseDTO o1, BookItemAdminResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList(), HttpStatus.OK);
+			
+//		Get books, with paging
+		}else {
+			
+			if (page == null) page = DEFAULT_PAGE;
+			if (size == null) size = DEFAULT_VALUE;
+			
+			Pageable paging = PageRequest.of(page, size);
+			
+			Page<BookItem> pageBookItems;
+			List<BookItem> bookItems;
+			
+			var books = bookRepository.findAllByTitleContainingIgnoreCase(title);
+			
+//			Search with type and book title
+			if (type != null) {
+				pageBookItems = repository.findAllByTypeAndBookIn(type, books, paging);
+				bookItems = pageBookItems.getContent();
+				
+//			Search with book title only
+			} else {
+				pageBookItems = repository.findAllByBookIn(books, paging);
+				bookItems = pageBookItems.getContent();
+			}
+			
+			if (bookItems.isEmpty()) {
+				throw new NoBookItemExistException("Dữ liệu về tài nguyên sách hiện đang rỗng.");
+			}
+			
+			var response = bookItems.stream()
+					.map(item -> mappingService.bookItemToBookItemAdminResponseDTO(item))
+					.sorted(new Comparator<BookItemAdminResponseDTO>() {
+						@Override
+						public int compare(BookItemAdminResponseDTO o1, BookItemAdminResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList();
+			
+			return Utils.generatePagingListResponseEntity(
+					pageBookItems.getTotalElements(), 
+					response, 
+					pageBookItems.getTotalPages(), 
+					pageBookItems.getNumber(), 
+					HttpStatus.OK);
+			
 		}
 		
-		return bookItems.stream()
-				.map(item -> mappingService.bookItemToBookItemAdminResponseDTO(item))
-				.sorted(new Comparator<BookItemAdminResponseDTO>() {
-					@Override
-					public int compare(BookItemAdminResponseDTO o1, BookItemAdminResponseDTO o2) {
-						return o1.id().compareTo(o2.id());
-					}
-				})
-				.toList();
 	}
 
 	public Set<BookItemType> findAllBookItemType() {

@@ -3,66 +3,101 @@ package com.inkmelo.genre;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.exception.NoGenreExistException;
 import com.inkmelo.exception.NoGenreFoundException;
+import com.inkmelo.utils.Utils;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class GenreService {
 	private final GenreRepository repository;
 	private final GenreMappingService mappingService;
+	private final int DEFAULT_PAGE = 0;
+	private final int DEFAULT_VALUE = 8;
 	
-	public GenreService(GenreRepository repository, GenreMappingService mappingService) {
-		super();
-		this.repository = repository;
-		this.mappingService = mappingService;
+	public ResponseEntity<?> findAllGenreByStatus(GenreStatus status, Integer page, Integer size, String keyword) {
+
+//		Get genres, no paging
+		if (page == null & size == null) {
+			var genres = repository.findAllByStatusAndNameContainingIgnoreCase(status, keyword);
+			
+			if (genres.isEmpty()) {
+				throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
+			}
+			
+			return new ResponseEntity<>(genres.stream()
+					.map(genre -> mappingService.genreToGenreResponseDTO(genre))
+					.sorted(new Comparator<GenreResponseDTO>() {
+						@Override
+						public int compare(GenreResponseDTO o1, GenreResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList(), HttpStatus.OK);
+			
+//		Get genres, with paging
+		}else {
+			if (page == null) page = DEFAULT_PAGE;
+			if (size == null) size = DEFAULT_VALUE;
+			
+			Pageable paging = PageRequest.of(page, size); 
+			
+			var pageGenres = repository.findAllByStatusAndNameContainingIgnoreCase(status, keyword, paging);
+			
+			return getGenreResponseDTO(pageGenres);
+		}
+	
 	}
 
-	public List<GenreResponseDTO> findAllGenreByStatus(GenreStatus status) {
-		
-		var genres = repository.findAllByStatus(status);
-		
-		if (genres.isEmpty()) {
-			throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
+	public ResponseEntity<?> findAllGenre(Integer page, Integer size, String keyword) {
+
+//		Get genres, no paging
+		if (page == null & size == null) {
+				
+			var genres = repository.findAllByNameContainingIgnoreCase(keyword);
+			
+			if (genres.isEmpty()) {
+				throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
+			}
+			
+			return new ResponseEntity<>(genres.stream()
+					.map(genre -> mappingService.genreToGenreAdminResponseDTO(genre))
+					.sorted(new Comparator<GenreAdminResponseDTO>() {
+						@Override
+						public int compare(GenreAdminResponseDTO o1, GenreAdminResponseDTO o2) {
+							return o1.id().compareTo(o2.id());
+						}
+					})
+					.toList(), HttpStatus.OK);
+			
+//		Get genres, with paging
+		}else {
+			if (page == null) page = DEFAULT_PAGE;
+			if (size == null) size = DEFAULT_VALUE;
+			
+			Pageable paging = PageRequest.of(page, size); 
+			
+			var pageGenres = repository.findAllByNameContainingIgnoreCase(keyword, paging);
+			
+			return getGenreAdminResponseDTO(pageGenres);
+			
 		}
-		
-		return genres.stream()
-				.map(genre -> mappingService.genreToGenreResponseDTO(genre))
-				.sorted(new Comparator<GenreResponseDTO>() {
-					@Override
-					public int compare(GenreResponseDTO o1, GenreResponseDTO o2) {
-						return o1.id().compareTo(o2.id());
-					}
-				})
-				.toList();
 	}
 
-	public List<GenreAdminResponseDTO> findAllGenre() {
-		
-		var genres = repository.findAll();
-		
-		if (genres.isEmpty()) {
-			throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
-		}
-		
-		return genres.stream()
-				.map(genre -> mappingService.genreToGenreAdminResponseDTO(genre))
-				.sorted(new Comparator<GenreAdminResponseDTO>() {
-					@Override
-					public int compare(GenreAdminResponseDTO o1, GenreAdminResponseDTO o2) {
-						return o1.id().compareTo(o2.id());
-					}
-				})
-				.toList();
-	}
 
 	public Set<GenreStatus> findAllGenreStatus() {
 		return GenreStatus.allStatus;
@@ -109,4 +144,55 @@ public class GenreService {
 	}
 
 	
+	private ResponseEntity<?> getGenreResponseDTO(Page<Genre> pageGenres) {
+
+		var genres = pageGenres.getContent();
+		
+		if (genres.isEmpty()) {
+			throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
+		}
+		
+		var response = genres.stream()
+				.map(genre -> mappingService.genreToGenreResponseDTO(genre))
+				.sorted(new Comparator<GenreResponseDTO>() {
+					@Override
+					public int compare(GenreResponseDTO o1, GenreResponseDTO o2) {
+						return o1.id().compareTo(o2.id());
+					}
+				})
+				.toList();
+		
+		return Utils.generatePagingListResponseEntity(
+				pageGenres.getTotalElements(), 
+				response, 
+				pageGenres.getTotalPages(), 
+				pageGenres.getNumber(), 
+				HttpStatus.OK);
+	}
+	
+	private ResponseEntity<?> getGenreAdminResponseDTO(Page<Genre> pageGenres) {
+
+		var genres = pageGenres.getContent();
+		
+		if (genres.isEmpty()) {
+			throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
+		}
+		
+		var response = genres.stream()
+				.map(genre -> mappingService.genreToGenreAdminResponseDTO(genre))
+				.sorted(new Comparator<GenreAdminResponseDTO>() {
+					@Override
+					public int compare(GenreAdminResponseDTO o1, GenreAdminResponseDTO o2) {
+						return o1.id().compareTo(o2.id());
+					}
+				})
+				.toList();
+		
+		return Utils.generatePagingListResponseEntity(
+				pageGenres.getTotalElements(), 
+				response, 
+				pageGenres.getTotalPages(), 
+				pageGenres.getNumber(), 
+				HttpStatus.OK);
+	}
 }
