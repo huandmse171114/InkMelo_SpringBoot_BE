@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,12 +18,12 @@ public class GHNController {
     private GHNApis ghnApis;
 
     @GetMapping("/delivery-time")
-    public Date calculateExpectedDeliveryTime(@RequestParam String toDistrictId, @RequestParam String toWardCode) {
+    public Date calculateExpectedDeliveryTime(@RequestParam int toDistrictId, @RequestParam String toWardCode) {
         return ghnApis.calculateExpectedDeliveryTime(toDistrictId, toWardCode);
     }
 
     @PostMapping("/create-order")
-    public String createOrder(@RequestParam String toDistrictId,
+    public String createOrder(@RequestParam int toDistrictId,
                               @RequestParam String toWardCode,
                               @RequestParam int quantity,
                               @RequestParam String toName,
@@ -31,12 +32,12 @@ public class GHNController {
         return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress);
     }
 
-    @PostMapping("/wards")
+    @GetMapping("/wards")
     public String getWardList(@RequestParam String districtId) {
         return ghnApis.getWardList(districtId);
     }
 
-    @PostMapping("/districts")
+    @GetMapping("/districts")
     public String getDistrictList(@RequestParam String provinceId) {
         return ghnApis.getDistrictList(provinceId);
     }
@@ -46,15 +47,20 @@ public class GHNController {
         return ghnApis.getProvinceList();
     }
 
-    @PostMapping("/calculate-fee")
-    public String calculateFee(@RequestParam String toDistrictId, 
+    @GetMapping("/calculate-fee")
+    public String calculateFee(@RequestParam int toDistrictId, 
                                @RequestParam String toWardCode, 
                                @RequestParam int quantity) {
         return ghnApis.calculateFee(toDistrictId, toWardCode, quantity);
     }
     
-    @GetMapping("/track-order")
-    public String trackOrder(@RequestParam String orderCode) {
-        return GHNApis.trackOrder(orderCode);
+    @GetMapping("/track-order/{orderCode}")
+    public String trackOrder(@PathVariable String orderCode) {
+        try {
+            return ghnApis.trackOrder(orderCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Failed to track order: " + e.getMessage();
+        }
     }
 }
