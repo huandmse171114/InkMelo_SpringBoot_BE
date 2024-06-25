@@ -17,6 +17,7 @@ public class CategoryMappingService {
 				.createdAt(category.getCreatedAt())
 				.lastChangedBy(category.getLastChangedBy())
 				.lastUpdatedTime(category.getLastUpdatedTime())
+				.status(category.getStatus())
 				.build();
 	}
 

@@ -11,6 +11,7 @@ import lombok.Builder;
 
 @Builder
 public record BookAdminResponseDTO(
+			Integer id,
 			String title,
 			String ISBN,
 			String publicationDecisionNumber,

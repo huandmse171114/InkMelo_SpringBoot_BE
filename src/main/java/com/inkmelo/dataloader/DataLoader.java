@@ -12,6 +12,14 @@ import org.springframework.stereotype.Component;
 import com.inkmelo.book.Book;
 import com.inkmelo.book.BookRepository;
 import com.inkmelo.book.BookStatus;
+import com.inkmelo.bookitem.BookItem;
+import com.inkmelo.bookitem.BookItemRepository;
+import com.inkmelo.bookitem.BookItemStatus;
+import com.inkmelo.bookitem.BookItemType;
+import com.inkmelo.bookpackage.BookPackage;
+import com.inkmelo.bookpackage.BookPackageMode;
+import com.inkmelo.bookpackage.BookPackageRepository;
+import com.inkmelo.bookpackage.BookPackageStatus;
 import com.inkmelo.category.Category;
 import com.inkmelo.category.CategoryRepository;
 import com.inkmelo.category.CategoryStatus;
@@ -30,15 +38,23 @@ public class DataLoader implements CommandLineRunner {
 	private final CategoryRepository categoryRepository;
 	private final BookRepository bookRepository;
 	private final PublisherRepository publisherRepository;
+	private final BookItemRepository bookItemRepository;
+	private final BookPackageRepository bookPackageRepository;
+	
 	private Collection<String> searchList = new ArrayList<>(); 
+	private Collection<Integer> itemList = new ArrayList<>();
+	
 
 	public DataLoader(GenreRepository genreRepository, CategoryRepository categoryRepository,
-			BookRepository bookRepository, PublisherRepository publisherRepository) {
+			BookRepository bookRepository, PublisherRepository publisherRepository,
+			BookItemRepository bookItemRepository, BookPackageRepository bookPackageRepository) {
 		super();
 		this.genreRepository = genreRepository;
 		this.categoryRepository = categoryRepository;
 		this.bookRepository = bookRepository;
 		this.publisherRepository = publisherRepository;
+		this.bookItemRepository = bookItemRepository;
+		this.bookPackageRepository = bookPackageRepository;
 	}
 
 
@@ -1010,7 +1026,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1033,7 +1049,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1070,7 +1086,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1096,7 +1112,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1117,7 +1133,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1147,7 +1163,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1174,7 +1190,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1200,7 +1216,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1228,7 +1244,7 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
@@ -1255,13 +1271,223 @@ public class DataLoader implements CommandLineRunner {
 				.averageStar(0)
 				.totalRating(0)
 				.bookCoverImg("")
-				.genres(genreRepository.findAllByStatusAndNameIn(GenreStatus.ACTIVE, searchList))
+				.genres(genreRepository.findAllByNameIn(searchList))
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy("HUANDM")
 				.status(BookStatus.ACTIVE)
 				.build());
 		
+//	========================================= Load initial data into the Book item database ============================================
+		
+		bookItemRepository.save(BookItem.builder()
+				.book(bookRepository.findById(1).get())
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.type(BookItemType.AUDIO)
+				.duration(100)
+				.stock(0)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(BookItemStatus.ACTIVE)
+				.build());
+		
+		bookItemRepository.save(BookItem.builder()
+				.book(bookRepository.findById(1).get())
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.type(BookItemType.PDF)
+				.duration(100)
+				.stock(0)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(BookItemStatus.ACTIVE)
+				.build());
+		
+		bookItemRepository.save(BookItem.builder()
+				.book(bookRepository.findById(1).get())
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.type(BookItemType.PAPER)
+				.duration(100)
+				.stock(100)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(BookItemStatus.ACTIVE)
+				.build());
+		
+		bookItemRepository.save(BookItem.builder()
+				.book(bookRepository.findById(2).get())
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.type(BookItemType.AUDIO)
+				.duration(70)
+				.stock(0)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(BookItemStatus.ACTIVE)
+				.build());
+		
+		bookItemRepository.save(BookItem.builder()
+				.book(bookRepository.findById(2).get())
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.type(BookItemType.PDF)
+				.duration(100)
+				.stock(0)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(BookItemStatus.ACTIVE)
+				.build());
+		
+		bookItemRepository.save(BookItem.builder()
+				.book(bookRepository.findById(3).get())
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.type(BookItemType.AUDIO)
+				.duration(923)
+				.stock(0)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(BookItemStatus.ACTIVE)
+				.build());
+		
+		bookItemRepository.save(BookItem.builder()
+				.book(bookRepository.findById(3).get())
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.type(BookItemType.PAPER)
+				.duration(100)
+				.stock(7)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.status(BookItemStatus.ACTIVE)
+				.build());
+		
+//		========================================= Load initial data into the Book Package database ============================================
+		itemList.clear();
+		itemList.add(1);
+		
+		bookPackageRepository.save(BookPackage.builder()
+				.book(bookRepository.findById(1).get())
+				.category(categoryRepository.findById(1).get())
+				.items(bookItemRepository.findAllByIdIn(itemList))
+				.title("Gói tài nguyên sách 1 cho Book 1")
+				.description("Bao gồm tài nguyên audio")
+				.mode(BookPackageMode.AUDIO.getValue())
+				.price(399000)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.status(BookPackageStatus.ACTIVE)
+				.build());
+		
+		itemList.clear();
+		itemList.add(2);
+		
+		bookPackageRepository.save(BookPackage.builder()
+				.book(bookRepository.findById(1).get())
+				.category(categoryRepository.findById(3).get())
+				.items(bookItemRepository.findAllByIdIn(itemList))
+				.title("Gói tài nguyên sách 2 cho Book 1")
+				.description("Bao gồm tài nguyên pdf")
+				.mode(BookPackageMode.PDF.getValue())
+				.price(399000)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.status(BookPackageStatus.ACTIVE)
+				.build());
+		
+		itemList.clear();
+		itemList.add(3);
+		
+		bookPackageRepository.save(BookPackage.builder()
+				.book(bookRepository.findById(1).get())
+				.category(categoryRepository.findById(2).get())
+				.items(bookItemRepository.findAllByIdIn(itemList))
+				.title("Gói tài nguyên sách 3 cho Book 1")
+				.description("Bao gồm tài nguyên bản cứng")
+				.mode(BookPackageMode.PAPER.getValue())
+				.price(399000)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.status(BookPackageStatus.ACTIVE)
+				.build());
+		
+		itemList.clear();
+		itemList.add(1);
+		itemList.add(2);
+		itemList.add(3);
+		
+		bookPackageRepository.save(BookPackage.builder()
+				.book(bookRepository.findById(1).get())
+				.category(categoryRepository.findById(5).get())
+				.items(bookItemRepository.findAllByIdIn(itemList))
+				.title("Gói tài nguyên sách 4 cho Book 1")
+				.description("Bao gồm 3 tài nguyên bản audio. pdf, và bản cứng")
+				.mode(BookPackageMode.ALL.getValue())
+				.price(399000)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.status(BookPackageStatus.ACTIVE)
+				.build());
+		
+		itemList.clear();
+		itemList.add(4);
+		
+		bookPackageRepository.save(BookPackage.builder()
+				.book(bookRepository.findById(2).get())
+				.category(categoryRepository.findById(1).get())
+				.items(bookItemRepository.findAllByIdIn(itemList))
+				.title("Gói tài nguyên sách 1 cho Book 2")
+				.description("Bao gồm tài nguyên audio")
+				.mode(BookPackageMode.AUDIO.getValue())
+				.price(399000)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.status(BookPackageStatus.ACTIVE)
+				.build());
+		
+		itemList.clear();
+		itemList.add(5);
+		
+		bookPackageRepository.save(BookPackage.builder()
+				.book(bookRepository.findById(2).get())
+				.category(categoryRepository.findById(3).get())
+				.items(bookItemRepository.findAllByIdIn(itemList))
+				.title("Gói tài nguyên sách 2 cho Book 2")
+				.description("Bao gồm tài nguyên pdf")
+				.mode(BookPackageMode.PDF.getValue())
+				.price(399000)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.status(BookPackageStatus.ACTIVE)
+				.build());
+		
+		itemList.clear();
+		itemList.add(4);
+		itemList.add(5);
+		
+		bookPackageRepository.save(BookPackage.builder()
+				.book(bookRepository.findById(2).get())
+				.category(categoryRepository.findById(5).get())
+				.items(bookItemRepository.findAllByIdIn(itemList))
+				.title("Gói tài nguyên sách 3 cho Book 2")
+				.description("Bao gồm 2 tài nguyên audio và pdf")
+				.mode(BookPackageMode.AUDIOPDF.getValue())
+				.price(399000)
+				.createdAt(Date.valueOf(LocalDate.now()))
+				.lastChangedBy("HUANDM")
+				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+				.status(BookPackageStatus.ACTIVE)
+				.build());
+		
 	}
+	
 
 }

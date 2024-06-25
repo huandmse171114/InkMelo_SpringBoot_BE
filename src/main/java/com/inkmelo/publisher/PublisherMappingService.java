@@ -27,6 +27,7 @@ public class PublisherMappingService {
 				.createdAt(publisher.getCreatedAt())
 				.lastChangedBy(publisher.getLastChangedBy())
 				.lastUpdatedTime(publisher.getLastUpdatedTime())
+				.status(publisher.getStatus())
 				.build();
 	}
 	
