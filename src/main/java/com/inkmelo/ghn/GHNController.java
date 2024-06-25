@@ -31,7 +31,7 @@ public class GHNController {
         return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress);
     }
 
-    @GetMapping("/wards")
+    @PostMapping("/wards")
     public String getWardList(@RequestParam String districtId) {
         return ghnApis.getWardList(districtId);
     }

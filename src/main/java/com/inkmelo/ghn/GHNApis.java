@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 
+import org.hibernate.query.NativeQuery.ReturnableResultNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +37,9 @@ public class GHNApis {
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/leadtime");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");  // Changed to POST
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; utf-8");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("ShopId", shopId);
             conn.setRequestProperty("token", token);
             conn.setDoOutput(true);
 
@@ -67,6 +67,7 @@ public class GHNApis {
         } catch (IOException | RuntimeException e) {
             e.printStackTrace();
         }
+
 
         JsonParser parser = new JsonParser();
         JsonObject outputObject = parser.parse(output).getAsJsonObject();
@@ -145,12 +146,19 @@ public class GHNApis {
     public String getWardList(String district_id) {
         String output = "";
         try {
-            URL url = new URL(ghnUrl + "/public-api/master-data/ward?district_id=" + district_id);  // Added district_id as query param
+            URL url = new URL(ghnUrl + "/public-api/master-data/ward?district_id");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; utf-8");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("token", token);
+            conn.setDoOutput(true);
+
+            String requestBody = "{\"district_id\":" + district_id + "}";
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestBody.getBytes(StandardCharsets.UTF_8));
+                os.flush();
+            }
 
             if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 throw new RuntimeException("Failed : HTTP error code : "
@@ -173,7 +181,7 @@ public class GHNApis {
     public String getDistrictList(String province_id) {
         String output = "";
         try {
-            URL url = new URL("https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district");
+            URL url = new URL(ghnUrl + "/public-api/master-data/district");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; utf-8");
@@ -283,7 +291,7 @@ public class GHNApis {
     public static String trackOrder(String orderCode) {
         String output = "";
         try {
-            URL url = new URL("https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/tracking");
+            URL url = new URL("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/tracking");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; utf-8");
