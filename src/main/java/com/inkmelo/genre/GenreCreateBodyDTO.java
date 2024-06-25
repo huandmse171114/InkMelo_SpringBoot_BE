@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record GenreCreateBodyDTO(
-			@NotEmpty
+			@NotEmpty(message = "Tên của thể loại sách không được để trống.")
 			String name,
 			String description
 		) {

@@ -1,5 +1,7 @@
 package com.inkmelo.cartdetail;
 
+import java.sql.Date;
+
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.cart.Cart;
 
@@ -49,5 +51,8 @@ public class CartDetail {
 			nullable = false
 	)
 	private CartDetailStatus status;
+	
+	@Column(nullable = false)
+	private Date lastUpdatedTime;
 	
 }

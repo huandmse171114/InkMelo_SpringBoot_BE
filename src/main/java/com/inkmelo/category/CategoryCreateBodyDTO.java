@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record CategoryCreateBodyDTO(
-			@NotEmpty
+			@NotEmpty(message = "Tên danh mục không được để trống.")
 			String name,
 			String description
 		) {

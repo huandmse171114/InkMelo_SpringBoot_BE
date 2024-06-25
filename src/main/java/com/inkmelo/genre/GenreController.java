@@ -16,85 +16,133 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoGenreExistException;
 import com.inkmelo.exception.NoGenreFoundException;
+import com.inkmelo.utils.MessageResponseDTO;
+import com.inkmelo.utils.PagingListResposneDTO;
 import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Genre", description = "Genre Management APIs")
 @RestController
+@RequiredArgsConstructor
 public class GenreController {
-	private GenreService service;
-
-	public GenreController(GenreService service) {
-		this.service = service;
+	private final GenreService service;
+	
+	@Operation(summary = "Get Active Genres Only",
+			description = "This endpoint will return genres that have ACTIVE status in DB with paging option and search by genre's name | (Authority) ALL.")
+	@ApiResponse(responseCode = "200", description = "Found the Genres, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@GetMapping("/store/api/v1/genres")
+	public ResponseEntity<?> getAllActiveGenres(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllGenreByStatus(GenreStatus.ACTIVE, page, size, keyword);
 	}
 	
-	@Operation(summary = "Get All Active Genres",
-			description = "This endpoint will return all genres that have ACTIVE status in DB | (Authority) ALL.")
-	@GetMapping("/genres")
-	public List<GenreResponseDTO> getAllActiveGenres() {
-		return service.findAllGenreByStatus(GenreStatus.ACTIVE);
-	}
-	
-	@Operation(summary = "Get All Genres",
-			description = "This endpoint will return all genres in DB | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/genres")
-	public List<GenreAdminResponseDTO> getAllGenres() {
-		return service.findAllGenre();
+	@Operation(summary = "Get Genres",
+			description = "This endpoint will return all genres in DB, with paging option and search by genre's name | (Authority) ADMIN.")
+	@ApiResponse(responseCode = "200", description = "Found the Genres, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@GetMapping("/admin/api/v1/genres")
+	public ResponseEntity<?> getAllGenres(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllGenre(page, size, keyword);
 	}
 	
 	@Operation(summary = "Get All Genre's Status",
-			description = "This endpoint will return all genre's status | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/genres/status")
+			description = "This endpoint will return all genre's status | (Authority) ADMIN.")
+	@GetMapping("/admin/api/v1/genres/status")
 	public Set<GenreStatus> getAllGenreStatus() {
 		return service.findAllGenreStatus();
 	}
 	
 	@Operation(summary = "Create new Genre",
-			description = "This endpoint will create new genre with the given information | (Authority) ADMIN, MANAGER.")
-	@PostMapping("/admin/genres")
+			description = "This endpoint will create new genre with the given information | (Authority) ADMIN.")
+	@PostMapping("/admin/api/v1/genres")
 	public ResponseEntity<?> saveGenre(@Valid @RequestBody GenreCreateBodyDTO genreDTO) {
-		var response = new HashMap<String, Object>();
 		service.saveGenre(genreDTO);
-		response.put("message", "Create new genre successfully!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.CREATED.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return Utils.generateMessageResponseEntity(
+				"Tạo mới thể loại sách thành công!", 
+				HttpStatus.CREATED);
 	}
 	
 	@Operation(summary = "Update Genre data",
-			description = "This endpoint will update genre with the given information | (Authority) ADMIN, MANAGER.")
-	@PutMapping("/admin/genres")
+			description = "This endpoint will update genre with the given information | (Authority) ADMIN.")
+	@PutMapping("/admin/api/v1/genres")
 	public ResponseEntity<?> updateGenre(@Valid @RequestBody GenreUpdateBodyDTO genreDTO) {
-		var response = new HashMap<String, Object>();
-		
 		service.updateGenre(genreDTO);
-		response.put("message", "Update genre successfully!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return Utils.generateMessageResponseEntity(
+				"Cập nhật thể loại sách thành công!", 
+				HttpStatus.OK);
 	}
 	
 	@Operation(summary = "Delete Genre By Id",
-			description = "This endpoint will soft delete genre with the given id | (Authority) ADMIN, MANAGER")
-	@DeleteMapping("/admin/genres/{id}")
+			description = "This endpoint will soft delete genre with the given id | (Authority) ADMIN.")
+	@DeleteMapping("/admin/api/v1/genres/{id}")
 	public ResponseEntity<?> deleteGenreById(@PathVariable("id") Integer id){
-
-		var response = new HashMap<String, Object>();
 		service.deleteGenreById(id);
-		response.put("message", "Delete genre with id " + id + " successfully!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return Utils.generateMessageResponseEntity(
+				"Xóa thể loại sách với mã số " + id + " thành công!", 
+				HttpStatus.OK);
 	}
 	
 //	====================================== Exception Handler ===================================
@@ -104,13 +152,9 @@ public class GenreController {
 				NoGenreFoundException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(NoGenreExistException.class)
@@ -118,25 +162,19 @@ public class GenreController {
 				NoGenreExistException ex
 			) {
 		
-		var response = new HashMap<String, Object>();
-		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NO_CONTENT.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> handleDataIntegrityViolationException(
 			DataIntegrityViolationException ex
 			) {
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)

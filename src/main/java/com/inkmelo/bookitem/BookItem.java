@@ -3,6 +3,7 @@ package com.inkmelo.bookitem;
 import java.sql.Date;
 import java.util.List;
 
+import com.inkmelo.book.Book;
 import com.inkmelo.bookpackage.BookPackage;
 
 import jakarta.persistence.Column;
@@ -11,7 +12,9 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +32,6 @@ public class BookItem {
 	@GeneratedValue
 	private Integer id;
 	
-	@Enumerated(EnumType.STRING)
 	@Column(
 			nullable = false,
 			length = 50
@@ -67,4 +69,13 @@ public class BookItem {
 	
 	@ManyToMany(mappedBy = "items")
 	private List<BookPackage> bookPackages;
+	
+	@ManyToOne
+	@JoinColumn(name = "book_id")
+	private Book book;
+	
+	@Override
+	public String toString() {
+		return this.type + "-" + this.id;
+	}
 }

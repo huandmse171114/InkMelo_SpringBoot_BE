@@ -19,6 +19,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,6 +48,9 @@ public class BookPackage {
 	
 	@Column(nullable = false)
 	private int mode;
+	
+	@Column(nullable = false)
+	private int stock;
 	
 	@Column(
 			updatable = false,
@@ -82,11 +86,7 @@ public class BookPackage {
 	@JoinColumn(name = "book_id")
 	private Book book;
 	
-	@ManyToMany
-	@JoinTable(
-			name = "bookpackage_category",
-			joinColumns = @JoinColumn(name = "bookpackage_id", nullable = false),
-			inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false)
-	)
-	private List<Category> categories;
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private Category category;
 }

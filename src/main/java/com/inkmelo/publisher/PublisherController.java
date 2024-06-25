@@ -4,11 +4,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoPublisherExistException;
 import com.inkmelo.exception.NoPublisherFoundException;
+import com.inkmelo.utils.MessageResponseDTO;
+import com.inkmelo.utils.PagingListResposneDTO;
 import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Tag(name = "Publisher", description = "Publisher Management APIs")
@@ -37,67 +45,108 @@ public class PublisherController {
 		this.service = service;
 	}
 
-	@Operation(summary = "Get All Active Publishers",
-			description = "This endpoint will return all publishers that have ACTIVE status in DB | (Authority) ALL.")
-	@GetMapping("/publishers")
-	public List<PublisherResponseDTO> getAllActivePublisher() {
-		return service.findAllPublisherByStatus(PublisherStatus.ACTIVE);
+	@Operation(summary = "Get Active Publishers Only",
+			description = "This endpoint will return publishers that have ACTIVE status in DB, with paging option and search by publisher's name | (Authority) ALL.")
+	@ApiResponse(responseCode = "200", description = "Found the Publishers, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@GetMapping("/store/api/v1/publishers")
+	public ResponseEntity<?> getAllActivePublisher(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllPublisherByStatus(PublisherStatus.ACTIVE, page, size, keyword);
 	}
 	
-	@Operation(summary = "Get All Publishers",
-			description = "This endpoint will return all publishers in DB | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/publishers")
-	public List<PublisherAdminResponseDTO> getAllPublisher() {
-		return service.findAllPublisher();
+	@Operation(summary = "Get Publishers",
+			description = "This endpoint will return all publishers in DB, with paging option and search by publisher's name | (Authority) ADMIN, MANAGER.")
+	@ApiResponse(responseCode = "200", description = "Found the Publishers, response with paging",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					array = @ArraySchema(schema = @Schema(implementation = PagingListResposneDTO.class))),
+	})
+	@ApiResponse(responseCode = "400", description = "Bad Request Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@ApiResponse(responseCode = "404", description = "Not Found Exception Response",
+	useReturnTypeSchema = true,
+	content = {
+			@Content(mediaType = "application/json", 
+					schema = @Schema(implementation = MessageResponseDTO.class)),
+	})
+	@GetMapping("/admin/api/v1/publishers")
+	public ResponseEntity<?> getAllPublisher(
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, name = "query") String keyword
+			) {
+		
+		if (keyword == null) keyword = "";
+		
+		return service.findAllPublisher(page, size, keyword);
 	}
 	
 	@Operation(summary = "Get All Publisher's Status",
 			description = "This endpoint will return all publisher's status in DB | (Authority) ADMIN, MANAGER.")
-	@GetMapping("/admin/publishers/status")
+	@GetMapping("/admin/api/v1/publishers/status")
 	public Set<PublisherStatus> getAllPublisherStatus() {
 		return service.findAllPublisherStatus();
 	}
 	
 	@Operation(summary = "Delete Publisher By Id",
 			description = "This endpoint will soft delete publisher with the given id | (Authority) ADMIN, MANAGER")
-	@DeleteMapping("/admin/publishers/{id}")
+	@DeleteMapping("/admin/api/v1/publishers/{id}")
 	public ResponseEntity<?> deletePublisherById(@PathVariable("id") Integer id){
-		System.out.println(id);
-		var response = new HashMap<String, Object>();
 		service.deletePublisherById(id);
-		response.put("message", "Delete publisher with id " + id + " successfully!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return Utils.generateMessageResponseEntity(
+				"Xóa nhà xuất bản với mã số " + id + " thành công!", 
+				HttpStatus.OK);
 	}
 	
 	@Operation(summary = "Create new Publisher",
 			description = "This endpoint will create new publisher with the given information | (Authority) ADMIN, MANAGER.")
-	@PostMapping("/admin/publishers")
+	@PostMapping("/admin/api/v1/publishers")
 	public ResponseEntity<?> savePublisher(@Valid @RequestBody PublisherCreateBodyDTO publisher){
-		
-		var response = new HashMap<String, Object>();
 		service.savePublisher(publisher);
-		response.put("message", "Create new publisher successfully!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.CREATED.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return Utils.generateMessageResponseEntity(
+				"Tạo mới nhà xuất bản thành công!", 
+				HttpStatus.CREATED);
 	}
 	
 	@Operation(summary = "Update Publisher data",
 			description = "This endpoint will update publisher with the given information | (Authority) ADMIN, MANAGER.")
-	@PutMapping("/admin/publishers")
+	@PutMapping("/admin/api/v1/publishers")
 	public ResponseEntity<?> updatePublisher(@Valid @RequestBody PublisherUpdateBodyDTO publisher) {
-		
-		var response = new HashMap<String, Object>();
 		service.updatePublisher(publisher);
-		response.put("message", "Update publisher successfully!");
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.OK.value());
 		
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return Utils.generateMessageResponseEntity(
+				"Cập nhật nhà xuất bản thành công!", 
+				HttpStatus.OK);
 	}
 	
 	
@@ -125,38 +174,30 @@ public class PublisherController {
 	public ResponseEntity<?> handleDataIntegrityViolationException(
 			DataIntegrityViolationException ex
 			) {
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.BAD_REQUEST.value());
-		response.put("message", ex.getMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(NoPublisherFoundException.class)
 	public ResponseEntity<?> handleNoPublisherFoundException(
 				NoPublisherFoundException ex
 			){
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NOT_FOUND.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(NoPublisherExistException.class)
 	public ResponseEntity<?> handleNoPublisherExistException(
 				NoPublisherExistException ex
 			){
-		var response = new HashMap<String, Object>();
 		
-		response.put("timestamp", Utils.getCurrentTimestamp());
-		response.put("status", HttpStatus.NO_CONTENT.value());
-		response.put("message", ex.getMessage());
-		
-		return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 }

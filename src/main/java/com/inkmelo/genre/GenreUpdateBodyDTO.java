@@ -6,9 +6,9 @@ import lombok.Builder;
 
 @Builder
 public record GenreUpdateBodyDTO(
-			@NotNull
+			@NotNull(message = "Mã số của thể loại sách không được để rỗng.")
 			Integer id,
-			@NotEmpty
+			@NotEmpty(message = "Tên của thể loại sách không được để rỗng.")
 			String name,
 			String description,
 			GenreStatus status

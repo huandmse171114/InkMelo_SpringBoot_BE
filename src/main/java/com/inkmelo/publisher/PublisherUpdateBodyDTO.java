@@ -6,9 +6,9 @@ import lombok.Builder;
 
 @Builder
 public record PublisherUpdateBodyDTO(
-			@NotNull
+			@NotNull(message = "Mã số của nhà xuất bản không được để trống.")
 			Integer id,
-			@NotEmpty
+			@NotEmpty(message = "Tên của nhà xuất bản không được để trống.")
 			String name,
 			String description,
 			String logoImg,
