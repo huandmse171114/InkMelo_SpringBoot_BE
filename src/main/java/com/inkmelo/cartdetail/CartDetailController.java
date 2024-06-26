@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +38,7 @@ public class CartDetailController {
 	private final CartDetailService service;
 	
 	@Operation(summary = "Get Active Cart Detail Only",
-			description = "This endpoint will return cart details that have ACTIVE status in DB with paging option by username | (Authority) CUSTOMER.")
+			description = "This endpoint will return cart details that have ACTIVE status in DB with paging option and search by username | (Authority) CUSTOMER.")
 	@ApiResponse(responseCode = "200", description = "Found the Cart Details, response with paging",
 	useReturnTypeSchema = true,
 	content = {
@@ -56,20 +57,21 @@ public class CartDetailController {
 			@Content(mediaType = "application/json", 
 					schema = @Schema(implementation = MessageResponseDTO.class)),
 	})
-	@GetMapping("/store/api/v1/cart-details")
+	@GetMapping("/store/api/v1/customer/{username}/cart-details")
 	public ResponseEntity<?> getAllActiveCartDetail(
 				@RequestParam(required = false) Integer page,
 				@RequestParam(required = false) Integer size,
-				@RequestParam(required = true, name = "user") String username
+				@PathVariable("username") String username
 			) {
 		return service.findAllCartDetailByStatus(CartDetailStatus.ACTIVE, page, size, username);
 	}
 	
 	@Operation(summary = "Modify Book Package into Customer Cart",
 			description = "This endpoint will add, update book package quantity into customer cart. For deletion, please update cart item with quantity 0 | (Authority) ADMIN.")
-	@PostMapping("/store/api/v1/cart-details")
-	public ResponseEntity<?> modifyCartDetails(@Valid @RequestBody CartDetailCreateUpdateBodyDTO cartDetailDTO) {
-		String message = service.modifyCartDetails(cartDetailDTO);
+	@PostMapping("/store/api/v1/customer/{username}/cart-details")
+	public ResponseEntity<?> modifyCartDetails(@Valid @RequestBody CartDetailCreateUpdateBodyDTO cartDetailDTO,
+			@PathVariable("username") String username) {
+		String message = service.modifyCartDetails(cartDetailDTO, username);
 		
 		return Utils.generateMessageResponseEntity(
 				message, 
