@@ -1,5 +1,6 @@
 package com.inkmelo.user;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,8 +11,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.inkmelo.exception.NoUserExistException;
 import com.inkmelo.exception.NoUserFoundException;
@@ -20,6 +23,7 @@ import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 @Tag(name = "Users", description = "Users Management APIs")
@@ -114,5 +118,19 @@ public class UserController {
 		return Utils.generateMessageResponseEntity(
 				ex.getMessage(), 
 				HttpStatus.BAD_REQUEST);
+	}
+	@Operation(summary = "Request password reset", description = "This endpoint sends a password reset token to the user's email.")
+	@PostMapping("/store/api/v1/users/reset-password/{email}")
+	public ResponseEntity<?> requestPasswordReset(@PathVariable String email) throws MessagingException {
+	    service.updateResetPasswordToken(email);
+	    return Utils.generateMessageResponseEntity("Password reset email sent.", HttpStatus.OK);
+	}
+
+	@Operation(summary = "Reset password", description = "This endpoint resets the user's password using the provided token.")
+	@PostMapping("/store/api/v1/users/reset-password-confirm/{token}/{newPassword}")
+	public ResponseEntity<?> resetPassword(@PathVariable String token, @PathVariable String newPassword) {
+	    User user = service.getByResetPasswordToken(token);
+	    service.updatePassword(user, newPassword);
+	    return Utils.generateMessageResponseEntity("Password has been reset successfully.", HttpStatus.OK);
 	}
 }
