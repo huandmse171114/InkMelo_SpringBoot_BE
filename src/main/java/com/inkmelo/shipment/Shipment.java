@@ -34,27 +34,39 @@ public class Shipment {
 			nullable = false,
 			length = 100
 	)
-	private String name;
+	private String receiverName;
 	
 	@Column(nullable = false)
-	private String address;
+	private String street;
+	
+	@Column(nullable = false)
+	private String ward;
+	
+	@Column(nullable = false)
+	private String district;
+	
+	@Column(nullable = false)
+	private String province;
 	
 	@Column(
 			nullable = false,
 			length = 12
 	)
-	private String phone;
+	private String contactNumber;
 	
 	private String description;
 	
 	@Column(nullable = false)
-	private boolean isActive;
+	private boolean isDefault;
 	
 	@Column(
 			updatable = false,
 			nullable = false
 	)
 	private Date createdAt;
+	
+	@Column(nullable = false)
+	private Date lastUpdatedTime;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(

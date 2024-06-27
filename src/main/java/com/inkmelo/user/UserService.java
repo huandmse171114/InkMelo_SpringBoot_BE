@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,8 +23,10 @@ import com.inkmelo.exception.NoPublisherExistException;
 import com.inkmelo.exception.NoUserExistException;
 import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.exception.PasswordConfirmIsDifferentException;
+import com.inkmelo.mailsender.SendEmailService;
 import com.inkmelo.publisher.PublisherAdminResponseDTO;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +39,7 @@ public class UserService {
 	private final CustomerRepository customerRepository;
 	private final CustomerMappingService customerMappingService;
 	private final CartRepository cartRepository;
+	private final SendEmailService sendEmailService;
 
 	public User loadUserByUsername(String username) {
 		Optional<User> userOptional = repository.findByUsername(username);
@@ -126,35 +130,73 @@ public class UserService {
 				.toList();
 	}
 	
-	public User getByResetPasswordToken(String token) throws NoUserFoundException {
-		Optional<User> userOption = repository.findByResetPasswordToken(token);
-		
-		if (userOption.isEmpty()) {
-			throw new NoUserFoundException("User is not found.");
-		}
+//	public User getByResetPasswordToken(String token) throws NoUserFoundException {
+//		Optional<User> userOption = repository.findByResetPasswordToken(token);
+//		
+//		if (userOption.isEmpty()) {
+//			throw new NoUserFoundException("User is not found.");
+//		}
+//
+//		return userOption.get();
+//	}
+//	
+//	public void updatePassword(User user, String newPassword) {
+//		BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
+//		String encodedPassword = pwdEncoder.encode(newPassword);
+//		user.setPassword(encodedPassword);
+//		
+//		user.setResetPasswordToken(null);
+//		repository.save(user);
+//	}
+//	
+//	public void updateResetPasswordToken(String token, String username) throws NoUserFoundException {
+//		Optional<User> userOption = repository.findByUsername(username);
+//		
+//		if (userOption.isEmpty()) {
+//			throw new NoUserFoundException("User is not found.");
+//		}
+//		
+//		User user = userOption.get();
+//		user.setResetPasswordToken(token);
+//		repository.save(user);
+//	}
+	public void updateResetPasswordToken(String email) throws NoUserFoundException, MessagingException {
+        Optional<User> userOption = repository.findByEmail(email);
 
-		return userOption.get();
-	}
-	
-	public void updatePassword(User user, String newPassword) {
-		BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
-		String encodedPassword = pwdEncoder.encode(newPassword);
-		user.setPassword(encodedPassword);
-		
-		user.setResetPasswordToken(null);
-		repository.save(user);
-	}
-	
-	public void updateResetPasswordToken(String token, String username) throws NoUserFoundException {
-		Optional<User> userOption = repository.findByUsername(username);
-		
-		if (userOption.isEmpty()) {
-			throw new NoUserFoundException("User is not found.");
-		}
-		
-		User user = userOption.get();
-		user.setResetPasswordToken(token);
-		repository.save(user);
-	}
-	
+        if (userOption.isEmpty()) {
+            throw new NoUserFoundException("User is not found.");
+        }
+
+        User user = userOption.get();
+        String token = UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setResetPasswordTokenExpiry(Date.valueOf(LocalDate.now().plusDays(1)));
+        repository.save(user);
+
+        try {
+            sendEmailService.sendResetPasswordEmail(user.getEmail(), token);
+        } catch (MessagingException e) {
+            throw new MessagingException("Failed to send password reset email.");
+        }
+    }
+
+    public User getByResetPasswordToken(String token) throws NoUserFoundException {
+        Optional<User> userOption = repository.findByResetPasswordToken(token);
+
+        if (userOption.isEmpty() || userOption.get().getResetPasswordTokenExpiry().before(Date.valueOf(LocalDate.now()))) {
+            throw new NoUserFoundException("Invalid or expired reset token.");
+        }
+
+        return userOption.get();
+    }
+
+    public void updatePassword(User user, String newPassword) {
+        BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = pwdEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
+        repository.save(user);
+    }
 }

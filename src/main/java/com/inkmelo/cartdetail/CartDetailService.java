@@ -96,11 +96,11 @@ public class CartDetailService {
 		}
 	}
 
-	public String modifyCartDetails(CartDetailCreateUpdateBodyDTO cartDetailDTO) {
+	public String modifyCartDetails(CartDetailCreateUpdateBodyDTO cartDetailDTO, String username) {
 		
 		String message = "";
 		
-		Optional<User> user = userRepository.findByUsername(cartDetailDTO.getUsername());
+		Optional<User> user = userRepository.findByUsername(username);
 		
 		if (user.isEmpty()) {
 			throw new NoUserFoundException("Thêm sản phẩm vào giỏ hàng thất bại. Người dùng không tồn tại.");

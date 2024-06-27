@@ -18,9 +18,6 @@ public class CartDetailCreateUpdateBodyDTO {
 	@NotNull(message = "Không được để trống mã gói tài nguyên sách")
 	private Integer bookPackageId;
 	
-	@NotEmpty(message = "Không được để trống tài khoản người dùng.")
-	private String username;
-	
 	@NotNull(message = "Không được để trống số lượng sản phẩm")
 	private Integer quantity;
 

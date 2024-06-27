@@ -34,56 +34,42 @@ public class User implements UserDetails {
 	@Id
 	@GeneratedValue
 	private Integer id;
-	
-	@Column(unique = true,
-			nullable = false,
-			length = 100
-	)
+
+	@Column(unique = true, nullable = false, length = 100)
 	private String username;
-	
+
 	@Column(nullable = false)
 	private String password;
-	
+
 	@Column(length = 150)
 	private String fullname;
-	
+
 	@Column(unique = true)
 	private String email;
-	
+
 	private String resetPasswordToken;
-	
+
+	private Date resetPasswordTokenExpiry;
+
 	@Enumerated(EnumType.STRING)
-	@Column(
-			nullable = false,
-			length = 50
-	)
+	@Column(nullable = false, length = 50)
 	private UserRole role;
-	
+
 	@Enumerated(EnumType.STRING)
-	@Column(
-			nullable = false,
-			length = 50
-	)
+	@Column(nullable = false, length = 50)
 	private UserStatus status;
-	
-	@Column(
-			updatable = false,
-			nullable = false
-	)
+
+	@Column(updatable = false, nullable = false)
 	private Date createdAt;
-	
+
 	@Column(nullable = false)
 	private Date lastUpdatedTime;
-	
-	@Column(
-			nullable = false,
-			length = 100
-	)
+
+	@Column(nullable = false, length = 100)
 	private String lastChangedBy;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
 		return List.of(new SimpleGrantedAuthority(role.toString()));
 	}
 
@@ -106,5 +92,4 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return status == UserStatus.ACTIVE;
 	}
-	
 }

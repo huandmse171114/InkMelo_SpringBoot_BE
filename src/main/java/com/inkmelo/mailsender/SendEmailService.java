@@ -22,7 +22,7 @@ public class SendEmailService {
     @Value("${spring.mail.username}")
     private String fromEmailId;
 
-    public void sendEmail(String receipt, String body, String subject) throws MessagingException, IOException {
+    public void sendConfirmEmail(String receipt, String body, String subject) throws MessagingException, IOException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
@@ -49,4 +49,24 @@ public class SendEmailService {
 
         javaMailSender.send(mimeMessage);
     }
+    public void sendResetPasswordEmail(String to, String token) throws MessagingException {
+		String subject = "Password Reset Request";
+//		String url = "http://localhost:8080/store/api/v1/users/reset-password-confirm?token=" + token;
+		String url = token;
+		String message = "<p>Hi,</p>" + 
+						 "<p>You have requested to reset your password.</p>" +
+						 "<p>Click the link below to change your password:</p>" +
+						 "<p><a href=\"" + url + "\">Change my password</a></p>" +
+						 "<br>" +
+						 "<p>If you did not request this, please ignore this email.</p>";
+
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+		helper.setText(message, true);
+		helper.setTo(to);
+		helper.setSubject("YÊU CẦU THAY ĐỔI MẬT KHẨU");
+		helper.setFrom(fromEmailId);
+		
+		javaMailSender.send(mimeMessage);
+	}
 }
