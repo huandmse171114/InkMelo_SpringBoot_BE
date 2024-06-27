@@ -10,8 +10,11 @@ public record ShipmentResponseDTO(
 			String description,
 			String street,
 			String ward,
+			Integer wardId,
 			String district,
+			Integer districtId,
 			String province,
+			Integer provinceId,
 			boolean isDefault
 		) {
 

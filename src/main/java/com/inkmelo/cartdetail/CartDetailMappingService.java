@@ -18,6 +18,7 @@ public class CartDetailMappingService {
 				.bookTitle(bookPackage.getBook().getTitle())
 				.bookAuthor(bookPackage.getBook().getAuthor())
 				.bookCoverImg(bookPackage.getBook().getBookCoverImg())
+				.bookPackageId(bookPackage.getId())
 				.bookPackageTitle(bookPackage.getTitle())
 				.bookPackageDescription(bookPackage.getDescription())
 				.bookPackageStock(bookPackage.getStock())

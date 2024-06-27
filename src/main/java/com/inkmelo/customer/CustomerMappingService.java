@@ -25,4 +25,16 @@ public class CustomerMappingService {
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.build();
 	}
+	
+	public CustomerProfileResponseDTO customerToCustomerProfileResponseDTO(Customer customer) {
+		return CustomerProfileResponseDTO.builder()
+				.fullname(customer.getFullname())
+				.dateOfBirth(customer.getDateOfBirth())
+				.gender(customer.getGender())
+				.phone(customer.getPhone())
+				.email(customer.getEmail())
+				.profileImg(customer.getProfileImg())
+				.lastUpdatedTime(customer.getLastUpdatedTime())
+				.build();
+	}
 }

@@ -3,6 +3,7 @@ package com.inkmelo.VnPay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,8 +20,10 @@ public class VnPayController {
     private QueryService queryService;
 
     @PostMapping("/create-payment")
-    public String createPayment(HttpServletRequest req) throws Exception {
-        return vnPayService.createPayment(req);
+    public String createPayment(HttpServletRequest req,
+    		@RequestBody String returnURL) throws Exception {
+    	
+        return vnPayService.createPayment(req, returnURL);
     }
 
     @GetMapping("/query-transaction")

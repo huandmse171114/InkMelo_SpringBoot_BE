@@ -1,8 +1,8 @@
 package com.inkmelo.order;
 
 public enum OrderStatus {
-	ACTIVE(1),
-	INACTIVE(0);
+	PAYMENT_PENDING(1),
+	FINISHED(0);
 	
 	public final int value;
 	

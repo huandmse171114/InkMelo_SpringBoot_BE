@@ -35,19 +35,8 @@ public class OrderDetail {
 	@Column(nullable = false)
 	private float itemPrice;
 	
-	@Enumerated(EnumType.STRING)
-	@Column(
-			nullable = false,
-			length = 50
-	)
-	private OrderDetailType type;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(
-			nullable = false,
-			length = 50
-	)
-	private OrderDetailStatus status;
+	@Column(nullable = false)
+	private float totalPrice;
 	
 	@ManyToOne
 	@JoinColumn(name = "bookpackage_id")

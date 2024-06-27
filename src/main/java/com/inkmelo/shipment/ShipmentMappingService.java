@@ -18,6 +18,9 @@ public class ShipmentMappingService {
 				.ward(shipmentDTO.ward())
 				.district(shipmentDTO.district())
 				.province(shipmentDTO.province())
+				.wardId(shipmentDTO.wardId())
+				.districtId(shipmentDTO.districtId())
+				.provinceId(shipmentDTO.provinceId())
 				.contactNumber(shipmentDTO.contactNumber())
 				.description(shipmentDTO.description())
 				.isDefault(shipmentDTO.isDefault())
@@ -29,13 +32,17 @@ public class ShipmentMappingService {
 	
 	public ShipmentResponseDTO shipmentToShipmentResponseDTO(Shipment shipment) {
 		return ShipmentResponseDTO.builder()
+				.id(shipment.getId())
 				.receiverName(shipment.getReceiverName())
 				.contactNumber(shipment.getContactNumber())
 				.description(shipment.getDescription())
 				.street(shipment.getStreet())
 				.ward(shipment.getWard())
+				.wardId(shipment.getWardId())
 				.district(shipment.getDistrict())
+				.districtId(shipment.getDistrictId())
 				.province(shipment.getProvince())
+				.provinceId(shipment.getProvinceId())
 				.isDefault(shipment.isDefault())
 				.build();
 	}

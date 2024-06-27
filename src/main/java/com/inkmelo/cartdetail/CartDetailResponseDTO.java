@@ -9,6 +9,7 @@ public record CartDetailResponseDTO(
 			String bookTitle,
 			String bookAuthor,
 			String bookCoverImg,
+			Integer bookPackageId,
 			String bookPackageTitle,
 			String bookPackageDescription,
 			float bookPackagePrice,
