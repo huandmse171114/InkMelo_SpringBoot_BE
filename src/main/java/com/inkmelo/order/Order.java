@@ -39,20 +39,26 @@ public class Order {
 	@Column(nullable = false)
 	private float totalPrice;
 	
-	@Column(
-			nullable = false,
-			length = 100
-	)
-	private String shipmentName;
+	@Column(nullable = false)
+	private String shipmentStreet;
 	
 	@Column(nullable = false)
-	private String shipmentAddress;
+	private String shipmentWard;
+	
+	@Column(nullable = false)
+	private String shipmentDistrict;
+	
+	@Column(nullable = false)
+	private String shipmentProvince;
+	
+	@Column(nullable = false)
+	private String receiverName;
 	
 	@Column(
 			length = 12,
 			nullable = false
 	)
-	private String phone;
+	private String contactNumber;
 	
 	@Column(
 			updatable = false,
@@ -80,7 +86,7 @@ public class Order {
 	@ManyToOne
 	@JoinColumn(
 			name = "payment_id",
-			nullable = false
+			nullable = true
 	)
 	private Payment payment;
 	
