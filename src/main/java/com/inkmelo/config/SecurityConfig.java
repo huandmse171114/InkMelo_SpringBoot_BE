@@ -104,7 +104,7 @@ public class SecurityConfig {
  
 	
 	@Bean
-	@Profile(value = "dev")
+	@Profile(value = "devv")
     CommandLineRunner initData(UserService userService) {
         return args -> {
             User user = User.builder()
