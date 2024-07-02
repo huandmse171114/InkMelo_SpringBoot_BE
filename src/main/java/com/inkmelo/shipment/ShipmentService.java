@@ -160,7 +160,7 @@ public class ShipmentService {
 		shipment.setDescription(shipmentDTO.description());
 		shipment.setStreet(shipmentDTO.street());
 		shipment.setWard(shipmentDTO.ward());
-		shipment.setWardId(shipmentDTO.wardId());
+		shipment.setWardCode(shipmentDTO.wardCode());
 		shipment.setDistrict(shipmentDTO.district());
 		shipment.setDistrictId(shipmentDTO.districtId());
 		shipment.setProvince(shipmentDTO.province());

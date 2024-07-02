@@ -6,7 +6,6 @@ import java.util.List;
 import com.inkmelo.bookrating.BookRating;
 import com.inkmelo.cart.Cart;
 import com.inkmelo.order.Order;
-import com.inkmelo.payment.Payment;
 import com.inkmelo.shipment.Shipment;
 import com.inkmelo.user.User;
 
@@ -65,9 +64,6 @@ public class Customer {
 	
 	@OneToMany(mappedBy = "customer")
 	private List<Order> orders;
-	
-	@OneToMany(mappedBy = "customer")
-	private List<Payment> payments;
 	
 	@OneToMany(mappedBy = "customer")
 	private List<Shipment> shipments;

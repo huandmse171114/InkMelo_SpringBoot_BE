@@ -10,7 +10,7 @@ public record ShipmentResponseDTO(
 			String description,
 			String street,
 			String ward,
-			Integer wardId,
+			String wardCode,
 			String district,
 			Integer districtId,
 			String province,

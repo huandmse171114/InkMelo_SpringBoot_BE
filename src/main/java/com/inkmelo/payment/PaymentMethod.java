@@ -1,6 +1,6 @@
 package com.inkmelo.payment;
 
 public enum PaymentMethod {
-	COD,
-	VNPAY
+	VNPAY,
+	PAYOS
 }

@@ -15,6 +15,9 @@ public record OrderCreateBodyDTO(
 			String shipmentWard,
 			String shipmentDistrict,
 			String shipmentProvince,
+			Integer districtId,
+			Integer provinceId,
+			String wardCode,
 			List<CartDetailResponseDTO> items,
 			String redirectUrl
 		) {

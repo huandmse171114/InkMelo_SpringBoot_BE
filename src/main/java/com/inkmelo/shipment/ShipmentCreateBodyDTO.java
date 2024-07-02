@@ -16,7 +16,7 @@ public record ShipmentCreateBodyDTO(
 			@NotEmpty(message = "Vui lòng không để trống thông tin phường/xã.")
 			String ward,
 			@NotNull
-			Integer wardId,
+			String wardCode,
 			@NotEmpty(message = "Vui lòng không để trống thông tin quận/huyện.")
 			String district,
 			@NotNull

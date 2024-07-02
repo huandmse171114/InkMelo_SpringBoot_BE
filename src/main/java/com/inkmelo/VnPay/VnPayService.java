@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.inkmelo.utils.GlobalVariable;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -30,8 +29,6 @@ public class VnPayService {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        
-        GlobalVariable.setRedirectURL(returnUrl);
         
         String amountStr = req.getParameter("amount");
         if (amountStr == null || amountStr.isEmpty()) {
@@ -112,7 +109,7 @@ public class VnPayService {
         return gson.toJson(job);
     }
     
-    public String getPaymentUrl(HttpServletRequest req, float totalPayment, Integer orderId) throws Exception {
+    public String getPaymentUrl(HttpServletRequest req, float totalPayment, Integer orderId, String redirectUrl) throws Exception {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -146,7 +143,7 @@ public class VnPayService {
             vnp_Params.put("vnp_BankCode", bankCode);
         }
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef + "|" + redirectUrl);
         vnp_Params.put("vnp_OrderType", orderType);
 
         String locate = req.getParameter("language");

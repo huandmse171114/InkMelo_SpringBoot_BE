@@ -43,7 +43,7 @@ public class Shipment {
 	private String ward;
 	
 	@Column(nullable = false)
-	private Integer wardId;
+	private String wardCode;
 	
 	@Column(nullable = false)
 	private String district;
