@@ -49,9 +49,10 @@ public class GHNController {
 
     @GetMapping("/calculate-fee")
     public String calculateFee(@RequestParam int toDistrictId, 
-                               @RequestParam String toWardCode, 
+                               @RequestParam String toWardCode,
+                               @RequestParam int serviceId,
                                @RequestParam int quantity) {
-        return ghnApis.calculateFee(toDistrictId, toWardCode, quantity);
+        return ghnApis.calculateFee(toDistrictId, toWardCode, quantity, serviceId);
     }
     
     @GetMapping("/track-order/{orderCode}")
@@ -62,5 +63,9 @@ public class GHNController {
             e.printStackTrace();
             return "Failed to track order: " + e.getMessage();
         }
+    }
+    @GetMapping("/get-service/{to_district}")
+    public String getAvailableServices(@PathVariable String to_district) {
+        return ghnApis.getService(to_district);
     }
 }
