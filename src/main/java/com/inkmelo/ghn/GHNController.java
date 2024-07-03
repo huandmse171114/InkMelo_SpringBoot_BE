@@ -49,9 +49,8 @@ public class GHNController {
     @GetMapping("/store/api/v1/ghn/calculate-fee")
     public String calculateFee(@RequestParam int toDistrictId, 
                                @RequestParam String toWardCode,
-                               @RequestParam int serviceId,
                                @RequestParam int quantity) {
-        return ghnApis.calculateFee(toDistrictId, toWardCode, quantity, serviceId);
+        return ghnApis.calculateFee(toDistrictId, toWardCode, quantity);
     }
     
     @GetMapping("/store/api/v1/ghn/track-order/{orderCode}")
