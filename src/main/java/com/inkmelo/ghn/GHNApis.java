@@ -39,7 +39,7 @@ public class GHNApis {
     private String address;
     
     // This function will return the amount of time needed for delivering in DAY(S)
-    public Date calculateExpectedDeliveryTime(int to_district_id, String to_ward_code) {
+    public Date calculateExpectedDeliveryTime(int to_district_id, String to_ward_code, Integer serviceId) {
         String output = "";
         HttpURLConnection conn = null;
         try {
@@ -56,7 +56,7 @@ public class GHNApis {
                                  "\"from_ward_code\": \"" + wardCode + "\"," +
                                  "\"to_district_id\": " + to_district_id + "," +
                                  "\"to_ward_code\": \"" + to_ward_code + "\"," +
-                                 "\"service_id\": 53320}";
+                                 "\"service_id\": " + serviceId + "}";
 
             // Log the request body
             System.out.println("Request Body: " + requestBody);
@@ -336,8 +336,8 @@ public class GHNApis {
 
             // Constructing the request body JSON
             String requestBody = "{" +
-                    "\"service_id\":53320," +
-                    "\"insurance_value\":" + serviceId + "," +
+                    "\"service_id\":"+ serviceId +"," +
+                    "\"insurance_value\": 500000," +
                     "\"coupon\":null," +
                     "\"from_district_id\":" + districtId + "," +
                     "\"to_district_id\":" + to_district_id + "," +
@@ -427,7 +427,7 @@ public class GHNApis {
         return output;
     }
  // This function will return the list of available services
-    public String getService(String to_district) {
+    public String getService(Integer to_district) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/available-services");
@@ -442,7 +442,7 @@ public class GHNApis {
             String requestBody = "{" +
                     "\"shop_id\":" + shopId + "," +
                     "\"from_district\":" + districtId + "," +
-                    "\"to_district\":" + Integer.parseInt(to_district) +
+                    "\"to_district\":" + to_district +
                     "}";
 
             // Log the request body

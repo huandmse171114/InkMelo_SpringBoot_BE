@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.exception.NoOrderFoundException;
+import com.inkmelo.ghn.GHNApis;
 import com.inkmelo.order.Order;
 import com.inkmelo.order.OrderRepository;
 import com.inkmelo.order.OrderStatus;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class PaymentService {
 	private final VNPayPaymentRepository vnpayRepository;
 	private final OrderRepository orderRepository;
+	private final GHNApis ghnApis;
 
 	public String handleVNPayResponse(Long vnp_Amount, String vnp_BankCode, String vnp_BankTranNo, String vnp_CardType,
 			String vnp_OrderInfo, String vnp_PayDate, String vnp_ResponseCode, String vnp_TmnCode,
@@ -54,7 +56,6 @@ public class PaymentService {
 				.vnp_TxnRef(vnp_TxnRef)
 				.status(PaymentStatus.ACTIVE)
 				.paymentMethod(PaymentMethod.VNPAY)
-				.order(order)
 				.build();
 		
 		if (vnp_ResponseCode.equals("00")) {
@@ -63,9 +64,17 @@ public class PaymentService {
 			order.setStatus(OrderStatus.PAYMENT_FAILED);
 		}
 		
-		vnpayRepository.save(vnpayPayment);
-		
+		VNPayPayment vnpayPaymentDB = vnpayRepository.save(vnpayPayment);
+		order.setPayment(vnpayPaymentDB);
 		orderRepository.save(order);
+		
+		ghnApis.createOrder(
+				order.getShipmentDistrictId(), 
+				order.getShipmentWardCode(), 
+				2, 
+				order.getReceiverName(), 
+				order.getContactNumber(), 
+				order.getShipmentStreet());
 		
 		return redirectURL;
 	}

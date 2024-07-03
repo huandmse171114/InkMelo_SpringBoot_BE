@@ -50,7 +50,7 @@ public class Order {
 	private Date expectedDeliveryTime;
 	
 	@Column(nullable = false)
-	private int expectedDaysToDelivery;
+	private Long expectedDaysToDelivery;
 	
 	@Column(nullable = false)
 	private String shipmentStreet;
@@ -75,6 +75,12 @@ public class Order {
 	
 	@Column(nullable = false)
 	private String receiverName;
+	
+	@Column(nullable = false)
+	private Integer ghnServiceId;
+	
+	@Column(nullable = false)
+	private String ghbOrderCode;
 	
 	@Column(
 			length = 12,

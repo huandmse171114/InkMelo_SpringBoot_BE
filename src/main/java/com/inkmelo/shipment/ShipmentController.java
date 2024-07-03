@@ -40,6 +40,13 @@ public class ShipmentController {
 		return service.findAllShipmentByStatus(ShipmentStatus.ACTIVE, username, page, size);
 	}
 	
+	@GetMapping("/store/api/v1/customer/{username}/shipments/default")
+	public ResponseEntity<?> getDefaultShipment(
+				@PathVariable("username") String username
+			) {
+		return service.findDefaultShipment(username);
+	}
+	
 	
 	@Operation(summary = "Create new Shipment",
 			description = "This endpoint will create new shipment with given information for corresponding customer base on username | (Authority) CUSTOMER.")

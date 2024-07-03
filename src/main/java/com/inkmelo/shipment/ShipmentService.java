@@ -2,6 +2,7 @@ package com.inkmelo.shipment;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,15 +97,19 @@ public class ShipmentService {
 		
 		Shipment shipment = mappingService.shipmentCreateBodyDTOToShipment(shipmentDTO);
 		
+		Optional<Shipment> defaultShipmentOptional = repository.findByCustomerAndIsDefault(customer, true);
+		
 		if (shipment.isDefault()) {
-			Optional<Shipment> defaultShipmentOptional = repository.findByCustomerAndIsDefault(customer, true);
-			
 			if (!defaultShipmentOptional.isEmpty()) {
 				Shipment defaultShipment = defaultShipmentOptional.get();
 				defaultShipment.setDefault(false);
 				defaultShipment.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
 				repository.save(defaultShipment);
 			}			
+		}else {
+			if (defaultShipmentOptional.isEmpty()) {
+				shipment.setDefault(true);
+			}
 		}
 		
 		shipment.setCustomer(customer);
@@ -200,6 +205,24 @@ public class ShipmentService {
 			repository.save(newDefaultShipment);
 		}
 		
+	}
+	
+	public ResponseEntity<?> findDefaultShipment(String username) {
+		Customer customer = getCustomer(username);
+		
+		Optional<Shipment> defaultShipmentOptional = repository.findByCustomerAndIsDefault(customer, true);
+		
+		if (defaultShipmentOptional.isEmpty()) {
+			throw new NoShipmentFoundException("Người dùng chưa có thông tin địa chỉ nhận hàng.");
+		}
+		
+		var response = new HashMap<String, Object>();
+		
+		response.put("data", mappingService.shipmentToShipmentResponseDTO(defaultShipmentOptional.get()));
+		response.put("status", HttpStatus.OK.value());
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	private Customer getCustomer(String username) {
