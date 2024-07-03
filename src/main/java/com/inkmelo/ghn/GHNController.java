@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 @RestController
 public class GHNController {
 
@@ -16,8 +19,7 @@ public class GHNController {
     private GHNApis ghnApis;
 
     @GetMapping("/store/api/v1/ghn/delivery-time")
-    public Date calculateExpectedDeliveryTime(@RequestParam int toDistrictId, @RequestParam String toWardCode,
-    		@RequestParam int serviceId) {
+    public Date calculateExpectedDeliveryTime(@RequestParam int toDistrictId, @RequestParam String toWardCode, @RequestParam Integer serviceId) {
         return ghnApis.calculateExpectedDeliveryTime(toDistrictId, toWardCode, serviceId);
     }
 
@@ -27,8 +29,9 @@ public class GHNController {
                               @RequestParam int quantity,
                               @RequestParam String toName,
                               @RequestParam String toPhone,
-                              @RequestParam String toAddress) {
-        return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress);
+                              @RequestParam String toAddress,
+                              @RequestParam Integer serviceId) {
+        return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress, serviceId);
     }
 
     @GetMapping("/store/api/v1/ghn/wards")
@@ -49,8 +52,9 @@ public class GHNController {
     @GetMapping("/store/api/v1/ghn/calculate-fee")
     public String calculateFee(@RequestParam int toDistrictId, 
                                @RequestParam String toWardCode,
-                               @RequestParam int quantity) {
-        return ghnApis.calculateFee(toDistrictId, toWardCode, quantity);
+                               @RequestParam int quantity,
+                               @RequestParam Integer serviceId) {
+        return ghnApis.calculateFee(toDistrictId, toWardCode, quantity, serviceId);
     }
     
     @GetMapping("/store/api/v1/ghn/track-order/{orderCode}")
@@ -64,7 +68,7 @@ public class GHNController {
     }
     
     @GetMapping("/store/api/v1/ghn/get-service/{to_district}")
-    public String getAvailableServices(@PathVariable Integer to_district) {
+    public GHNServiceResponse getAvailableServices(@PathVariable Integer to_district) throws JsonMappingException, JsonProcessingException {
         return ghnApis.getService(to_district);
     }
 }

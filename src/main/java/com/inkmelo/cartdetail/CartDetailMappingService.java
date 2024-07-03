@@ -15,6 +15,7 @@ public class CartDetailMappingService {
 		BookPackage bookPackage = cartDetail.getBookPackage();
 		
 		return CartDetailResponseDTO.builder()
+				.id(cartDetail.getId())
 				.bookTitle(bookPackage.getBook().getTitle())
 				.bookAuthor(bookPackage.getBook().getAuthor())
 				.bookCoverImg(bookPackage.getBook().getBookCoverImg())

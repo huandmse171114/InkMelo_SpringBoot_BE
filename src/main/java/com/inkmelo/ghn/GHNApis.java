@@ -10,9 +10,14 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -129,7 +134,8 @@ public class GHNApis {
                               int quantity,
                               String to_name,
                               String to_phone,
-                              String to_address) {
+                              String to_address,
+                              Integer serviceId) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/create");
@@ -173,8 +179,7 @@ public class GHNApis {
                     "    \"pick_station_id\": 1444,\n" +
                     "    \"deliver_station_id\": null,\n" +
                     "    \"insurance_value\": 0,\n" +
-                    "    \"service_id\": null,\n" +
-                    "    \"service_type_id\": 2,\n" +
+                    "    \"service_id\": "+ serviceId +",\n" +
                     "    \"coupon\": null,\n" +
                     "    \"pick_shift\": [2],\n" +
                     "    \"items\": [\n" +
@@ -317,7 +322,7 @@ public class GHNApis {
     }
 
     // This function will return the fee for shipping
-    public String calculateFee(int to_district_id, String to_ward_code, int quantity) {
+    public String calculateFee(int to_district_id, String to_ward_code, int quantity, int serviceId) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/fee");
@@ -336,7 +341,7 @@ public class GHNApis {
 
             // Constructing the request body JSON
             String requestBody = "{" +
-                    "\"service_type_id\":2," + 
+                    "\"service_id\":"+ serviceId +"," + 
                     "\"from_district_id\":" + districtId + "," +
                     "\"to_district_id\":" + to_district_id + "," +
                     "\"to_ward_code\":\"" + to_ward_code + "\"," +
@@ -442,7 +447,7 @@ public class GHNApis {
         return output;
     }
  // This function will return the list of available services
-    public String getService(Integer to_district) {
+    public GHNServiceResponse getService(Integer to_district) throws JsonMappingException, JsonProcessingException {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/available-services");
@@ -492,6 +497,16 @@ public class GHNApis {
         } catch (IOException | RuntimeException e) {
             e.printStackTrace();
         }
-        return output;
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        GHNServiceResponse serviceResponse = objectMapper.readValue(output, GHNServiceResponse.class);
+        List<GHNServiceResponseData> services = serviceResponse.getData();
+        services = services.stream()
+        		.filter(service -> service.getService_type_id() != 5)
+        		.toList();
+        
+        serviceResponse.setData(services);
+        
+        return serviceResponse;
     }
 }

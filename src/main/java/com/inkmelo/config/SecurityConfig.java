@@ -21,6 +21,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import com.inkmelo.auth.AuthEntryPointJwt;
 import com.inkmelo.auth.AuthTokenFilter;
+import com.inkmelo.cartdetail.CartDetail;
+import com.inkmelo.cartdetail.CartDetailCreateUpdateBodyDTO;
+import com.inkmelo.cartdetail.CartDetailRepository;
+import com.inkmelo.cartdetail.CartDetailService;
 import com.inkmelo.user.User;
 import com.inkmelo.user.UserRepository;
 import com.inkmelo.user.UserRole;
@@ -39,6 +43,9 @@ public class SecurityConfig {
 	
 	@Autowired
     UserRepository repository;
+	
+	@Autowired
+	private CartDetailService cartDetailService;
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
@@ -101,53 +108,6 @@ public class SecurityConfig {
 		return http.build();
 		
 	}
- 
-	
-	@Bean
-	@Profile(value = "dev")
-    CommandLineRunner initData(UserService userService) {
-        return args -> {
-            User user = User.builder()
-            		.username("user1")
-            		.fullname("Nguyen Thi Khach Hang")
-            		.email("user@gmail.com")
-            		.password(passwordEncoder().encode("password1"))
-            		.role(UserRole.CUSTOMER)
-            		.status(UserStatus.ACTIVE)
-            		.createdAt(Date.valueOf(LocalDate.now()))
-            		.lastChangedBy("anonymous")
-            		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-            		.build();
-            
-            User admin = User.builder()
-            		.username("admin1")
-            		.email("admin@gmail.com")
-            		.fullname("Nguyen Van Muoi")
-            		.password(passwordEncoder().encode("password1"))
-            		.role(UserRole.ADMIN)
-            		.status(UserStatus.ACTIVE)
-            		.createdAt(Date.valueOf(LocalDate.now()))
-            		.lastChangedBy("anonymous")
-            		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-            		.build();
-            
-            User manager = User.builder()
-            		.username("manager1")
-            		.fullname("Nguyen Van A")
-            		.email("manager@gmail.com")
-            		.password(passwordEncoder().encode("password1"))
-            		.role(UserRole.MANAGER)
-            		.status(UserStatus.ACTIVE)
-            		.createdAt(Date.valueOf(LocalDate.now()))
-            		.lastChangedBy("anonymous")
-            		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-            		.build();
-
-            userService.createUser(user);
-            userService.createUser(admin);
-            userService.createUser(manager);
-        };
-    }
 
     @Bean
     PasswordEncoder passwordEncoder(){

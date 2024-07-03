@@ -12,7 +12,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
-import java.io.File;
 import java.io.IOException;
 
 

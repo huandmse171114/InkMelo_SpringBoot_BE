@@ -1,16 +1,24 @@
 package com.inkmelo.payment;
 
+import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.ghn.GHNApis;
+import com.inkmelo.ghn.GHNOrderResponse;
+import com.inkmelo.mailsender.SendEmailService;
 import com.inkmelo.order.Order;
 import com.inkmelo.order.OrderRepository;
 import com.inkmelo.order.OrderStatus;
 import com.inkmelo.utils.Utils;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,11 +27,14 @@ public class PaymentService {
 	private final VNPayPaymentRepository vnpayRepository;
 	private final OrderRepository orderRepository;
 	private final GHNApis ghnApis;
+	private final SendEmailService emailService;
 
 	public String handleVNPayResponse(Long vnp_Amount, String vnp_BankCode, String vnp_BankTranNo, String vnp_CardType,
 			String vnp_OrderInfo, String vnp_PayDate, String vnp_ResponseCode, String vnp_TmnCode,
-			String vnp_TransactionNo, String vnp_TxnRef, String vnp_TransactionStatus, String vnp_SecureHash) {
+			String vnp_TransactionNo, String vnp_TxnRef, String vnp_TransactionStatus, String vnp_SecureHash) throws MessagingException, IOException {
 		
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
 		Integer orderId = Integer.parseInt(vnp_OrderInfo.substring(20,21));
 		String[] infoSplit = vnp_OrderInfo.split("[|]");
@@ -66,15 +77,27 @@ public class PaymentService {
 		
 		VNPayPayment vnpayPaymentDB = vnpayRepository.save(vnpayPayment);
 		order.setPayment(vnpayPaymentDB);
-		orderRepository.save(order);
 		
-		ghnApis.createOrder(
+		String ghnOrderResponse = ghnApis.createOrder(
 				order.getShipmentDistrictId(), 
 				order.getShipmentWardCode(), 
 				2, 
 				order.getReceiverName(), 
 				order.getContactNumber(), 
-				order.getShipmentStreet());
+				order.getShipmentStreet(),
+				order.getGhnServiceId());
+		
+		System.out.println(ghnOrderResponse);
+		
+		GHNOrderResponse orderResponse = objectMapper.readValue(ghnOrderResponse, GHNOrderResponse.class);
+		var currentDate = Date.valueOf(LocalDate.now()).getTime();
+		order.setExpectedDeliveryTime(orderResponse.getData().getExpected_delivery_time());
+		order.setExpectedDaysToDelivery((order.getExpectedDeliveryTime().getTime() - currentDate) / 
+				(1000 * 60 * 60 * 24) );
+		order.setGhbOrderCode(orderResponse.getData().getOrder_code());
+		orderRepository.save(order);
+		
+		emailService.sendConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
 		
 		return redirectURL;
 	}
