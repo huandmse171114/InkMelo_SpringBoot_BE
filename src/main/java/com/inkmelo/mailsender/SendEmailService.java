@@ -1,6 +1,9 @@
 package com.inkmelo.mailsender;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,17 +20,22 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SendEmailService {
 
-    private final JavaMailSender javaMailSender;
-
     @Value("${spring.mail.username}")
     private String fromEmailId;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
 
     public void sendConfirmEmail(String receipt, String body, String subject) throws MessagingException, IOException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-        String signature = 
-        		"<br><br>" +
+        String signature =
+                "<br><br>" +
                         "<div style='font-family: Arial, sans-serif; color: #333;'>" +
                         "Bất cứ lúc nào, bạn có thể tra cứu trạng thái các đơn hàng đã mua " +
                         "<a href='http://example.com' style='color: #1a73e8;'>TẠI ĐÂY</a> bằng cách cung cấp thông tin về đơn hàng theo yêu cầu.<br>" +
@@ -44,11 +52,12 @@ public class SendEmailService {
         helper.setSubject(subject);
         helper.setText(body + signature, true);
 
-        File imageFile = new File("D:/SEMESTER 7/SWD392/InkMelo_SpringBoot_BE/src/main/resources/Logo.jpg");
-        helper.addInline("logoImage", imageFile);
+        Resource resource = resourceLoader.getResource("classpath:Logo.jpg");
+        helper.addInline("logoImage", resource);
 
         javaMailSender.send(mimeMessage);
     }
+    
     public void sendResetPasswordEmail(String to, String token) throws MessagingException {
 		String subject = "Password Reset Request";
 //		String url = "http://localhost:8080/store/api/v1/users/reset-password-confirm?token=" + token;
