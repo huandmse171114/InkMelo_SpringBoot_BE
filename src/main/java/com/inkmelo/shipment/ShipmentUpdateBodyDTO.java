@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record ShipmentCreateBodyDTO(
+public record ShipmentUpdateBodyDTO(
+			@NotNull(message = "Vui lòng không để trống mã địa chỉ vận chuyển.")
+			Integer id,
 			@NotEmpty(message = "Vui lòng không để trống tên người nhận.")
 			String receiverName,
 			@NotEmpty(message = "Vui lòng không để trống số điện thoại liên hệ.")
@@ -25,7 +27,8 @@ public record ShipmentCreateBodyDTO(
 			String province,
 			@NotNull
 			Integer provinceId,
-			boolean isDefault
+			boolean isDefault,
+			ShipmentStatus status
 		) {
-	
+
 }

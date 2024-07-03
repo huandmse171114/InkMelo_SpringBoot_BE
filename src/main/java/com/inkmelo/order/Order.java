@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,22 +38,55 @@ public class Order {
 	private Integer id;
 	
 	@Column(nullable = false)
-	private float totalPrice;
-	
-	@Column(
-			nullable = false,
-			length = 100
-	)
-	private String shipmentName;
+	private float orderPrice;
 	
 	@Column(nullable = false)
-	private String shipmentAddress;
+	private float shippingFee;
+	
+	@Column(nullable = false)
+	private float totalPrice;
+	
+	@Column(nullable = false)
+	private Date expectedDeliveryTime;
+	
+	@Column(nullable = false)
+	private Long expectedDaysToDelivery;
+	
+	@Column(nullable = false)
+	private String shipmentStreet;
+	
+	@Column(nullable = false)
+	private String shipmentWard;
+	
+	@Column(nullable = false)
+	private String shipmentDistrict;
+	
+	@Column(nullable = false)
+	private String shipmentProvince;
+	
+	@Column(nullable = false)
+	private Integer shipmentDistrictId;
+	
+	@Column(nullable = false)
+	private Integer shipmentProvinceId;
+	
+	@Column(nullable = false)
+	private String shipmentWardCode;
+	
+	@Column(nullable = false)
+	private String receiverName;
+	
+	@Column(nullable = false)
+	private Integer ghnServiceId;
+	
+	@Column(nullable = false)
+	private String ghbOrderCode;
 	
 	@Column(
 			length = 12,
 			nullable = false
 	)
-	private String phone;
+	private String contactNumber;
 	
 	@Column(
 			updatable = false,
@@ -77,11 +111,8 @@ public class Order {
 	)
 	private Customer customer;
 	
-	@ManyToOne
-	@JoinColumn(
-			name = "payment_id",
-			nullable = false
-	)
+	@OneToOne
+	@JoinColumn(name = "payment_id")
 	private Payment payment;
 	
 }

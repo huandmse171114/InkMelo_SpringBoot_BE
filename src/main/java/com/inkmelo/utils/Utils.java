@@ -35,4 +35,15 @@ public class Utils {
 		
 		return new ResponseEntity<>(response, status);
 	}
+
+	public static Timestamp stringToTimestamp(String date) {
+		
+		date = date.substring(0, 4) + "-" + date.substring(4);
+	    date = date.substring(0, 7) + "-" + date.substring(7);
+	    date = date.substring(0, 10) + " " + date.substring(10);
+	    date = date.substring(0, 13) + ":" + date.substring(13);
+	    date = date.substring(0, 16) + ":" + date.substring(16);
+		
+		return Timestamp.valueOf(date);
+	}
 }

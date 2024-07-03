@@ -43,10 +43,19 @@ public class Shipment {
 	private String ward;
 	
 	@Column(nullable = false)
+	private String wardCode;
+	
+	@Column(nullable = false)
 	private String district;
 	
 	@Column(nullable = false)
+	private Integer districtId;
+	
+	@Column(nullable = false)
 	private String province;
+	
+	@Column(nullable = false)
+	private Integer provinceId;
 	
 	@Column(
 			nullable = false,

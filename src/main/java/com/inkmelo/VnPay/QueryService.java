@@ -21,7 +21,7 @@ public class QueryService {
 
     @Autowired
     private VnPayConfig vnPayconfig;
-
+    
     public String queryTransaction(HttpServletRequest req) throws Exception {
         String vnp_RequestId = VnPayConfig.getRandomNumber(8);
         String vnp_Version = "2.1.0";

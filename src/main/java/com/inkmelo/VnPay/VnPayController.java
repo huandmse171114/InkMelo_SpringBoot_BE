@@ -1,30 +1,32 @@
 package com.inkmelo.VnPay;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/vnpay")
+@RequiredArgsConstructor
 public class VnPayController {
 
-    @Autowired
-    private VnPayService vnPayService;
+    private final VnPayService vnPayService;
+    private final QueryService queryService;
 
-    @Autowired
-    private QueryService queryService;
-
-    @PostMapping("/create-payment")
-    public String createPayment(HttpServletRequest req) throws Exception {
-        return vnPayService.createPayment(req);
+    @PostMapping("/api/vnpay/create-payment")
+    public String createPayment(HttpServletRequest req,
+    		@RequestBody String returnURL) throws Exception {
+    	
+        return vnPayService.createPayment(req, returnURL);
     }
 
-    @GetMapping("/query-transaction")
+    @GetMapping("/api/vnpay/query-transaction")
     public String queryTransaction(HttpServletRequest req) throws Exception {
         return queryService.queryTransaction(req);
     }
+    
+
 }

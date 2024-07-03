@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.inkmelo.utils.JwtUtils;
+import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,10 +43,7 @@ public class AuthController {
             authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
         } catch (AuthenticationException exception) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("message", "Bad credentials");
-            map.put("status", false);
-            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
+            return Utils.generateMessageResponseEntity("Tài khoản hoặc mật khẩu không đúng.", HttpStatus.BAD_REQUEST);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
