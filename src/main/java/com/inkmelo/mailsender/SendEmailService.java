@@ -1,6 +1,8 @@
 package com.inkmelo.mailsender;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -9,7 +11,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
-import java.io.File;
 import java.io.IOException;
 
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 public class SendEmailService {
 
     private final JavaMailSender javaMailSender;
+    private final ResourceLoader resourceLoader;
 
     @Value("${spring.mail.username}")
     private String fromEmailId;
@@ -44,8 +46,8 @@ public class SendEmailService {
         helper.setSubject(subject);
         helper.setText(body + signature, true);
 
-        File imageFile = new File("D:/SEMESTER 7/SWD392/InkMelo_SpringBoot_BE/src/main/resources/Logo.jpg");
-        helper.addInline("logoImage", imageFile);
+        Resource resource = resourceLoader.getResource("classpath:Logo.jpg");
+        helper.addInline("logoImage", resource);
 
         javaMailSender.send(mimeMessage);
     }

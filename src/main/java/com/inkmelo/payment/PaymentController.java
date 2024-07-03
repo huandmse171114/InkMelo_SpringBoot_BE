@@ -1,11 +1,14 @@
 package com.inkmelo.payment;
 
+import java.io.IOException;
+
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,7 +31,7 @@ public class PaymentController {
 		@RequestParam(name = "vnp_TxnRef", required = false)	String vnp_TxnRef,
 		@RequestParam(name = "vnp_TransactionStatus", required = false)	String vnp_TransactionStatus,
 		@RequestParam(name = "vnp_SecureHash", required = false)	String vnp_SecureHash
-			) {
+			) throws MessagingException, IOException {
 		
 		String redirectUrl = service.handleVNPayResponse(vnp_Amount, vnp_BankCode, vnp_BankTranNo, vnp_CardType, vnp_OrderInfo,
 				vnp_PayDate, vnp_ResponseCode, vnp_TmnCode, vnp_TransactionNo, vnp_TxnRef,

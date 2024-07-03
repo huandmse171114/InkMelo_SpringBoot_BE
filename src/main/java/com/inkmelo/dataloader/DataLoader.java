@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.inkmelo.book.Book;
@@ -20,6 +21,8 @@ import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookpackage.BookPackageMode;
 import com.inkmelo.bookpackage.BookPackageRepository;
 import com.inkmelo.bookpackage.BookPackageStatus;
+import com.inkmelo.cartdetail.CartDetailCreateUpdateBodyDTO;
+import com.inkmelo.cartdetail.CartDetailService;
 import com.inkmelo.category.Category;
 import com.inkmelo.category.CategoryRepository;
 import com.inkmelo.category.CategoryStatus;
@@ -29,9 +32,16 @@ import com.inkmelo.genre.GenreStatus;
 import com.inkmelo.publisher.Publisher;
 import com.inkmelo.publisher.PublisherRepository;
 import com.inkmelo.publisher.PublisherStatus;
+import com.inkmelo.user.User;
+import com.inkmelo.user.UserRole;
+import com.inkmelo.user.UserService;
+import com.inkmelo.user.UserStatus;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @Profile(value = "dev")
+@RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 	
 	private final GenreRepository genreRepository;
@@ -40,22 +50,12 @@ public class DataLoader implements CommandLineRunner {
 	private final PublisherRepository publisherRepository;
 	private final BookItemRepository bookItemRepository;
 	private final BookPackageRepository bookPackageRepository;
+	private final UserService userService;
+	private final PasswordEncoder passwordEncoder;
+	private final CartDetailService cartDetailService;
 	
 	private Collection<String> searchList = new ArrayList<>(); 
 	private Collection<Integer> itemList = new ArrayList<>();
-	
-
-	public DataLoader(GenreRepository genreRepository, CategoryRepository categoryRepository,
-			BookRepository bookRepository, PublisherRepository publisherRepository,
-			BookItemRepository bookItemRepository, BookPackageRepository bookPackageRepository) {
-		super();
-		this.genreRepository = genreRepository;
-		this.categoryRepository = categoryRepository;
-		this.bookRepository = bookRepository;
-		this.publisherRepository = publisherRepository;
-		this.bookItemRepository = bookItemRepository;
-		this.bookPackageRepository = bookPackageRepository;
-	}
 
 
 	@Override
@@ -1486,6 +1486,67 @@ public class DataLoader implements CommandLineRunner {
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.status(BookPackageStatus.ACTIVE)
 				.build());
+		
+		
+		User user = User.builder()
+        		.username("user1")
+        		.fullname("Nguyen Thi Khach Hang")
+        		.email("minhhuan0507@gmail.com")
+        		.password(passwordEncoder.encode("password1"))
+        		.role(UserRole.CUSTOMER)
+        		.status(UserStatus.ACTIVE)
+        		.createdAt(Date.valueOf(LocalDate.now()))
+        		.lastChangedBy("anonymous")
+        		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.build();
+        
+        User admin = User.builder()
+        		.username("admin1")
+        		.email("admin@gmail.com")
+        		.fullname("Nguyen Van Muoi")
+        		.password(passwordEncoder.encode("password1"))
+        		.role(UserRole.ADMIN)
+        		.status(UserStatus.ACTIVE)
+        		.createdAt(Date.valueOf(LocalDate.now()))
+        		.lastChangedBy("anonymous")
+        		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.build();
+        
+        User manager = User.builder()
+        		.username("manager1")
+        		.fullname("Nguyen Van A")
+        		.email("manager@gmail.com")
+        		.password(passwordEncoder.encode("password1"))
+        		.role(UserRole.MANAGER)
+        		.status(UserStatus.ACTIVE)
+        		.createdAt(Date.valueOf(LocalDate.now()))
+        		.lastChangedBy("anonymous")
+        		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.build();
+
+        userService.createUser(user);
+        userService.createUser(admin);
+        userService.createUser(manager);
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(1)
+        		.quantity(10)
+        		.build(), "user1");
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(2)
+        		.quantity(10)
+        		.build(), "user1");
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(3)
+        		.quantity(10)
+        		.build(), "user1");
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(4)
+        		.quantity(10)
+        		.build(), "user1");
 		
 	}
 	

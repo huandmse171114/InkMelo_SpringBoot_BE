@@ -1,5 +1,6 @@
 package com.inkmelo.order;
 
+import java.sql.Date;
 import java.util.List;
 
 import com.inkmelo.cartdetail.CartDetailResponseDTO;
@@ -9,16 +10,11 @@ import lombok.Builder;
 @Builder
 public record OrderCreateBodyDTO(
 			float totalPrice,
-			String receiverName,
-			String contactNumber,
-			String shipmentStreet,
-			String shipmentWard,
-			String shipmentDistrict,
-			String shipmentProvince,
-			Integer districtId,
-			Integer provinceId,
-			String wardCode,
-			List<CartDetailResponseDTO> items,
+			float shippingFee,
+			Integer quantity,
+			Integer shipmentId,
+			List<Integer> items,
+			Integer serviceId,
 			String redirectUrl
 		) {
 

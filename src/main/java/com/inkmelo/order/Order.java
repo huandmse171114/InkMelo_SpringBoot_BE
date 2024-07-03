@@ -46,10 +46,10 @@ public class Order {
 	@Column(nullable = false)
 	private float totalPrice;
 	
-	@Column(nullable = false)
+	private Integer quantity;
+	
 	private Date expectedDeliveryTime;
 	
-	@Column(nullable = false)
 	private Long expectedDaysToDelivery;
 	
 	@Column(nullable = false)
@@ -79,7 +79,6 @@ public class Order {
 	@Column(nullable = false)
 	private Integer ghnServiceId;
 	
-	@Column(nullable = false)
 	private String ghbOrderCode;
 	
 	@Column(

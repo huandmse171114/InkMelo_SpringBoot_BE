@@ -3,6 +3,8 @@ package com.inkmelo.cartdetail;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +20,6 @@ public interface CartDetailRepository extends JpaRepository<CartDetail, Integer>
 	Optional<CartDetail> findByBookPackageAndCartAndStatus(BookPackage bookPackage, Cart cart, CartDetailStatus status);
 	
 	Optional<CartDetail> findByBookPackageAndCart(BookPackage bookPackage, Cart cart);
+	
+	List<CartDetail> findAllByIdIn(Collection<Integer> id);
 }
