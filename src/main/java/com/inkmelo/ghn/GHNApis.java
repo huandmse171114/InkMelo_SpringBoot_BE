@@ -317,7 +317,7 @@ public class GHNApis {
     }
 
     // This function will return the fee for shipping
-    public String calculateFee(int to_district_id, String to_ward_code, int quantity, int serviceId) {
+    public String calculateFee(int to_district_id, String to_ward_code, int quantity) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/fee");
@@ -336,16 +336,31 @@ public class GHNApis {
 
             // Constructing the request body JSON
             String requestBody = "{" +
-                    "\"service_id\":53320," +
-                    "\"insurance_value\":" + serviceId + "," +
-                    "\"coupon\":null," +
+                    "\"service_type_id\":2," + 
                     "\"from_district_id\":" + districtId + "," +
                     "\"to_district_id\":" + to_district_id + "," +
                     "\"to_ward_code\":\"" + to_ward_code + "\"," +
                     "\"height\":" + avgHeight + "," +
                     "\"length\":" + avgLength + "," +
                     "\"weight\":" + avgWeight + "," +
-                    "\"width\":" + avgWidth +
+                    "\"width\":" + avgWidth + "," +
+                    "\"insurance_value\":500000," +
+                    "\"coupon\":null," +
+                    "\"items\": [" +
+                    "   {" +
+                    "       \"name\":\"Sách\"," +
+                    "       \"quantity\":" + quantity + "," +
+                    "       \"height\": 4," +
+                    "       \"weight\": 50," +
+                    "       \"length\": 22," +
+                    "       \"width\": 15," +
+                    "       \"price\": 200000," +
+                    "       \"code\": \"Book123\"," +
+                    "       \"category\": {" +
+                    "           \"level1\": \"Book\"" +
+                    "       }" +
+                    "   }" +
+                    "]" +
                     "}";
 
             // Log the request body
