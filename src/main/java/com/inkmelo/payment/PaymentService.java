@@ -131,28 +131,34 @@ public class PaymentService {
 		});
 		
 		
+		if (isHavingPaperBook) {
 //		Tao don tren Giao Hang Nhanh
-		String ghnOrderResponse = ghnApis.createOrder(
-				order.getShipmentDistrictId(), 
-				order.getShipmentWardCode(), 
-				2, 
-				order.getReceiverName(), 
-				order.getContactNumber(), 
-				order.getShipmentStreet(),
-				order.getGhnServiceId());		
-		
-		GHNOrderResponse orderResponse = objectMapper.readValue(ghnOrderResponse, GHNOrderResponse.class);
-		
-		var currentDate = Date.valueOf(LocalDate.now()).getTime();
-		
+			String ghnOrderResponse = ghnApis.createOrder(
+					order.getShipmentDistrictId(), 
+					order.getShipmentWardCode(), 
+					2, 
+					order.getReceiverName(), 
+					order.getContactNumber(), 
+					order.getShipmentStreet(),
+					order.getGhnServiceId(),
+					paperBookItem);		
+			
+			GHNOrderResponse orderResponse = objectMapper.readValue(ghnOrderResponse, GHNOrderResponse.class);
+			
+			var currentDate = Date.valueOf(LocalDate.now()).getTime();
+			
 //		Luu thong tin don hang tren Giao Hang Nhanh
-		order.setExpectedDeliveryTime(orderResponse.getData().getExpected_delivery_time());
-		order.setExpectedDaysToDelivery((order.getExpectedDeliveryTime().getTime() - currentDate) / 
-				(1000 * 60 * 60 * 24) );
-		order.setGhbOrderCode(orderResponse.getData().getOrder_code());
-		orderRepository.save(order);
-		
-		emailService.sendPaymentConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
+			order.setExpectedDeliveryTime(orderResponse.getData().getExpected_delivery_time());
+			order.setExpectedDaysToDelivery((order.getExpectedDeliveryTime().getTime() - currentDate) / 
+					(1000 * 60 * 60 * 24) );
+			order.setGhbOrderCode(orderResponse.getData().getOrder_code());
+			orderRepository.save(order);
+			
+			emailService.sendOrderSuccessfulEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG", orderResponse.getData().getOrder_code());
+			
+		} else {
+			emailService.sendPaymentConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
+		}
 
 		return redirectURL;
 	}
