@@ -119,18 +119,40 @@ public class UserController {
 				ex.getMessage(), 
 				HttpStatus.BAD_REQUEST);
 	}
-	@Operation(summary = "Request password reset", description = "This endpoint sends a password reset token to the user's email.")
-	@PostMapping("/store/api/v1/users/reset-password/{email}")
-	public ResponseEntity<?> requestPasswordReset(@PathVariable String email) throws MessagingException {
-	    service.updateResetPasswordToken(email);
-	    return Utils.generateMessageResponseEntity("Password reset email sent.", HttpStatus.OK);
-	}
+//	@Operation(summary = "Request password reset", description = "This endpoint sends a password reset token to the user's email.")
+//	@PostMapping("/store/api/v1/users/reset-password/{email}")
+//	public ResponseEntity<?> requestPasswordReset(@PathVariable String email) throws MessagingException {
+//	    service.updateResetPasswordToken(email);
+//	    return Utils.generateMessageResponseEntity("Password reset email sent.", HttpStatus.OK);
+//	}
+//
+//	@Operation(summary = "Reset password", description = "This endpoint resets the user's password using the provided token.")
+//	@PostMapping("/store/api/v1/users/reset-password-confirm/{token}/{newPassword}")
+//	public ResponseEntity<?> resetPassword(@PathVariable String token, @PathVariable String newPassword) {
+//	    User user = service.getByResetPasswordToken(token);
+//	    service.updatePassword(user, newPassword);
+//	    return Utils.generateMessageResponseEntity("Password has been reset successfully.", HttpStatus.OK);
+//	}
+	@Operation(summary = "Request password reset", description = "This endpoint sends a password reset OTP to the user's email.")
+	@PostMapping("/reset-password/{email}")
+    public ResponseEntity<?> requestPasswordReset(@PathVariable String email) throws MessagingException {
+        try {
+            service.updateResetPassword(email);
+            return new ResponseEntity<>("Password reset email sent.", HttpStatus.OK);
+        } catch (NoUserFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
-	@Operation(summary = "Reset password", description = "This endpoint resets the user's password using the provided token.")
-	@PostMapping("/store/api/v1/users/reset-password-confirm/{token}/{newPassword}")
-	public ResponseEntity<?> resetPassword(@PathVariable String token, @PathVariable String newPassword) {
-	    User user = service.getByResetPasswordToken(token);
-	    service.updatePassword(user, newPassword);
-	    return Utils.generateMessageResponseEntity("Password has been reset successfully.", HttpStatus.OK);
-	}
+    @Operation(summary = "Reset password", description = "This endpoint resets the user's password using the provided OTP.")
+    @PostMapping("/reset-password-confirm/{OTP}")
+    public ResponseEntity<?> resetPassword(@PathVariable String OTP, @RequestParam String newPassword) throws MessagingException {
+        try {
+            User user = service.getByResetPassword(OTP);
+            service.updatePassword(user, newPassword);
+            return new ResponseEntity<>("Password has been reset successfully.", HttpStatus.OK);
+        } catch (NoUserFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 }
