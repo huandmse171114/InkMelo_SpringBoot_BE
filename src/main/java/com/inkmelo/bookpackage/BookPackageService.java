@@ -21,6 +21,7 @@ import com.inkmelo.book.Book;
 import com.inkmelo.book.BookRepository;
 import com.inkmelo.bookitem.BookItem;
 import com.inkmelo.bookitem.BookItemRepository;
+import com.inkmelo.bookitem.BookItemType;
 import com.inkmelo.category.Category;
 import com.inkmelo.category.CategoryRepository;
 import com.inkmelo.exception.DuplicateBookPackageException;
@@ -49,6 +50,7 @@ public class BookPackageService {
 	private final GenreRepository genreRepository;
 	private final int DEFAULT_PAGE = 0;
 	private final int DEFAULT_VALUE = 5;
+	private int minStock;
 
 	public ResponseEntity<?> findAllBookPackageByStatus(BookPackageStatus status, Integer page, 
 			Integer size, Integer categoryId, Integer genreId, Integer modeId, String keyword) {
@@ -576,6 +578,33 @@ public class BookPackageService {
 		return bookPackages.stream()
 				.map(item -> mappingService.bookPackageToBookPackageAdminResponseDTO(item))
 				.toList();
+	}
+	
+	public void updateStock(BookPackage bookPackage) {
+		int mode = bookPackage.getMode();
+		minStock = 9999999;
+		List<BookItem> bookItems = bookPackage.getItems();
+		
+//		Get stock value
+		if (mode != BookPackageMode.AUDIO.getValue()
+				& mode != BookPackageMode.PDF.getValue()
+				& mode != BookPackageMode.AUDIOPDF.getValue()) {
+			bookItems.forEach(item -> {
+				if (item.getType() == BookItemType.PAPER) {
+					if (minStock > item.getStock()) {
+						minStock = item.getStock();
+					}
+				}
+			});
+		}else {
+			minStock = 1;
+		}
+		
+		bookPackage.setStock(minStock);
+		bookPackage.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
+		bookPackage.setLastChangedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+		
+		repository.save(bookPackage);
 	}
 	
 }

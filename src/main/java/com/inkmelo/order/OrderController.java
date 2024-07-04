@@ -58,7 +58,8 @@ public class OrderController {
 	public ResponseEntity<?> getAllOrdersByCustomer(
 				@PathVariable(name = "username") String username
 			) {
-		return service.findAllOrdersByCustomer(username, OrderStatus.FINISHED);
+		return service.findAllOrdersByCustomer(username, OrderStatus.PAYMENT_FINISHED);
 	}
+	
 	
 }
