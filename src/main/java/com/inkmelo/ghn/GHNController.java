@@ -1,7 +1,7 @@
 package com.inkmelo.ghn;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +32,7 @@ public class GHNController {
                               @RequestParam String toPhone,
                               @RequestParam String toAddress,
                               @RequestParam Integer serviceId) {
-        return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress, serviceId, new ArrayList<>());
+        return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress, serviceId, new LinkedList<>(), new LinkedList<>());
     }
 
     @GetMapping("/store/api/v1/ghn/wards")

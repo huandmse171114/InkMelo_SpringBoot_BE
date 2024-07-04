@@ -45,7 +45,7 @@ import com.inkmelo.user.UserStatus;
 import lombok.RequiredArgsConstructor;
 
 @Component
-@Profile(value = "devv")
+@Profile(value = "dev")
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 	
@@ -1438,20 +1438,6 @@ public class DataLoader implements CommandLineRunner {
 				.categoryId(3)
 				.build());
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(2).get())
-				.category(categoryRepository.findById(5).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
-				.title("Gói tài nguyên sách 3 cho Book 2")
-				.description("Bao gồm 2 tài nguyên audio và pdf")
-				.mode(BookPackageMode.AUDIOPDF.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
-				.build());
-		
 		itemList.clear();
 		itemList.add(3);
 		itemList.add(7);
@@ -1525,6 +1511,11 @@ public class DataLoader implements CommandLineRunner {
         cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
         		.bookPackageId(4)
         		.quantity(10)
+        		.build(), "user1");
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(8)
+        		.quantity(5)
         		.build(), "user1");
 		
 	}

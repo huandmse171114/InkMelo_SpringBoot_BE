@@ -232,7 +232,7 @@ public class BookService {
 			book.setGenres(newGenres);
 		}
 		
-		if (book.getPublisher().getId() != bookDTO.id()) {
+		if (book.getPublisher().getId() != bookDTO.publisherId()) {
 			var newPublisher = publisherRepository.findById(bookDTO.publisherId());
 			
 			if (newPublisher.isEmpty()) {

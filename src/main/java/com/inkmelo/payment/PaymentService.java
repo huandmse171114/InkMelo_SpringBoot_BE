@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,7 +98,8 @@ public class PaymentService {
 //		Cap nhat so luong ton kho cua goi sach neu don hang co mua sach ban cung
 //		Lay cac san pham trong don hang
 		List<OrderDetail> details = order.getOrderDetails();
-		List<BookItem> paperBookItem = new ArrayList<>();
+		List<BookItem> paperBookItem = new LinkedList<>();
+		List<Integer> itemQuantity = new LinkedList<>();
 		
 		details.forEach(detail -> {
 			int mode = detail.getBookPackage().getMode();
@@ -113,6 +115,7 @@ public class PaymentService {
 				items.forEach(item -> {
 					if (item.getType() == BookItemType.PAPER) {
 						paperBookItem.add(item);
+						itemQuantity.add(detail.getQuantity());
 						
 //						Cap nhat ton kho cua book item
 						item.setStock(item.getStock() - detail.getQuantity());
@@ -141,7 +144,8 @@ public class PaymentService {
 					order.getContactNumber(), 
 					order.getShipmentStreet(),
 					order.getGhnServiceId(),
-					paperBookItem);		
+					paperBookItem,
+					itemQuantity);		
 			
 			GHNOrderResponse orderResponse = objectMapper.readValue(ghnOrderResponse, GHNOrderResponse.class);
 			
