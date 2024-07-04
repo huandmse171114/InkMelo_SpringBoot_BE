@@ -26,7 +26,6 @@ public record BookUpdateBodyDTO(
 			List<Integer> genreIds,
 			@NotNull(message = "Nhà xuất bản sách không được để trống.")
 			Integer publisherId,
-			@NotEmpty(message = "Trạng thái cuốn sách không được để trống")
 			BookStatus status
 
 			
