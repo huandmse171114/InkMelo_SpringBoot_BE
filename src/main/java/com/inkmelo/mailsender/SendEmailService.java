@@ -86,29 +86,52 @@ public class SendEmailService {
         javaMailSender.send(mimeMessage);
     }
     
-    public void sendResetPasswordEmail(String receipt, String token) throws MessagingException {
-		String subject = "Password Reset Request";
-//		String url = "http://localhost:8080/store/api/v1/users/reset-password-confirm?token=" + token;
-		String url = token;
-		String message = "<p>Hi,</p>" + 
-						 "<p>Bạn đã yêu cầu thay đổi mật khẩu.</p>" +
-						 "<p>Vui lòng truy cập vào link dưới đây để thay đổi mật khẩu:</p>" +
-						 "<p><a href=\"" + url + "\">Đổi mật khẩu</a></p>" +
-						 "<br>" +
-						 "<p>Nếu bạn chưa từng yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này.</p>";
+    public void sendResetPasswordEmail(String receipt, String OTP) throws MessagingException {
+    	String message = "<div style='font-family: Arial, sans-serif;'>" +
+                "<p>Hi,</p>" +
+                "<p>Bạn đã yêu cầu thay đổi mật khẩu.</p>" +
+                "<p>Vui lòng nhập mã OTP để thay đổi mật khẩu:</p>" +
+                "<p style='font-size: 20px; font-weight: bold;'>" + OTP + "</p>" +
+                "<br>" +
+                "<p>Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ bộ phận hỗ trợ của chúng tôi ngay lập tức.</p>" +
+                "<div style='display: flex; align-items: center;'>" +
+                "<img src='cid:logoImage' style='float: left; width: 100px; height: auto; margin-right: 10px;'>" +
+                "</div>" +
+                "</div>";
 
-		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-		helper.setText(message, true);
-		helper.setTo(receipt);
-		helper.setSubject("YÊU CẦU THAY ĐỔI MẬT KHẨU");
-		helper.setFrom(fromEmailId);
-		
-		Resource resource = resourceLoader.getResource("classpath:Logo.jpg");
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+        helper.setText(message, true);
+        helper.setTo(receipt);
+        helper.setSubject("YÊU CẦU THAY ĐỔI MẬT KHẨU");
+        helper.setFrom(fromEmailId);
+
+        Resource resource = resourceLoader.getResource("classpath:Logo.jpg");
         helper.addInline("logoImage", resource);
 
         javaMailSender.send(mimeMessage);
-		
-		javaMailSender.send(mimeMessage);
-	}
+    }
+    public void sendResetPasswordSuccessfulEmail(String receipt) throws MessagingException {
+    	String message = "<div style='font-family: Arial, sans-serif;'>" +
+                "<p>Hi,</p>" +
+                "<p style='font-size: 18px;'>Mật khẩu của bạn đã được thay đổi thành công.</p>" +
+                "<br>" +
+                "<p>Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ bộ phận hỗ trợ của chúng tôi ngay lập tức.</p>" +
+                "<div style='display: flex; align-items: center;'>" +
+                "<img src='cid:logoImage' style='float: left; width: 100px; height: auto; margin-right: 10px;'>" +
+                "</div>" +
+                "</div>";
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+        helper.setText(message, true);
+        helper.setTo(receipt);
+        helper.setSubject("THAY ĐỔI MẬT KHẨU THÀNH CÔNG");
+        helper.setFrom(fromEmailId);
+
+        Resource resource = resourceLoader.getResource("classpath:Logo.jpg");
+        helper.addInline("logoImage", resource);
+
+        javaMailSender.send(mimeMessage);
+    }
 }

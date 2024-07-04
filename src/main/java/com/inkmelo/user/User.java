@@ -47,9 +47,9 @@ public class User implements UserDetails {
 	@Column(unique = true)
 	private String email;
 
-	private String resetPasswordToken;
+	private String resetPassword;
 
-	private Date resetPasswordTokenExpiry;
+	private Date resetPasswordExpiry;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 50)
