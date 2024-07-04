@@ -10,13 +10,18 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.inkmelo.bookitem.BookItem;
 
 @Service
 public class GHNApis {
@@ -40,7 +45,7 @@ public class GHNApis {
     private String address;
     
     // This function will return the amount of time needed for delivering in DAY(S)
-    public Date calculateExpectedDeliveryTime(int to_district_id, String to_ward_code) {
+    public Date calculateExpectedDeliveryTime(int to_district_id, String to_ward_code, Integer serviceId) {
         String output = "";
         HttpURLConnection conn = null;
         try {
@@ -57,7 +62,7 @@ public class GHNApis {
                                  "\"from_ward_code\": \"" + wardCode + "\"," +
                                  "\"to_district_id\": " + to_district_id + "," +
                                  "\"to_ward_code\": \"" + to_ward_code + "\"," +
-                                 "\"service_id\": 53320}";
+                                 "\"service_id\": " + serviceId + "}";
 
             // Log the request body
             System.out.println("Request Body: " + requestBody);
@@ -130,7 +135,9 @@ public class GHNApis {
                               int quantity,
                               String to_name,
                               String to_phone,
-                              String to_address) {
+                              String to_address,
+                              Integer serviceId,
+                              List<BookItem> items) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/create");
@@ -174,8 +181,7 @@ public class GHNApis {
                     "    \"pick_station_id\": 1444,\n" +
                     "    \"deliver_station_id\": null,\n" +
                     "    \"insurance_value\": 0,\n" +
-                    "    \"service_id\": null,\n" +
-                    "    \"service_type_id\": 2,\n" +
+                    "    \"service_id\": "+ serviceId +",\n" +
                     "    \"coupon\": null,\n" +
                     "    \"pick_shift\": [2],\n" +
                     "    \"items\": [\n" +
@@ -318,53 +324,89 @@ public class GHNApis {
     }
 
     // This function will return the fee for shipping
-    public String calculateFee(int to_district_id, String to_ward_code, int quantity) {
+    public String calculateFee(int to_district_id, String to_ward_code, int quantity, int serviceId) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/fee");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");  // Changed to POST
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; utf-8");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("token", token);
             conn.setDoOutput(true);
 
+            // Calculating dimensions and weight based on quantity
             int avgHeight = 4 * quantity;
             int avgWidth = 15;
             int avgLength = 22;
             int avgWeight = 50 * quantity;
 
+            // Constructing the request body JSON
             String requestBody = "{" +
+                    "\"service_id\":"+ serviceId +"," + 
                     "\"from_district_id\":" + districtId + "," +
-                    "\"from_ward_code\":\"" + wardCode + "\"," +
-                    "\"service_id\":53320," +
-                    "\"service_type_id\":null," +
                     "\"to_district_id\":" + to_district_id + "," +
                     "\"to_ward_code\":\"" + to_ward_code + "\"," +
                     "\"height\":" + avgHeight + "," +
                     "\"length\":" + avgLength + "," +
                     "\"weight\":" + avgWeight + "," +
                     "\"width\":" + avgWidth + "," +
-                    "\"insurance_value\":0," +
-                    "\"cod_failed_amount\":0," +
-                    "\"coupon\":null" +
+                    "\"insurance_value\":500000," +
+                    "\"coupon\":null," +
+                    "\"items\": [" +
+                    "   {" +
+                    "       \"name\":\"Sách\"," +
+                    "       \"quantity\":" + quantity + "," +
+                    "       \"height\": 4," +
+                    "       \"weight\": 50," +
+                    "       \"length\": 22," +
+                    "       \"width\": 15," +
+                    "       \"price\": 200000," +
+                    "       \"code\": \"Book123\"," +
+                    "       \"category\": {" +
+                    "           \"level1\": \"Book\"" +
+                    "       }" +
+                    "   }" +
+                    "]" +
                     "}";
+
+            // Log the request body
+            System.out.println("Request Body: " + requestBody);
+
             try (OutputStream os = conn.getOutputStream()) {
-                os.write(requestBody.getBytes(StandardCharsets.UTF_8));
-                os.flush();
+                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
             }
 
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                        + conn.getResponseCode());
+            // Log the response code and message
+            int responseCode = conn.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                String responseMessage = conn.getResponseMessage();
+                System.out.println("Response Message: " + responseMessage);
+
+                // Log the response body for more details
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                    StringBuilder errorResponse = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        errorResponse.append(line);
+                    }
+                    System.out.println("Error Response: " + errorResponse.toString());
+                }
+
+//                throw new RuntimeException("Failed : HTTP error code : " + responseCode);
             }
 
             try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {
-                    output += line;
+                    response.append(line);
                 }
+                output = response.toString();
             }
+
             conn.disconnect();
         } catch (IOException | RuntimeException e) {
             e.printStackTrace();
@@ -405,5 +447,68 @@ public class GHNApis {
             e.printStackTrace();
         }
         return output;
+    }
+ // This function will return the list of available services
+    public GHNServiceResponse getService(Integer to_district) throws JsonMappingException, JsonProcessingException {
+        String output = "";
+        try {
+            URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/available-services");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; utf-8");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("token", token);
+            conn.setDoOutput(true);
+
+            // Constructing the request body JSON
+            String requestBody = "{" +
+                    "\"shop_id\":" + shopId + "," +
+                    "\"from_district\":" + districtId + "," +
+                    "\"to_district\":" + to_district +
+                    "}";
+
+            // Log the request body
+            System.out.println("Request Body: " + requestBody);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestBody.getBytes(StandardCharsets.UTF_8));
+                os.flush();
+            }
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        output += line;
+                    }
+                    System.err.println("Error Response: " + output);
+                }
+                throw new RuntimeException("Failed : HTTP error code : " + responseCode);
+            }
+
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    output += line;
+                }
+            }
+            conn.disconnect();
+        } catch (IOException | RuntimeException e) {
+            e.printStackTrace();
+        }
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        GHNServiceResponse serviceResponse = objectMapper.readValue(output, GHNServiceResponse.class);
+        List<GHNServiceResponseData> services = serviceResponse.getData();
+        services = services.stream()
+        		.filter(service -> service.getService_type_id() != 5)
+        		.toList();
+        
+        serviceResponse.setData(services);
+        
+        return serviceResponse;
     }
 }

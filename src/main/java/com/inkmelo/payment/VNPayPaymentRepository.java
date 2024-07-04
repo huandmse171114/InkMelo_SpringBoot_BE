@@ -2,6 +2,6 @@ package com.inkmelo.payment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PaymentRepository extends JpaRepository<Payment, Integer> {
+public interface VNPayPaymentRepository extends JpaRepository<VNPayPayment, Integer> {
 	
 }

@@ -25,6 +25,9 @@ import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.exception.PasswordConfirmIsDifferentException;
 import com.inkmelo.mailsender.SendEmailService;
 import com.inkmelo.publisher.PublisherAdminResponseDTO;
+import com.inkmelo.shipment.Shipment;
+import com.inkmelo.shipment.ShipmentRepository;
+import com.inkmelo.shipment.ShipmentStatus;
 
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -40,6 +43,7 @@ public class UserService {
 	private final CustomerMappingService customerMappingService;
 	private final CartRepository cartRepository;
 	private final SendEmailService sendEmailService;
+	private final ShipmentRepository shipmentRepository;
 
 	public User loadUserByUsername(String username) {
 		Optional<User> userOptional = repository.findByUsername(username);
@@ -64,20 +68,33 @@ public class UserService {
 					.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 					.build();
 			
-			customerRepository.save(customer);
-			
-			Optional<Customer> customerDB = customerRepository.findByUser(user);
-			
-			if (customerDB.isEmpty()) {
-				throw new NoCustomerFoundException("Đăng ký tài khoản thất bại. Tạo mới thông tin khách hàng không thành công.");
-			}
+			Customer customerDB = customerRepository.save(customer);
 			
 			Cart cart = Cart.builder()
-					.customer(customerDB.get())
+					.customer(customerDB)
 					.build();
 			
 			cartRepository.save(cart);
 			
+			Shipment shipment = Shipment.builder()
+					.receiverName("Huan Minh Dinh")
+					.contactNumber("0977588901")
+					.description("Nha rieng")
+					.street("so XX duong YY")
+					.ward("phuong AB")
+					.wardCode("511110")
+					.district("quan CD")
+					.districtId(1750)
+					.province("thanh pho EF")
+					.provinceId(12029)
+					.isDefault(true)
+					.createdAt(Date.valueOf(LocalDate.now()))
+					.status(ShipmentStatus.ACTIVE)
+					.customer(customerDB)
+					.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+					.build();
+			
+			shipmentRepository.save(shipment);
 		}
 	}
 

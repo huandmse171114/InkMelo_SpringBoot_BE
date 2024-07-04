@@ -65,7 +65,8 @@ public class BookItemMappingService {
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.lastChangedBy(SecurityContextHolder.getContext()
-						.getAuthentication().getName())
+						.getAuthentication() != null ? SecurityContextHolder.getContext()
+								.getAuthentication().getName() : "anonymous")
 				.status(BookItemStatus.ACTIVE)
 				.build();
 	}

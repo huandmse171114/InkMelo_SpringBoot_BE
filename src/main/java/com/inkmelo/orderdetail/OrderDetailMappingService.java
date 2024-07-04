@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookpackage.BookPackageRepository;
+import com.inkmelo.cartdetail.CartDetail;
 import com.inkmelo.cartdetail.CartDetailResponseDTO;
 import com.inkmelo.exception.NoBookPackageFoundException;
 
@@ -32,6 +33,15 @@ public class OrderDetailMappingService {
 				.itemPrice(cartDetailDTO.bookPackagePrice())
 				.bookPackage(bookPackage)
 				.totalPrice(cartDetailDTO.quantity() * cartDetailDTO.bookPackagePrice())
+				.build();
+	}
+	
+	public OrderDetail cartDetailToOrderDetail(CartDetail cartDetail) {
+		return OrderDetail.builder()
+				.quantity(cartDetail.getQuantity())
+				.itemPrice(cartDetail.getBookPackage().getPrice())
+				.bookPackage(cartDetail.getBookPackage())
+				.totalPrice(cartDetail.getQuantity() * cartDetail.getBookPackage().getPrice())
 				.build();
 	}
 }

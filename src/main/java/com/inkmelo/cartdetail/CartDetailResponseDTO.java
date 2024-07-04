@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record CartDetailResponseDTO(
+			Integer id,
 			String bookTitle,
 			String bookAuthor,
 			String bookCoverImg,

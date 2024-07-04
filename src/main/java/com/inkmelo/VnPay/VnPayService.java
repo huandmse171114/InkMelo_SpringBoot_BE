@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.inkmelo.utils.GlobalVariable;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -30,8 +29,6 @@ public class VnPayService {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        
-        GlobalVariable.setRedirectURL(returnUrl);
         
         String amountStr = req.getParameter("amount");
         if (amountStr == null || amountStr.isEmpty()) {
@@ -47,7 +44,8 @@ public class VnPayService {
         
         String bankCode = req.getParameter("bankCode");
 
-        String vnp_TxnRef = VnPayConfig.getRandomNumber(8);
+        String vnp_TxnRef = VnPayConfig.getRandomNumber(20);
+        System.out.println(vnp_TxnRef);
         String vnp_IpAddr = VnPayConfig.getIpAddress(req);
 
         String vnp_TmnCode = vnPayconfig.getTmnCode();
@@ -112,7 +110,7 @@ public class VnPayService {
         return gson.toJson(job);
     }
     
-    public String getPaymentUrl(HttpServletRequest req, float totalPayment, Integer orderId) throws Exception {
+    public String getPaymentUrl(HttpServletRequest req, float totalPayment, Integer orderId, String redirectUrl) throws Exception {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -130,7 +128,7 @@ public class VnPayService {
         
         String bankCode = req.getParameter("bankCode");
 
-        String vnp_TxnRef = orderId + "";
+        String vnp_TxnRef = VnPayConfig.getRandomNumber(8);
         String vnp_IpAddr = VnPayConfig.getIpAddress(req);
 
         String vnp_TmnCode = vnPayconfig.getTmnCode();
@@ -146,7 +144,7 @@ public class VnPayService {
             vnp_Params.put("vnp_BankCode", bankCode);
         }
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + orderId + "|" + redirectUrl);
         vnp_Params.put("vnp_OrderType", orderType);
 
         String locate = req.getParameter("language");
@@ -163,7 +161,7 @@ public class VnPayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.MINUTE, 5);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 

@@ -3,7 +3,7 @@ package com.inkmelo.payment;
 import lombok.Builder;
 
 @Builder
-public record PaymentResponseDTO(
+public record VNPayPaymentResponseDTO(
 			Long vnp_Amount,
 			String vnp_BankCode,
 			String vnp_BankTranNo,

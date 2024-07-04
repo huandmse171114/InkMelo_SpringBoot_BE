@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +38,19 @@ public class Order {
 	private Integer id;
 	
 	@Column(nullable = false)
+	private float orderPrice;
+	
+	@Column(nullable = false)
+	private float shippingFee;
+	
+	@Column(nullable = false)
 	private float totalPrice;
+	
+	private Integer quantity;
+	
+	private Date expectedDeliveryTime;
+	
+	private Long expectedDaysToDelivery;
 	
 	@Column(nullable = false)
 	private String shipmentStreet;
@@ -52,7 +65,21 @@ public class Order {
 	private String shipmentProvince;
 	
 	@Column(nullable = false)
+	private Integer shipmentDistrictId;
+	
+	@Column(nullable = false)
+	private Integer shipmentProvinceId;
+	
+	@Column(nullable = false)
+	private String shipmentWardCode;
+	
+	@Column(nullable = false)
 	private String receiverName;
+	
+	@Column(nullable = false)
+	private Integer ghnServiceId;
+	
+	private String ghbOrderCode;
 	
 	@Column(
 			length = 12,
@@ -83,11 +110,8 @@ public class Order {
 	)
 	private Customer customer;
 	
-	@ManyToOne
-	@JoinColumn(
-			name = "payment_id",
-			nullable = true
-	)
+	@OneToOne
+	@JoinColumn(name = "payment_id")
 	private Payment payment;
 	
 }

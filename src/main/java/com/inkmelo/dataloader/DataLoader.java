@@ -4,22 +4,30 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.inkmelo.book.Book;
 import com.inkmelo.book.BookRepository;
 import com.inkmelo.book.BookStatus;
 import com.inkmelo.bookitem.BookItem;
+import com.inkmelo.bookitem.BookItemCreateBodyDTO;
 import com.inkmelo.bookitem.BookItemRepository;
+import com.inkmelo.bookitem.BookItemService;
 import com.inkmelo.bookitem.BookItemStatus;
 import com.inkmelo.bookitem.BookItemType;
 import com.inkmelo.bookpackage.BookPackage;
+import com.inkmelo.bookpackage.BookPackageCreateBodyDTO;
 import com.inkmelo.bookpackage.BookPackageMode;
 import com.inkmelo.bookpackage.BookPackageRepository;
+import com.inkmelo.bookpackage.BookPackageService;
 import com.inkmelo.bookpackage.BookPackageStatus;
+import com.inkmelo.cartdetail.CartDetailCreateUpdateBodyDTO;
+import com.inkmelo.cartdetail.CartDetailService;
 import com.inkmelo.category.Category;
 import com.inkmelo.category.CategoryRepository;
 import com.inkmelo.category.CategoryStatus;
@@ -29,9 +37,16 @@ import com.inkmelo.genre.GenreStatus;
 import com.inkmelo.publisher.Publisher;
 import com.inkmelo.publisher.PublisherRepository;
 import com.inkmelo.publisher.PublisherStatus;
+import com.inkmelo.user.User;
+import com.inkmelo.user.UserRole;
+import com.inkmelo.user.UserService;
+import com.inkmelo.user.UserStatus;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
-@Profile(value = "devv")
+@Profile(value = "dev")
+@RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 	
 	private final GenreRepository genreRepository;
@@ -40,22 +55,14 @@ public class DataLoader implements CommandLineRunner {
 	private final PublisherRepository publisherRepository;
 	private final BookItemRepository bookItemRepository;
 	private final BookPackageRepository bookPackageRepository;
+	private final UserService userService;
+	private final PasswordEncoder passwordEncoder;
+	private final CartDetailService cartDetailService;
+	private final BookPackageService bookPackageService;
+	private final BookItemService bookItemService;
 	
 	private Collection<String> searchList = new ArrayList<>(); 
-	private Collection<Integer> itemList = new ArrayList<>();
-	
-
-	public DataLoader(GenreRepository genreRepository, CategoryRepository categoryRepository,
-			BookRepository bookRepository, PublisherRepository publisherRepository,
-			BookItemRepository bookItemRepository, BookPackageRepository bookPackageRepository) {
-		super();
-		this.genreRepository = genreRepository;
-		this.categoryRepository = categoryRepository;
-		this.bookRepository = bookRepository;
-		this.publisherRepository = publisherRepository;
-		this.bookItemRepository = bookItemRepository;
-		this.bookPackageRepository = bookPackageRepository;
-	}
+	private List<Integer> itemList = new ArrayList<>();
 
 
 	@Override
@@ -1280,140 +1287,100 @@ public class DataLoader implements CommandLineRunner {
 		
 //	========================================= Load initial data into the Book item database ============================================
 		
-		bookItemRepository.save(BookItem.builder()
-				.book(bookRepository.findById(1).get())
+		bookItemService.saveBookItem(BookItemCreateBodyDTO.builder()
+				.bookId(1)
 				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
-				.type(BookItemType.AUDIO)
 				.duration(100)
-				.stock(0)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(BookItemStatus.ACTIVE)
+				.stock(20)
+				.type(BookItemType.AUDIO)
 				.build());
 		
-		bookItemRepository.save(BookItem.builder()
-				.book(bookRepository.findById(1).get())
+		bookItemService.saveBookItem(BookItemCreateBodyDTO.builder()
+				.bookId(1)
 				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.duration(100)
+				.stock(20)
 				.type(BookItemType.PDF)
-				.duration(100)
-				.stock(0)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(BookItemStatus.ACTIVE)
 				.build());
 		
-		bookItemRepository.save(BookItem.builder()
-				.book(bookRepository.findById(1).get())
+		bookItemService.saveBookItem(BookItemCreateBodyDTO.builder()
+				.bookId(1)
 				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.duration(100)
+				.stock(15)
 				.type(BookItemType.PAPER)
+				.build());
+		
+		bookItemService.saveBookItem(BookItemCreateBodyDTO.builder()
+				.bookId(2)
+				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
 				.duration(100)
-				.stock(100)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(BookItemStatus.ACTIVE)
-				.build());
-		
-		bookItemRepository.save(BookItem.builder()
-				.book(bookRepository.findById(2).get())
-				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.stock(20)
 				.type(BookItemType.AUDIO)
-				.duration(70)
-				.stock(0)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(BookItemStatus.ACTIVE)
 				.build());
 		
-		bookItemRepository.save(BookItem.builder()
-				.book(bookRepository.findById(2).get())
+		bookItemService.saveBookItem(BookItemCreateBodyDTO.builder()
+				.bookId(2)
 				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.duration(100)
+				.stock(20)
 				.type(BookItemType.PDF)
-				.duration(100)
-				.stock(0)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(BookItemStatus.ACTIVE)
 				.build());
 		
-		bookItemRepository.save(BookItem.builder()
-				.book(bookRepository.findById(3).get())
+		bookItemService.saveBookItem(BookItemCreateBodyDTO.builder()
+				.bookId(3)
 				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
+				.duration(100)
+				.stock(20)
 				.type(BookItemType.AUDIO)
-				.duration(923)
-				.stock(0)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(BookItemStatus.ACTIVE)
 				.build());
 		
-		bookItemRepository.save(BookItem.builder()
-				.book(bookRepository.findById(3).get())
+		bookItemService.saveBookItem(BookItemCreateBodyDTO.builder()
+				.bookId(3)
 				.source("https://www.bing.com/search?q=how%20to%20get%20enum%20by%20value%20java&qs=n&form=QBRE&sp=-1&ghc=1&lq=0&pq=how%20to%20get%20enum%20by%20value%20java&sc=3-29&sk=&cvid=5CF7C63F1C6341CDAD215E651B90B4DD&ghsh=0&ghacc=0&ghpl=&ntref=1")
-				.type(BookItemType.PAPER)
 				.duration(100)
-				.stock(7)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.status(BookItemStatus.ACTIVE)
+				.stock(20)
+				.type(BookItemType.PAPER)
 				.build());
 		
 //		========================================= Load initial data into the Book Package database ============================================
 		itemList.clear();
 		itemList.add(1);
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(1).get())
-				.category(categoryRepository.findById(1).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
 				.title("Gói tài nguyên sách 1 cho Book 1")
 				.description("Bao gồm tài nguyên audio")
-				.mode(BookPackageMode.AUDIO.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
+				.price((float)399000)
+				.modeId(BookPackageMode.AUDIO.getValue())
+				.bookId(1)
+				.itemIds(itemList)
+				.categoryId(1)
 				.build());
 		
 		itemList.clear();
 		itemList.add(2);
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(1).get())
-				.category(categoryRepository.findById(3).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
 				.title("Gói tài nguyên sách 2 cho Book 1")
 				.description("Bao gồm tài nguyên pdf")
-				.mode(BookPackageMode.PDF.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
+				.price((float)399000)
+				.modeId(BookPackageMode.PDF.getValue())
+				.bookId(1)
+				.itemIds(itemList)
+				.categoryId(3)
 				.build());
 		
 		itemList.clear();
 		itemList.add(3);
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(1).get())
-				.category(categoryRepository.findById(2).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
 				.title("Gói tài nguyên sách 3 cho Book 1")
 				.description("Bao gồm tài nguyên bản cứng")
-				.mode(BookPackageMode.PAPER.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
+				.price((float)399000)
+				.modeId(BookPackageMode.PAPER.getValue())
+				.bookId(1)
+				.itemIds(itemList)
+				.categoryId(2)
 				.build());
 		
 		itemList.clear();
@@ -1421,57 +1388,55 @@ public class DataLoader implements CommandLineRunner {
 		itemList.add(2);
 		itemList.add(3);
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(1).get())
-				.category(categoryRepository.findById(5).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
 				.title("Gói tài nguyên sách 4 cho Book 1")
-				.description("Bao gồm 3 tài nguyên bản audio. pdf, và bản cứng")
-				.mode(BookPackageMode.ALL.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
+				.description("Bao gồm tài nguyên audio, pdf, và bản cứng")
+				.price((float)399000)
+				.modeId(BookPackageMode.ALL.getValue())
+				.bookId(1)
+				.itemIds(itemList)
+				.categoryId(5)
 				.build());
 		
 		itemList.clear();
 		itemList.add(4);
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(2).get())
-				.category(categoryRepository.findById(1).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
 				.title("Gói tài nguyên sách 1 cho Book 2")
 				.description("Bao gồm tài nguyên audio")
-				.mode(BookPackageMode.AUDIO.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
+				.price((float)399000)
+				.modeId(BookPackageMode.AUDIO.getValue())
+				.bookId(2)
+				.itemIds(itemList)
+				.categoryId(1)
 				.build());
 		
 		itemList.clear();
 		itemList.add(5);
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(2).get())
-				.category(categoryRepository.findById(3).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
 				.title("Gói tài nguyên sách 2 cho Book 2")
 				.description("Bao gồm tài nguyên pdf")
-				.mode(BookPackageMode.PDF.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
+				.price((float)399000)
+				.modeId(BookPackageMode.PDF.getValue())
+				.bookId(2)
+				.itemIds(itemList)
+				.categoryId(3)
 				.build());
-		
+	
 		itemList.clear();
 		itemList.add(4);
 		itemList.add(5);
+		
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
+				.title("Gói tài nguyên sách 3 cho Book 2")
+				.description("Bao gồm tài nguyên audio và pdf")
+				.price((float)399000)
+				.modeId(BookPackageMode.AUDIOPDF.getValue())
+				.bookId(2)
+				.itemIds(itemList)
+				.categoryId(3)
+				.build());
 		
 		bookPackageRepository.save(BookPackage.builder()
 				.book(bookRepository.findById(2).get())
@@ -1486,6 +1451,81 @@ public class DataLoader implements CommandLineRunner {
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.status(BookPackageStatus.ACTIVE)
 				.build());
+		
+		itemList.clear();
+		itemList.add(3);
+		itemList.add(7);
+		
+		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
+				.title("Gói tài nguyên sách 3 cho Book 1")
+				.description("Bao gồm tài nguyên bản cứng")
+				.price((float)399000)
+				.modeId(BookPackageMode.PAPER.getValue())
+				.bookId(1)
+				.itemIds(itemList)
+				.categoryId(2)
+				.build());
+		
+		
+		User user = User.builder()
+        		.username("user1")
+        		.fullname("Nguyen Thi Khach Hang")
+        		.email("minhhuan0507@gmail.com")
+        		.password(passwordEncoder.encode("password1"))
+        		.role(UserRole.CUSTOMER)
+        		.status(UserStatus.ACTIVE)
+        		.createdAt(Date.valueOf(LocalDate.now()))
+        		.lastChangedBy("anonymous")
+        		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.build();
+        
+        User admin = User.builder()
+        		.username("admin1")
+        		.email("admin@gmail.com")
+        		.fullname("Nguyen Van Muoi")
+        		.password(passwordEncoder.encode("password1"))
+        		.role(UserRole.ADMIN)
+        		.status(UserStatus.ACTIVE)
+        		.createdAt(Date.valueOf(LocalDate.now()))
+        		.lastChangedBy("anonymous")
+        		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.build();
+        
+        User manager = User.builder()
+        		.username("manager1")
+        		.fullname("Nguyen Van A")
+        		.email("manager@gmail.com")
+        		.password(passwordEncoder.encode("password1"))
+        		.role(UserRole.MANAGER)
+        		.status(UserStatus.ACTIVE)
+        		.createdAt(Date.valueOf(LocalDate.now()))
+        		.lastChangedBy("anonymous")
+        		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.build();
+
+        userService.createUser(user);
+        userService.createUser(admin);
+        userService.createUser(manager);
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(1)
+        		.quantity(10)
+        		.build(), "user1");
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(2)
+        		.quantity(10)
+        		.build(), "user1");
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(3)
+        		.quantity(10)
+        		.build(), "user1");
+        
+        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+        		.bookPackageId(4)
+        		.quantity(10)
+        		.build(), "user1");
 		
 	}
 	

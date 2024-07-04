@@ -1,8 +1,8 @@
 package com.inkmelo.payment;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
-import com.inkmelo.customer.Customer;
+import com.inkmelo.order.Order;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,20 +10,19 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Payment {
 	
 	@Id
@@ -41,19 +40,12 @@ public class Payment {
 			nullable = false,
 			updatable = false
 	)
-	private Date createdDate;
-	
-	@Column(nullable = false)
-	private boolean isActive;
-	
-	private String thirdPartyCode;
+	private Timestamp createdDate;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private PaymentStatus status;
 	
-	@ManyToOne
-	@JoinColumn(name = "customer_id")
-	private Customer customer;
-	
+	@OneToOne(mappedBy = "payment")
+	private Order order;
 }
