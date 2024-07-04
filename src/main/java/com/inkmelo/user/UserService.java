@@ -1,6 +1,7 @@
 package com.inkmelo.user;
 
 import java.lang.StackWalker.Option;
+import java.security.SecureRandom;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -177,7 +178,51 @@ public class UserService {
 //		user.setResetPasswordToken(token);
 //		repository.save(user);
 //	}
-	public void updateResetPasswordToken(String email) throws NoUserFoundException, MessagingException {
+	
+	
+//	public void updateResetPasswordToken(String email) throws NoUserFoundException, MessagingException {
+//        Optional<User> userOption = repository.findByEmail(email);
+//
+//        if (userOption.isEmpty()) {
+//            throw new NoUserFoundException("User is not found.");
+//        }
+//
+//        User user = userOption.get();
+//        String token = UUID.randomUUID().toString();
+//        user.setResetPasswordToken(token);
+//        user.setResetPasswordTokenExpiry(Date.valueOf(LocalDate.now().plusDays(1)));
+//        repository.save(user);
+//
+//        try {
+//            sendEmailService.sendResetPasswordEmail(user.getEmail(), token);
+//        } catch (MessagingException e) {
+//            throw new MessagingException("Failed to send password reset email.");
+//        }
+//    }
+//
+	public User getByResetPassword(String OTP) throws NoUserFoundException {
+        Optional<User> userOption = repository.findByResetPassword(OTP);
+
+        if (userOption.isEmpty() || userOption.get().getResetPasswordExpiry().before(Date.valueOf(LocalDate.now()))) {
+            throw new NoUserFoundException("Invalid or expired reset OTP.");
+        }
+
+        return userOption.get();
+    }
+
+    public void updatePassword(User user, String newPassword) throws MessagingException {
+        BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = pwdEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+
+        user.setResetPassword(null);
+        user.setResetPasswordExpiry(null);
+        repository.save(user);
+
+        sendEmailService.sendResetPasswordSuccessfulEmail(user.getEmail());
+    }
+
+    public void updateResetPassword(String email) throws NoUserFoundException, MessagingException {
         Optional<User> userOption = repository.findByEmail(email);
 
         if (userOption.isEmpty()) {
@@ -185,35 +230,21 @@ public class UserService {
         }
 
         User user = userOption.get();
-        String token = UUID.randomUUID().toString();
-        user.setResetPasswordToken(token);
-        user.setResetPasswordTokenExpiry(Date.valueOf(LocalDate.now().plusDays(1)));
+        String OTP = generateOTP();
+        user.setResetPassword(OTP);
+        user.setResetPasswordExpiry(Date.valueOf(LocalDate.now().plusDays(1)));
         repository.save(user);
 
         try {
-            sendEmailService.sendResetPasswordEmail(user.getEmail(), token);
+            sendEmailService.sendResetPasswordEmail(user.getEmail(), OTP);
         } catch (MessagingException e) {
             throw new MessagingException("Failed to send password reset email.");
         }
     }
 
-    public User getByResetPasswordToken(String token) throws NoUserFoundException {
-        Optional<User> userOption = repository.findByResetPasswordToken(token);
-
-        if (userOption.isEmpty() || userOption.get().getResetPasswordTokenExpiry().before(Date.valueOf(LocalDate.now()))) {
-            throw new NoUserFoundException("Invalid or expired reset token.");
-        }
-
-        return userOption.get();
-    }
-
-    public void updatePassword(User user, String newPassword) {
-        BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = pwdEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
-
-        user.setResetPasswordToken(null);
-        user.setResetPasswordTokenExpiry(null);
-        repository.save(user);
+    private String generateOTP() {
+        SecureRandom random = new SecureRandom();
+        int otp = 100000 + random.nextInt(900000);
+        return String.valueOf(otp);
     }
 }
