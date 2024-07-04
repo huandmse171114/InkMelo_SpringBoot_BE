@@ -56,13 +56,13 @@ public class SendEmailService {
         javaMailSender.send(mimeMessage);
     }
     
-    public void sendOrderSuccessfulEmail(String receipt, String body, String subject) throws MessagingException, IOException {
+    public void sendOrderSuccessfulEmail(String receipt, String body, String subject, String orderCode) throws MessagingException, IOException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
         String signature =
         	    "<br>" +
-        	    "Mã vận đơn của bạn là: <strong style='font-weight: bold;'>" + /*orderCode + */"</strong>" +
+        	    "Mã vận đơn của bạn là: <strong style='font-weight: bold;'>" + orderCode + "</strong>" +
         	    "<br>" + 
         	    "<div style='font-family: Arial, sans-serif; color: #333;'>" +
         	    "Bất cứ lúc nào, quý khách có thể tra cứu tình trạng đơn hàng " +

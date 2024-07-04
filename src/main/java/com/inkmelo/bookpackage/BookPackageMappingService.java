@@ -15,6 +15,7 @@ import com.inkmelo.bookitem.BookItem;
 import com.inkmelo.bookitem.BookItemMappingService;
 import com.inkmelo.bookitem.BookItemRepository;
 import com.inkmelo.bookitem.BookItemStatus;
+import com.inkmelo.bookitem.BookItemType;
 import com.inkmelo.category.Category;
 import com.inkmelo.category.CategoryMappingService;
 import com.inkmelo.category.CategoryRepository;
@@ -34,6 +35,7 @@ public class BookPackageMappingService {
 	private final BookRepository bookRepository;
 	private final BookItemRepository bookItemRepository;
 	private final CategoryRepository categoryRepository;
+	private int minStock;
 	
 	public BookPackageModeResponseDTO bookPackageModeToBookPackageModeDTO(BookPackageMode bookPackageMode) {
 		return BookPackageModeResponseDTO.builder()
@@ -94,16 +96,30 @@ public class BookPackageMappingService {
 		}
 		
 		Book book = bookOption.get();
-		
-		System.out.println(bookPackageDTO.itemIds());
-		
 		List<BookItem> bookItems = bookItemRepository.findAllByIdIn(bookPackageDTO.itemIds());
 		
-		System.out.println(bookItems);
 		
 		if (bookItems.size() < bookPackageDTO.itemIds().size()) {
 			throw new NoBookItemFoundException("Tạo mới gói tài nguyên sách thất bại. Một số tài nguyên sách không tồn tại.");
 		}
+		
+		int mode = bookPackageDTO.modeId();
+		minStock = 9999999;
+//		Get stock value
+		if (mode != BookPackageMode.AUDIO.getValue()
+				& mode != BookPackageMode.PDF.getValue()
+				& mode != BookPackageMode.AUDIOPDF.getValue()) {
+			bookItems.forEach(item -> {
+				if (item.getType() == BookItemType.PAPER) {
+					if (minStock > item.getStock()) {
+						minStock = item.getStock();
+					}
+				}
+			});
+		}else {
+			minStock = 1;
+		}
+		
 		
 		Optional<Category> categoryOption = categoryRepository.findById(bookPackageDTO.categoryId());
 		
@@ -124,8 +140,10 @@ public class BookPackageMappingService {
 				.book(book)
 				.category(category)
 				.items(bookItems)
+				.stock(minStock)
 				.lastChangedBy(SecurityContextHolder.getContext()
-						.getAuthentication().getName())
+						.getAuthentication() != null ? SecurityContextHolder.getContext()
+								.getAuthentication().getName() : "anonymous")
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 				.status(BookPackageStatus.ACTIVE)

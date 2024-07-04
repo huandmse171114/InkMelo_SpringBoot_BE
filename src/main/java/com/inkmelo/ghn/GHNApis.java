@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.inkmelo.bookitem.BookItem;
 
 @Service
 public class GHNApis {
@@ -135,7 +136,8 @@ public class GHNApis {
                               String to_name,
                               String to_phone,
                               String to_address,
-                              Integer serviceId) {
+                              Integer serviceId,
+                              List<BookItem> items) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/create");

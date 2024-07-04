@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import com.inkmelo.book.BookRepository;
 import com.inkmelo.book.BookStatus;
+import com.inkmelo.bookpackage.BookPackage;
+import com.inkmelo.bookpackage.BookPackageService;
 import com.inkmelo.exception.DuplicatedBookItemException;
 import com.inkmelo.exception.InvalidBookItemFieldValueException;
 import com.inkmelo.exception.NoBookFoundException;
@@ -37,6 +39,7 @@ public class BookItemService {
 	private final BookItemMappingService mappingService;
 	private final int DEFAULT_PAGE = 0;
 	private final int DEFAULT_VALUE = 5;
+	private final BookPackageService bookPackageService;
 
 	public ResponseEntity<?> findAllBookItemByStatus(BookItemStatus status, Integer page, Integer size, 
 			BookItemType type, String title) throws NoBookItemExistException {
@@ -291,19 +294,25 @@ public class BookItemService {
 		}
 		
 		// Only paper item can update stock, audio and pdf cannot change default stock value
-		try {
-			if (bookItem.getType() == BookItemType.PAPER) {
-				if (bookItemDTO.stock() < 0) {
-					throw new InvalidBookItemFieldValueException(
-							"Cập nhật tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng không thể là số âm.");
+		if (bookItemDTO.stock() != bookItem.getStock()) {
+			try {
+				if (bookItem.getType() == BookItemType.PAPER) {
+					if (bookItemDTO.stock() < 0) {
+						throw new InvalidBookItemFieldValueException(
+								"Cập nhật tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng không thể là số âm.");
+					}
+					
+					bookItem.setStock(bookItemDTO.stock());
+					List<BookPackage> packages = bookItem.getBookPackages();
+					packages.forEach(bookPackage -> {
+						bookPackageService.updateStock(bookPackage);
+					});
 				}
+			} catch (NullPointerException e) {
+				throw new InvalidBookItemFieldValueException(
+						"Cập nhật tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng không được để trống.");
 				
-				bookItem.setStock(bookItemDTO.stock());
-			}
-		} catch (NullPointerException e) {
-			throw new InvalidBookItemFieldValueException(
-					"Cập nhật tài nguyên sách thất bại. Số lượng tồn kho sách bản cứng không được để trống.");
-		
+			}			
 		}
 		
 		try {
