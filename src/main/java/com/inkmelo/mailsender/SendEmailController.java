@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,9 +20,9 @@ public class SendEmailController {
 	private final SendEmailService sendEmailService;
 	
 	@GetMapping("sendConfirmEmail")
-	public String sendEmail() {
+	public String sendEmail(@RequestParam String email) {
 		try {
-            sendEmailService.sendConfirmEmail("khanhnqse170545@fpt.edu.vn", "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
+            sendEmailService.sendConfirmEmail(email, "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
             return "Email sent successfully";
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
