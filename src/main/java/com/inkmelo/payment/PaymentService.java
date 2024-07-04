@@ -152,9 +152,8 @@ public class PaymentService {
 		order.setGhbOrderCode(orderResponse.getData().getOrder_code());
 		orderRepository.save(order);
 		
-//		Gui mail thong bao thanh toan don hang thanh cong
-		emailService.sendConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
-		
+		emailService.sendPaymentConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
+
 		return redirectURL;
 	}
 	
