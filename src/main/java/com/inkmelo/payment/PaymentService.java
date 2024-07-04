@@ -97,7 +97,7 @@ public class PaymentService {
 		order.setGhbOrderCode(orderResponse.getData().getOrder_code());
 		orderRepository.save(order);
 		
-		emailService.sendConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
+		emailService.sendPaymentConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
 		
 		return redirectURL;
 	}

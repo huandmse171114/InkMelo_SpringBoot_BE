@@ -20,7 +20,7 @@ public class SendEmailController {
 	@GetMapping("sendConfirmEmail")
 	public String sendEmail() {
 		try {
-            sendEmailService.sendConfirmEmail("khanhnqse170545@fpt.edu.vn", "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
+            sendEmailService.sendPaymentConfirmEmail("khanhnqse170545@fpt.edu.vn", "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
             return "Email sent successfully";
         } catch (MessagingException | IOException e) {
             e.printStackTrace();
