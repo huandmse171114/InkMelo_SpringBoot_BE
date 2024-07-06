@@ -140,7 +140,8 @@ public class GHNApis {
                               String to_address,
                               Integer serviceId,
                               List<BookItem> items,
-                              List<Integer> quantities) {
+                              List<Integer> quantities,
+                              List<String> names) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/create");
@@ -159,12 +160,14 @@ public class GHNApis {
             ObjectMapper objectMapper = new ObjectMapper();
             itemsStr = "";
             index = 0;
+            System.out.println(quantities);
+            
 		    List<String> itemJson = items.stream()
 		    		.map(item -> {
 		    			String genreName = item.getBook().getGenres().get(0).getName();
 		    			
 		    			GHNOrderItem orderItem = GHNOrderItem.builder()
-		    					.name(item.getBook().getTitle() + " - " + item.getBook().getAuthor())
+		    					.name(names.get(index))
 		    					.code(item.getBook().getISBN())
 		    					.quantity(quantities.get(index))
 		    					.price(0)
@@ -194,6 +197,7 @@ public class GHNApis {
             		itemsStr = itemsStr + item;
             	}else {
             		itemsStr = itemsStr + item + ",";
+            		index = index - 1;
             	}
             }
 		    

@@ -32,7 +32,7 @@ public class GHNController {
                               @RequestParam String toPhone,
                               @RequestParam String toAddress,
                               @RequestParam Integer serviceId) {
-        return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress, serviceId, new LinkedList<>(), new LinkedList<>());
+        return ghnApis.createOrder(toDistrictId, toWardCode, quantity, toName, toPhone, toAddress, serviceId, new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
     }
 
     @GetMapping("/store/api/v1/ghn/wards")

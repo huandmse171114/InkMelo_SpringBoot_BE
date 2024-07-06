@@ -52,8 +52,8 @@ public class PaymentService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
-		Integer orderId = Integer.parseInt(vnp_OrderInfo.substring(20,21));
 		String[] infoSplit = vnp_OrderInfo.split("[|]");
+		Integer orderId = Integer.parseInt(infoSplit[0].substring(20));
 		String redirectURL = "";
 		if (infoSplit.length > 1) {
 			redirectURL = infoSplit[1];
@@ -62,7 +62,7 @@ public class PaymentService {
 		Optional<Order> orderOptional = orderRepository.findById(orderId);
 		
 		if (orderOptional.isEmpty()) {
-			throw new NoOrderFoundException("Không tìm thấy đơn hàng vừa thanh toán.");
+			throw new NoOrderFoundException("Không tìm thấy đơn hàng vừa thanh toán." + orderId);
 		}
 		
 		Order order = orderOptional.get();
@@ -100,6 +100,7 @@ public class PaymentService {
 		List<OrderDetail> details = order.getOrderDetails();
 		List<BookItem> paperBookItem = new LinkedList<>();
 		List<Integer> itemQuantity = new LinkedList<>();
+		List<String> itemNames = new LinkedList<>();
 		
 		details.forEach(detail -> {
 			int mode = detail.getBookPackage().getMode();
@@ -116,6 +117,9 @@ public class PaymentService {
 					if (item.getType() == BookItemType.PAPER) {
 						paperBookItem.add(item);
 						itemQuantity.add(detail.getQuantity());
+						itemNames.add(detail.getBookPackage().getTitle() +
+								" | " + detail.getBookPackage().getBook().getTitle()
+								+ " - " + detail.getBookPackage().getBook().getAuthor());
 						
 //						Cap nhat ton kho cua book item
 						item.setStock(item.getStock() - detail.getQuantity());
@@ -145,7 +149,8 @@ public class PaymentService {
 					order.getShipmentStreet(),
 					order.getGhnServiceId(),
 					paperBookItem,
-					itemQuantity);		
+					itemQuantity,
+					itemNames);		
 			
 			GHNOrderResponse orderResponse = objectMapper.readValue(ghnOrderResponse, GHNOrderResponse.class);
 			

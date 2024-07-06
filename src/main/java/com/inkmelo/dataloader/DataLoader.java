@@ -45,7 +45,7 @@ import com.inkmelo.user.UserStatus;
 import lombok.RequiredArgsConstructor;
 
 @Component
-@Profile(value = "dev")
+@Profile(value = "devv")
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 	
@@ -1438,20 +1438,6 @@ public class DataLoader implements CommandLineRunner {
 				.categoryId(3)
 				.build());
 		
-		itemList.clear();
-		itemList.add(3);
-		itemList.add(7);
-		
-		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
-				.title("Gói tài nguyên sách 3 cho Book 1")
-				.description("Bao gồm tài nguyên bản cứng")
-				.price((float)399000)
-				.modeId(BookPackageMode.PAPER.getValue())
-				.bookId(1)
-				.itemIds(itemList)
-				.categoryId(2)
-				.build());
-		
 		
 		User user = User.builder()
         		.username("user1")
@@ -1500,23 +1486,19 @@ public class DataLoader implements CommandLineRunner {
         
         cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
         		.bookPackageId(2)
-        		.quantity(10)
+        		.quantity(3)
         		.build(), "user1");
         
         cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
         		.bookPackageId(3)
-        		.quantity(10)
+        		.quantity(2)
         		.build(), "user1");
         
         cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
         		.bookPackageId(4)
-        		.quantity(10)
-        		.build(), "user1");
-        
-        cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
-        		.bookPackageId(8)
         		.quantity(5)
         		.build(), "user1");
+        
 		
 	}
 	
