@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,8 +52,8 @@ public class PaymentService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
-		Integer orderId = Integer.parseInt(vnp_OrderInfo.substring(20,21));
 		String[] infoSplit = vnp_OrderInfo.split("[|]");
+		Integer orderId = Integer.parseInt(infoSplit[0].substring(20));
 		String redirectURL = "";
 		if (infoSplit.length > 1) {
 			redirectURL = infoSplit[1];
@@ -61,7 +62,7 @@ public class PaymentService {
 		Optional<Order> orderOptional = orderRepository.findById(orderId);
 		
 		if (orderOptional.isEmpty()) {
-			throw new NoOrderFoundException("Không tìm thấy đơn hàng vừa thanh toán.");
+			throw new NoOrderFoundException("Không tìm thấy đơn hàng vừa thanh toán." + orderId);
 		}
 		
 		Order order = orderOptional.get();
@@ -97,7 +98,9 @@ public class PaymentService {
 //		Cap nhat so luong ton kho cua goi sach neu don hang co mua sach ban cung
 //		Lay cac san pham trong don hang
 		List<OrderDetail> details = order.getOrderDetails();
-		List<BookItem> paperBookItem = new ArrayList<>();
+		List<BookItem> paperBookItem = new LinkedList<>();
+		List<Integer> itemQuantity = new LinkedList<>();
+		List<String> itemNames = new LinkedList<>();
 		
 		details.forEach(detail -> {
 			int mode = detail.getBookPackage().getMode();
@@ -113,6 +116,10 @@ public class PaymentService {
 				items.forEach(item -> {
 					if (item.getType() == BookItemType.PAPER) {
 						paperBookItem.add(item);
+						itemQuantity.add(detail.getQuantity());
+						itemNames.add(detail.getBookPackage().getTitle() +
+								" | " + detail.getBookPackage().getBook().getTitle()
+								+ " - " + detail.getBookPackage().getBook().getAuthor());
 						
 //						Cap nhat ton kho cua book item
 						item.setStock(item.getStock() - detail.getQuantity());
@@ -141,7 +148,9 @@ public class PaymentService {
 					order.getContactNumber(), 
 					order.getShipmentStreet(),
 					order.getGhnServiceId(),
-					paperBookItem);		
+					paperBookItem,
+					itemQuantity,
+					itemNames);		
 			
 			GHNOrderResponse orderResponse = objectMapper.readValue(ghnOrderResponse, GHNOrderResponse.class);
 			
