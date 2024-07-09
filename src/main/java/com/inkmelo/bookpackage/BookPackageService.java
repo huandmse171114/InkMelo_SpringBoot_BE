@@ -262,7 +262,7 @@ public class BookPackageService {
 				.map(item -> item.getId())
 				.toList();
 		
-		if (oldItemIds
+		if (!oldItemIds
 				.containsAll(bookPackageDTO.itemIds()) |
 				!bookPackageDTO.itemIds().containsAll(oldItemIds)) {
 			List<BookItem> newItems = bookItemRepository.findAllByIdIn(bookPackageDTO.itemIds());
