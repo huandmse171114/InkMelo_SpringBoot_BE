@@ -8,7 +8,6 @@ import lombok.Builder;
 public record BookItemCreateBodyDTO(
 			@NotNull(message = "Mã cuốn sách không được để trống.")
 			Integer bookId,
-			@NotEmpty(message = "Dữ liệu của tài nguyên sách không được để trống.")
 			String source,
 			Integer duration,
 			Integer stock,
