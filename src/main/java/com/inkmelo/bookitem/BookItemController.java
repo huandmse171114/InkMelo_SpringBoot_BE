@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.DuplicatedBookItemException;
 import com.inkmelo.exception.InvalidBookItemFieldValueException;
+import com.inkmelo.exception.InvalidBookItemSourceValue;
 import com.inkmelo.exception.NoBookExistException;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoBookItemExistException;
@@ -170,6 +171,16 @@ public class BookItemController {
 	@ExceptionHandler(InvalidBookItemFieldValueException.class)
 	public ResponseEntity<?> handleInvalidBookItemFieldValueException(
 			InvalidBookItemFieldValueException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(InvalidBookItemSourceValue.class)
+	public ResponseEntity<?> handleInvalidBookItemSourceValue(
+			InvalidBookItemSourceValue ex
 			) {
 		
 		return Utils.generateMessageResponseEntity(
