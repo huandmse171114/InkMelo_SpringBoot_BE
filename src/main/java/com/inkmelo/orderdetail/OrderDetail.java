@@ -1,5 +1,6 @@
 package com.inkmelo.orderdetail;
 
+import com.inkmelo.book.Book;
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.order.Order;
 
