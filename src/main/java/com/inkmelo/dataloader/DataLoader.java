@@ -1438,34 +1438,6 @@ public class DataLoader implements CommandLineRunner {
 				.categoryId(3)
 				.build());
 		
-		bookPackageRepository.save(BookPackage.builder()
-				.book(bookRepository.findById(2).get())
-				.category(categoryRepository.findById(5).get())
-				.items(bookItemRepository.findAllByIdIn(itemList))
-				.title("Gói tài nguyên sách 3 cho Book 2")
-				.description("Bao gồm 2 tài nguyên audio và pdf")
-				.mode(BookPackageMode.AUDIOPDF.getValue())
-				.price(399000)
-				.createdAt(Date.valueOf(LocalDate.now()))
-				.lastChangedBy("HUANDM")
-				.lastUpdatedTime(Date.valueOf(LocalDate.now()))
-				.status(BookPackageStatus.ACTIVE)
-				.build());
-		
-		itemList.clear();
-		itemList.add(3);
-		itemList.add(7);
-		
-		bookPackageService.saveBookPackage(BookPackageCreateBodyDTO.builder()
-				.title("Gói tài nguyên sách 3 cho Book 1")
-				.description("Bao gồm tài nguyên bản cứng")
-				.price((float)399000)
-				.modeId(BookPackageMode.PAPER.getValue())
-				.bookId(1)
-				.itemIds(itemList)
-				.categoryId(2)
-				.build());
-		
 		
 		User user = User.builder()
         		.username("user1")
@@ -1514,18 +1486,19 @@ public class DataLoader implements CommandLineRunner {
         
         cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
         		.bookPackageId(2)
-        		.quantity(10)
+        		.quantity(3)
         		.build(), "user1");
         
         cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
         		.bookPackageId(3)
-        		.quantity(10)
+        		.quantity(2)
         		.build(), "user1");
         
         cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
         		.bookPackageId(4)
-        		.quantity(10)
+        		.quantity(5)
         		.build(), "user1");
+        
 		
 	}
 	

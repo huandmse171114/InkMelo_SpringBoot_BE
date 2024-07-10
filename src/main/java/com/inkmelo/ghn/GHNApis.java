@@ -43,6 +43,8 @@ public class GHNApis {
 
     @Value("${inkmelo.address}")
     private String address;
+    private int index;
+    private String itemsStr;
     
     // This function will return the amount of time needed for delivering in DAY(S)
     public Date calculateExpectedDeliveryTime(int to_district_id, String to_ward_code, Integer serviceId) {
@@ -137,7 +139,9 @@ public class GHNApis {
                               String to_phone,
                               String to_address,
                               Integer serviceId,
-                              List<BookItem> items) {
+                              List<BookItem> items,
+                              List<Integer> quantities,
+                              List<String> names) {
         String output = "";
         try {
             URL url = new URL(ghnUrl + "/public-api/v2/shipping-order/create");
@@ -152,6 +156,53 @@ public class GHNApis {
             int avgWidth = 15;
             int avgLength = 22;
             int avgWeight = 50 * quantity;
+            
+            ObjectMapper objectMapper = new ObjectMapper();
+            itemsStr = "";
+            index = 0;
+            System.out.println(quantities);
+            
+		    List<String> itemJson = items.stream()
+		    		.map(item -> {
+		    			String genreName = item.getBook().getGenres().get(0).getName();
+		    			
+		    			GHNOrderItem orderItem = GHNOrderItem.builder()
+		    					.name(names.get(index))
+		    					.code(item.getBook().getISBN())
+		    					.quantity(quantities.get(index))
+		    					.price(0)
+		    					.width(15)
+		    					.height(4)
+		    					.weight(50)
+		    					.category(GHNOrderItemCategory.builder().level1(genreName).build())
+		    					.build();
+		    			
+		    			index = index + 1;
+		    			
+		    			try {
+							return objectMapper.writeValueAsString(orderItem);
+						} catch (JsonProcessingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return "";
+						}
+		    		}).toList();
+		    
+		    
+		    
+		    System.out.println(itemJson);
+		    index = index -1;
+            for (String item : itemJson) {
+            	if (index == 0) {
+            		itemsStr = itemsStr + item;
+            	}else {
+            		itemsStr = itemsStr + item + ",";
+            		index = index - 1;
+            	}
+            }
+		    
+            System.out.println(itemsStr);
+            
             String requestBody = "{\n" +
                     "    \"payment_type_id\": 2,\n" +
                     "    \"note\": null,\n" +
@@ -185,21 +236,11 @@ public class GHNApis {
                     "    \"coupon\": null,\n" +
                     "    \"pick_shift\": [2],\n" +
                     "    \"items\": [\n" +
-                    "         {\n" +
-                    "             \"name\":\"Sách\",\n" +
-                    "             \"code\": \"Book123\",\n" +
-                    "             \"quantity\": " + quantity + ",\n" +  // Added comma
-                    "             \"price\": 200000,\n" +
-                    "             \"length\": 22,\n" +
-                    "             \"width\": 15,\n" +
-                    "             \"height\": 4,\n" +
-                    "             \"weight\": 50,\n" +
-                    "             \"category\": {\n" +
-                    "                \"level1\": \"Book\"\n" +
-                    "             }\n" +
-                    "         }\n" +
+                    	 itemsStr +
                     "    ]\n" +
                     "}";
+            
+            
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(requestBody.getBytes(StandardCharsets.UTF_8));
                 os.flush();
