@@ -38,19 +38,19 @@ public class BookRatingController {
     @PostMapping("store/api/v1/ratings/book/{bookId}")
     public ResponseEntity<?> createRating(@PathVariable Integer bookId, @RequestBody BookRatingRequestDTO request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        BookRatingResponseDTO response = bookRatingService.createRating(bookId, username, request);
+        BookRatingResponseDTO response = bookRatingService.createRating(bookId, request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("store/api/v1/ratings/{ratingId}")
     public BookRatingResponseDTO updateRating(@PathVariable Integer ratingId, @RequestBody BookRatingRequestDTO request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return bookRatingService.updateRating(ratingId, username, request);
+        return bookRatingService.updateRating(ratingId, request);
     }
 
     @PutMapping("store/api/v1/ratings/delete/{ratingId}")
     public void deleteRating(@PathVariable Integer ratingId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        bookRatingService.deleteRating(ratingId, username);
+        bookRatingService.deleteRating(ratingId);
     }
 }

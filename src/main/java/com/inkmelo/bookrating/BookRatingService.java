@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,9 +49,16 @@ public class BookRatingService {
     }
 
     @Transactional
-    public BookRatingResponseDTO createRating(Integer bookId, String username, BookRatingRequestDTO request) {
+    public BookRatingResponseDTO createRating(Integer bookId, BookRatingRequestDTO request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getName().equals("anonymousUser")) {
+            throw new RuntimeException("You must be logged in to create a rating");
+        }
+
+        String username = authentication.getName();
         User user = findUserByUsername(username);
-        
+
         Customer customer = customerRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
@@ -64,11 +70,11 @@ public class BookRatingService {
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
         BookRating rating = BookRating.builder()
-                .star(request.getStar() != null ? request.getStar() : 0)
-                .comment(request.getComment() != null ? request.getComment() : "")
+                .star(request.getStar() != null ? request.getStar() : 0)  // Default to 0 if request.getStar() is null
+                .comment(request.getComment() != null ? request.getComment() : "")  // Default to empty string if request.getComment() is null
                 .createdAt(new Date(System.currentTimeMillis()))
                 .lastUpdatedTime(new Date(System.currentTimeMillis()))
-                .lastChangedBy(SecurityContextHolder.getContext().getAuthentication().getName())
+                .lastChangedBy(username)
                 .status(BookRatingStatus.ACTIVE)
                 .book(book)
                 .customer(customer)
@@ -79,7 +85,14 @@ public class BookRatingService {
     }
 
     @Transactional
-    public BookRatingResponseDTO updateRating(Integer ratingId, String username, BookRatingRequestDTO request) {
+    public BookRatingResponseDTO updateRating(Integer ratingId, BookRatingRequestDTO request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getName().equals("anonymousUser")) {
+            throw new RuntimeException("You must be logged in to update a rating");
+        }
+
+        String username = authentication.getName();
         BookRating rating = bookRatingRepository.findById(ratingId)
                 .orElseThrow(() -> new RuntimeException("Rating not found"));
 
@@ -90,14 +103,21 @@ public class BookRatingService {
         rating.setStar(request.getStar());
         rating.setComment(request.getComment());
         rating.setLastUpdatedTime(new Date(System.currentTimeMillis()));
-        rating.setLastChangedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        rating.setLastChangedBy(username);
 
         bookRatingRepository.save(rating);
         return ratingToRatingResponseDTO(rating);
     }
 
     @Transactional
-    public void deleteRating(Integer ratingId, String username) {
+    public void deleteRating(Integer ratingId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getName().equals("anonymousUser")) {
+            throw new RuntimeException("You must be logged in to delete a rating");
+        }
+
+        String username = authentication.getName();
         BookRating rating = bookRatingRepository.findById(ratingId)
                 .orElseThrow(() -> new RuntimeException("Rating not found"));
 
@@ -107,7 +127,7 @@ public class BookRatingService {
 
         rating.setStatus(BookRatingStatus.INACTIVE);
         rating.setLastUpdatedTime(new Date(System.currentTimeMillis()));
-        rating.setLastChangedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+        rating.setLastChangedBy(username);
 
         bookRatingRepository.save(rating);
     }
@@ -119,9 +139,9 @@ public class BookRatingService {
                 .createdAt(rating.getCreatedAt())
                 .build();
     }
-    
+
     private User findUserByUsername(String username) {
-        logger.info("Looking up user by username: {}", username);  
+        logger.info("Looking up user by username: {}", username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
