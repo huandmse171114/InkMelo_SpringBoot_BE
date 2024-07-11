@@ -22,6 +22,7 @@ import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookpackage.BookPackageService;
 import com.inkmelo.exception.DuplicatedBookItemException;
 import com.inkmelo.exception.InvalidBookItemFieldValueException;
+import com.inkmelo.exception.InvalidBookItemSourceValue;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoBookItemExistException;
 import com.inkmelo.exception.NoBookItemFoundException;
@@ -209,6 +210,11 @@ public class BookItemService {
 
 	public void saveBookItem(BookItemCreateBodyDTO bookItemDTO) 
 		throws DataIntegrityViolationException, DuplicatedBookItemException {
+		
+		if (bookItemDTO.source() == null & bookItemDTO.type() != BookItemType.PAPER) {
+			throw new InvalidBookItemSourceValue("Source không được để trống.");
+		}
+		
 		BookItem bookItem = mappingService.bookItemCreateBodyDTOToBookItem(bookItemDTO);
 		
 		Optional<BookItem> bookItemDB = repository.findByBookAndType(bookItem.getBook(), bookItem.getType());
@@ -272,6 +278,11 @@ public class BookItemService {
 		}
 		
 		BookItem bookItem = bookItemOption.get();
+		
+		if (bookItemDTO.source() == null & bookItemDTO.type() != BookItemType.PAPER) {
+			throw new InvalidBookItemSourceValue("Source không được để trống.");
+		}
+		
 		bookItem.setSource(bookItemDTO.source());
 		bookItem.setCreatedAt(Date.valueOf(LocalDate.now()));
 		bookItem.setLastChangedBy(SecurityContextHolder.getContext()
