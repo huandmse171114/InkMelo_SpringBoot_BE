@@ -52,6 +52,8 @@ public class Order {
 	
 	private Long expectedDaysToDelivery;
 	
+	private Date deliveredDate;
+	
 	@Column(nullable = false)
 	private String shipmentStreet;
 	
