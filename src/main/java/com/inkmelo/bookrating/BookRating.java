@@ -4,6 +4,7 @@ import java.sql.Date;
 
 import com.inkmelo.book.Book;
 import com.inkmelo.customer.Customer;
+import com.inkmelo.order.Order;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -72,5 +73,11 @@ public class BookRating {
 			nullable = false
 	)
 	private Customer customer;
+	
+	
+	//new
+	@ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 	
 }

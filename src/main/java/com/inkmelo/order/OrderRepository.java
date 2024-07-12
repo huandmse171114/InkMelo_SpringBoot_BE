@@ -1,5 +1,8 @@
 package com.inkmelo.order;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,4 +15,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	           "JOIN bp.book b " +
 	           "WHERE o.customer.id = :customerId AND b.id = :bookId")
 	    boolean existsByCustomerIdAndBookId(@Param("customerId") Integer customerId, @Param("bookId") Integer bookId);
+	
+	@Query("SELECT o FROM Order o WHERE o.customer.id = :customerId AND o.status = :status")
+    List<Order> findByCustomerIdAndStatus(@Param("customerId") Integer customerId, @Param("status") OrderStatus status);
+	
+	Optional<Order> findByIdAndCustomerIdAndStatus(Integer orderId, Integer customerId, OrderStatus status);
 	}
