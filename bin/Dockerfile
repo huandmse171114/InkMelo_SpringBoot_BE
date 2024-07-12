@@ -1,4 +1,4 @@
-FROM maven:3-openjdk-17 AS build
+FROM maven:3-eclipse-temurin-17-alpine AS build
 COPY . .
 RUN mvn clean package -DskipTests
 

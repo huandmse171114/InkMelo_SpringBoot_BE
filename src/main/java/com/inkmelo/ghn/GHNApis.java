@@ -188,9 +188,6 @@ public class GHNApis {
 						}
 		    		}).toList();
 		    
-		    
-		    
-		    System.out.println(itemJson);
 		    index = index -1;
             for (String item : itemJson) {
             	if (index == 0) {
@@ -200,8 +197,6 @@ public class GHNApis {
             		index = index - 1;
             	}
             }
-		    
-            System.out.println(itemsStr);
             
             String requestBody = "{\n" +
                     "    \"payment_type_id\": 2,\n" +
@@ -240,6 +235,8 @@ public class GHNApis {
                     "    ]\n" +
                     "}";
             
+            System.out.println("Final Request Body");
+            System.out.println(requestBody);
             
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(requestBody.getBytes(StandardCharsets.UTF_8));

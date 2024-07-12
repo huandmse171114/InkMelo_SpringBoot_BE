@@ -5,10 +5,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.bookpackage.BookPackage;
+import com.inkmelo.bookpackage.BookPackageMappingService;
 import com.inkmelo.bookpackage.BookPackageRepository;
 import com.inkmelo.cartdetail.CartDetail;
 import com.inkmelo.cartdetail.CartDetailResponseDTO;
 import com.inkmelo.exception.NoBookPackageFoundException;
+import com.inkmelo.order.Order;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderDetailMappingService {
 	
 	private final BookPackageRepository bookPackageRepository;
+	private final BookPackageMappingService bookPackageMapping;
 	
 	public OrderDetail cartDetailResponseDTOToOrderDetail(CartDetailResponseDTO cartDetailDTO) {
 		
@@ -42,6 +45,17 @@ public class OrderDetailMappingService {
 				.itemPrice(cartDetail.getBookPackage().getPrice())
 				.bookPackage(cartDetail.getBookPackage())
 				.totalPrice(cartDetail.getQuantity() * cartDetail.getBookPackage().getPrice())
+				.build();
+	}
+	
+	public OrderDetailResponseDTO orderDetailToOrderDetailResponseDTO(OrderDetail orderDetail) {
+		return OrderDetailResponseDTO.builder()
+				.id(orderDetail.getId())
+				.quantity(orderDetail.getQuantity())
+				.itemPrice(orderDetail.getItemPrice())
+				.totalPrice(orderDetail.getTotalPrice())
+				.bookPackage(bookPackageMapping.bookPackageToBookPackageResponseDTO(
+						orderDetail.getBookPackage()))
 				.build();
 	}
 }
