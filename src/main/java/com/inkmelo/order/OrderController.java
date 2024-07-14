@@ -1,9 +1,11 @@
 package com.inkmelo.order;
 
+import java.sql.Date;
 import java.util.HashMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inkmelo.exception.NoCategoryFoundException;
+import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.utils.Utils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,9 +60,26 @@ public class OrderController {
 	
 	@GetMapping("/store/api/v1/customers/{username}/orders")
 	public ResponseEntity<?> getAllOrdersByCustomer(
-				@PathVariable(name = "username") String username
+				@PathVariable(name = "username") String username,
+				@RequestParam(required = false) Integer page,
+				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false) Date fromDate,
+				@RequestParam(required = false) Date toDate
 			) {
-		return service.findAllOrdersByCustomer(username, OrderStatus.PAYMENT_FINISHED);
+		return service.findAllOrdersByCustomer(username, OrderStatus.PAYMENT_FINISHED, page, size, fromDate, toDate);
+	}
+	
+	
+//	====================================== Exception Handler ===================================
+	
+	@ExceptionHandler(NoOrderFoundException.class)
+	public ResponseEntity<?> handleNoOrderFoundException(
+			NoOrderFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
 	}
 	
 	

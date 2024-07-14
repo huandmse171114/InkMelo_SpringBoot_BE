@@ -135,21 +135,21 @@ public class SecurityConfig {
 	
     
 	
-    @Bean
-    @Profile(value = "dev")
-    SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
-    	http.csrf(csrf -> csrf.disable())
-            .authorizeRequests()
-                .requestMatchers("/store/api/v1/ratings/**").permitAll()
-                .anyRequest().authenticated()
-            .and()
-            .sessionManagement(
-    		        session ->
-	                session.sessionCreationPolicy(
-	                        SessionCreationPolicy.STATELESS)
-	);
-
-        return http.build();
-    }
+//    @Bean
+//    @Profile(value = "dev")
+//    SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
+//    	http.csrf(csrf -> csrf.disable())
+//            .authorizeRequests()
+//                .requestMatchers("/store/api/v1/ratings/**").permitAll()
+//                .anyRequest().authenticated()
+//            .and()
+//            .sessionManagement(
+//    		        session ->
+//	                session.sessionCreationPolicy(
+//	                        SessionCreationPolicy.STATELESS)
+//	);
+//
+//        return http.build();
+//    }
     
 }

@@ -1,5 +1,6 @@
 package com.inkmelo.order;
 
+import java.awt.print.Pageable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -7,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +21,9 @@ import com.inkmelo.cartdetail.CartDetailRepository;
 import com.inkmelo.customer.Customer;
 import com.inkmelo.customer.CustomerRepository;
 import com.inkmelo.exception.BookPackageOutOfStockException;
+import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
+import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.ghn.GHNApis;
 import com.inkmelo.ghn.GHNCalculateFeeResponse;
@@ -28,6 +34,7 @@ import com.inkmelo.orderdetail.OrderDetailMappingService;
 import com.inkmelo.orderdetail.OrderDetailRepository;
 import com.inkmelo.user.User;
 import com.inkmelo.user.UserRepository;
+import com.inkmelo.utils.Utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -44,6 +51,8 @@ public class OrderService {
 	private final VnPayService vnpayService;
 	private final CartDetailRepository cartDetailRepository;
 	private final OrderDetailRepository orderDetailRepository;
+	private final int DEFAULT_PAGE = 0;
+	private final int DEFALT_SIZE = 5;
 
 	public String saveOrder(HttpServletRequest req, @Valid OrderCreateBodyDTO orderDTO, String username) throws Exception {
 		
@@ -53,6 +62,10 @@ public class OrderService {
 		
 		List<CartDetail> cartDetails = cartDetailRepository.findAllByIdIn(orderDTO.items());
 		
+		if (cartDetails.size() < orderDTO.items().size()) {
+			System.out.println("error found");
+			throw new NoCartDetailFoundException("Sản phẩm cần thanh toán không có trong giỏ hàng");
+		}
 		
 		order.setCustomer(customer);
 		
@@ -78,6 +91,48 @@ public class OrderService {
 		return paymentUrl;
 	}
 	
+	public ResponseEntity<?> findAllOrdersByCustomer(String username, OrderStatus finished, Integer page, Integer size,
+			Date fromDate, Date toDate) {
+//		Kiem tra nguoi dung co ton tai hay khong
+		Customer customer = getCustomer(username);
+		
+		if (page == null) page = DEFAULT_PAGE;
+		if (size == null) size = DEFALT_SIZE;
+		
+		org.springframework.data.domain.Pageable paging = PageRequest.of(page, size);
+		
+		if (fromDate == null) {
+			LocalDate todayDate = LocalDate.now();
+//			Neu nguoi dung khong nhap ngay cu the, lay ngay dau tien trong thang
+			fromDate = Date.valueOf(todayDate.withDayOfMonth(1));
+		}
+		
+		Page<Order> pageOrders = repository
+				.findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(
+						customer, 
+						finished, 
+						toDate, 
+						toDate, 
+						paging);
+		
+		List<Order> orders = pageOrders.getContent();
+		
+		if (orders.size() == 0) {
+			throw new NoOrderFoundException("Không tìm thấy đơn hàng.");
+		}
+		
+		var response = orders.stream()
+				.map(order -> mappingService.orderToOrderResponseDTO(order))
+				.toList();
+		
+		return Utils.generatePagingListResponseEntity(
+				pageOrders.getTotalElements(), 
+				orders, 
+				pageOrders.getTotalPages(), 
+				pageOrders.getNumber(), 
+				HttpStatus.OK);
+	}
+	
 	private Customer getCustomer(String username) {
 		
 		Optional<User> userOption = userRepository.findByUsername(username);
@@ -93,11 +148,6 @@ public class OrderService {
 		}
 		
 		return customerOption.get();
-	}
-
-	public ResponseEntity<?> findAllOrdersByCustomer(String username, OrderStatus finished) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }
