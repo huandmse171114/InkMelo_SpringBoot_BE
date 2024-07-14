@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,15 +33,19 @@ public class BookRatingController {
     }
 
     @GetMapping("store/api/v1/ratings/book/{bookId}")
-    public List<BookRatingResponseDTO> getRatingsByBook(@PathVariable Integer bookId) {
-        return bookRatingService.getRatingsByBook(bookId);
+    public ResponseEntity<List<BookRatingResponseDTO>> getRatingsByBook(@PathVariable Integer bookId) {
+        List<BookRatingResponseDTO> ratings = bookRatingService.getRatingsByBook(bookId);
+        return ResponseEntity.ok(ratings);
     }
 
     @PostMapping("store/api/v1/ratings/book/{bookId}")
     public ResponseEntity<?> createRating(@PathVariable Integer bookId, @RequestBody BookRatingRequestDTO request) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        BookRatingResponseDTO response = bookRatingService.createRating(bookId, request);
-        return ResponseEntity.ok(response);
+        try {
+            BookRatingResponseDTO response = bookRatingService.createRating(bookId, request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("store/api/v1/ratings/{ratingId}")
@@ -53,5 +58,10 @@ public class BookRatingController {
     public void deleteRating(@PathVariable Integer ratingId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         bookRatingService.deleteRating(ratingId);
+    }
+    
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }
