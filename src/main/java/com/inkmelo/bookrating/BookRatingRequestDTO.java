@@ -18,4 +18,5 @@ public class BookRatingRequestDTO {
 
     private String comment;
 
+    private Integer orderId;
 }

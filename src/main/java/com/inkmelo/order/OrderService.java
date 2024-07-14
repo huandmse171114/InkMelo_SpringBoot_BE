@@ -1,20 +1,17 @@
 package com.inkmelo.order;
 
-import java.awt.print.Pageable;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inkmelo.VnPay.VnPayService;
 import com.inkmelo.cartdetail.CartDetail;
 import com.inkmelo.cartdetail.CartDetailRepository;
@@ -25,10 +22,6 @@ import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.exception.NoUserFoundException;
-import com.inkmelo.ghn.GHNApis;
-import com.inkmelo.ghn.GHNCalculateFeeResponse;
-import com.inkmelo.ghn.GHNService;
-import com.inkmelo.ghn.GHNServiceResponse;
 import com.inkmelo.orderdetail.OrderDetail;
 import com.inkmelo.orderdetail.OrderDetailMappingService;
 import com.inkmelo.orderdetail.OrderDetailRepository;
@@ -91,7 +84,7 @@ public class OrderService {
 		return paymentUrl;
 	}
 	
-	public ResponseEntity<?> findAllOrdersByCustomer(String username, OrderStatus finished, Integer page, Integer size,
+	public ResponseEntity<?> findAllOrdersByCustomer(String username, OrderStatus status, Integer page, Integer size,
 			Date fromDate, Date toDate) {
 //		Kiem tra nguoi dung co ton tai hay khong
 		Customer customer = getCustomer(username);
@@ -99,7 +92,7 @@ public class OrderService {
 		if (page == null) page = DEFAULT_PAGE;
 		if (size == null) size = DEFALT_SIZE;
 		
-		org.springframework.data.domain.Pageable paging = PageRequest.of(page, size);
+		Pageable paging = PageRequest.of(page, size);
 		
 		if (fromDate == null) {
 			LocalDate todayDate = LocalDate.now();
@@ -108,11 +101,9 @@ public class OrderService {
 		}
 		
 		Page<Order> pageOrders = repository
-				.findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(
+				.findAllByCustomerAndStatus(
 						customer, 
-						finished, 
-						toDate, 
-						toDate, 
+						status,  
 						paging);
 		
 		List<Order> orders = pageOrders.getContent();
@@ -127,7 +118,7 @@ public class OrderService {
 		
 		return Utils.generatePagingListResponseEntity(
 				pageOrders.getTotalElements(), 
-				orders, 
+				response, 
 				pageOrders.getTotalPages(), 
 				pageOrders.getNumber(), 
 				HttpStatus.OK);
