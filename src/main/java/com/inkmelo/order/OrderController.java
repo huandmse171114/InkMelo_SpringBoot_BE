@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoCategoryFoundException;
+import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
+import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.utils.Utils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,8 +63,8 @@ public class OrderController {
 	@GetMapping("/store/api/v1/customers/{username}/orders")
 	public ResponseEntity<?> getAllOrdersByCustomer(
 				@PathVariable(name = "username") String username,
-				@RequestParam(required = false) Integer page,
-				@RequestParam(required = false) Integer size,
+				@RequestParam(required = false, defaultValue = "0") Integer page,
+				@RequestParam(required = false, defaultValue = "5") Integer size,
 				@RequestParam(required = false) Date fromDate,
 				@RequestParam(required = false) Date toDate
 			) {
@@ -75,6 +77,26 @@ public class OrderController {
 	@ExceptionHandler(NoOrderFoundException.class)
 	public ResponseEntity<?> handleNoOrderFoundException(
 			NoOrderFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoUserFoundException.class)
+	public ResponseEntity<?> handleNoUserFoundException(
+			NoUserFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoCustomerFoundException.class)
+	public ResponseEntity<?> handleNoCustomerFoundException(
+			NoCustomerFoundException ex
 			) {
 		
 		return Utils.generateMessageResponseEntity(

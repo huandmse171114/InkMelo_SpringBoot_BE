@@ -3,6 +3,7 @@ package com.inkmelo.order;
 import java.sql.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.inkmelo.customer.Customer;
 import com.inkmelo.orderdetail.OrderDetail;
 import com.inkmelo.payment.Payment;
@@ -103,6 +104,7 @@ public class Order {
 	private OrderStatus status;
 	
 	@OneToMany(mappedBy = "order")
+	@JsonManagedReference
 	private List<OrderDetail> orderDetails;
 	
 	@ManyToOne

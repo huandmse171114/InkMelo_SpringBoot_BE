@@ -20,6 +20,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	           "WHERE o.customer.id = :customerId AND b.id = :bookId")
 	    boolean existsByCustomerIdAndBookId(@Param("customerId") Integer customerId, @Param("bookId") Integer bookId);
 	
-	Page<Order> findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(Customer customer, OrderStatus status, Date startDate, Date endDate, Pageable pageable);
+	Page<Order> findAllByCustomerAndStatus(Customer customer, OrderStatus status, Pageable pageable);
 	
 	}

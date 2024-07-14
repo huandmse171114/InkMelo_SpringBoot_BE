@@ -3,6 +3,7 @@ package com.inkmelo.book;
 import java.sql.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.inkmelo.bookitem.BookItem;
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookrating.BookRating;
@@ -115,6 +116,7 @@ public class Book {
 	private List<Genre> genres;
 	
 	@OneToMany(mappedBy = "book")
+	@JsonBackReference
 	private List<BookItem> items;
 	
 }
