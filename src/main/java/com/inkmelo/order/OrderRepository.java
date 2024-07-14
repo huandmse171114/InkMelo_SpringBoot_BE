@@ -1,7 +1,8 @@
 package com.inkmelo.order;
 
-import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
+import java.sql.Date;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +22,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	    boolean existsByCustomerIdAndBookId(@Param("customerId") Integer customerId, @Param("bookId") Integer bookId);
 	
 	Page<Order> findAllByCustomerAndStatus(Customer customer, OrderStatus status, Pageable pageable);
+	@Query("SELECT o FROM Order o WHERE o.customer.id = :customerId AND o.status = :status")
+    List<Order> findByCustomerIdAndStatus(@Param("customerId") Integer customerId, @Param("status") OrderStatus status);
 	
+	Optional<Order> findByIdAndCustomerIdAndStatus(Integer orderId, Integer customerId, OrderStatus status);
+	Page<Order> findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(Customer customer, OrderStatus status, Date startDate, Date endDate, Pageable pageable);
+
 	}
