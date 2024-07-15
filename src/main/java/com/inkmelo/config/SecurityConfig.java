@@ -83,11 +83,13 @@ public class SecurityConfig {
         				"/v3/api-docs/**",
         				"/store/api/v1/auth/sign-in",
         				"/store/api/v1/users/register").permitAll()
-        		.requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.ADMIN.toString())
-        		.requestMatchers(
-        				"/api/v1/admin/books/**",
-						"/api/v1/admin/publishers/**").hasAuthority(UserRole.MANAGER.toString())
-                .requestMatchers("/api/v1/sign-in").permitAll()
+//        		.requestMatchers("/admin/api/v1/**").hasAuthority(UserRole.ADMIN.toString())
+//        		.requestMatchers(
+//        				"/admin/api/v1/books/**",
+//        				"/admin/api/v1/book-items/**",
+//        				"/admin/api/v1/book-packages/**",
+//        				"/admin/api/v1/orders/**",
+//						"/admin/api/v1/publishers/**").hasAuthority(UserRole.MANAGER.toString())
                 .anyRequest().authenticated());
 		http.sessionManagement(
 		        session ->
