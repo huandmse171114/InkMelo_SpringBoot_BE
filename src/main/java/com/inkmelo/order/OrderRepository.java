@@ -3,6 +3,7 @@ package com.inkmelo.order;
 import java.util.List;
 import java.util.Optional;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByCustomerIdAndStatus(@Param("customerId") Integer customerId, @Param("status") OrderStatus status);
 	
 	Optional<Order> findByIdAndCustomerIdAndStatus(Integer orderId, Integer customerId, OrderStatus status);
-	Page<Order> findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(Customer customer, OrderStatus status, Date startDate, Date endDate, Pageable pageable);
+	
+	Page<Order> findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(Customer customer, OrderStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
 	}

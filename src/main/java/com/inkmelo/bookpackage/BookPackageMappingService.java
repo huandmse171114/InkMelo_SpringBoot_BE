@@ -64,6 +64,26 @@ public class BookPackageMappingService {
 				.build();
 	}
 	
+	public BookPackageOrderResponseDTO bookPackageToBookPackageOrderResponseDTO(BookPackage bookPackage) {
+		return BookPackageOrderResponseDTO.builder()
+				.id(bookPackage.getId())
+				.title(bookPackage.getTitle())
+				.description(bookPackage.getDescription())
+				.price(bookPackage.getPrice())
+				.modeId(bookPackage.getMode())
+				.stock(bookPackage.getStock())
+				.book(bookMappingService
+						.bookToBookOrderResponseDTO(bookPackage.getBook()))
+				.items(bookPackage.getItems().stream()
+						.filter(item -> item.getStatus() == BookItemStatus.ACTIVE)
+						.map(item -> 
+							bookItemMappingService.bookItemToBookItemOrderResponseDTO(item))
+						.toList())
+				.category(categoryMappingService
+						.categoryToCategoryResponseDTO(bookPackage.getCategory()))
+				.build();
+	}
+	
 	public BookPackageAdminResponseDTO bookPackageToBookPackageAdminResponseDTO(BookPackage bookPackage) {
 		return BookPackageAdminResponseDTO.builder()
 				.id(bookPackage.getId())

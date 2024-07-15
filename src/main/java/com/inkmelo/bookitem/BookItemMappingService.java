@@ -31,6 +31,15 @@ public class BookItemMappingService {
 				.stock(bookItem.getStock())
 				.build();
 	}
+	
+	public BookItemOrderResponseDTO bookItemToBookItemOrderResponseDTO(BookItem bookItem) {
+		return BookItemOrderResponseDTO.builder()
+				.id(bookItem.getId())
+				.bookTitle(bookItem.getBook().getTitle())
+				.bookCoverImg(bookItem.getBook().getBookCoverImg())
+				.type(bookItem.getType())
+				.build();
+	}
 
 	public BookItemAdminResponseDTO bookItemToBookItemAdminResponseDTO(BookItem bookItem) {
 		return BookItemAdminResponseDTO.builder()

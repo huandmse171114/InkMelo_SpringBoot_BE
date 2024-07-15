@@ -85,25 +85,37 @@ public class OrderService {
 	}
 	
 	public ResponseEntity<?> findAllOrdersByCustomer(String username, OrderStatus status, Integer page, Integer size,
-			Date fromDate, Date toDate) {
+			String fromDateStr, String toDateStr) {
 //		Kiem tra nguoi dung co ton tai hay khong
 		Customer customer = getCustomer(username);
+		
+		LocalDate fromDate;
+		LocalDate toDate;
 		
 		if (page == null) page = DEFAULT_PAGE;
 		if (size == null) size = DEFALT_SIZE;
 		
 		Pageable paging = PageRequest.of(page, size);
 		
-		if (fromDate == null) {
+		if (fromDateStr.isEmpty()) {
 			LocalDate todayDate = LocalDate.now();
 //			Neu nguoi dung khong nhap ngay cu the, lay ngay dau tien trong thang
-			fromDate = Date.valueOf(todayDate.withDayOfMonth(1));
+			fromDate = todayDate.withDayOfMonth(1);
 		}
 		
+		if (toDateStr.isEmpty()) {
+			toDate = LocalDate.now();
+		}
+		
+		fromDate = LocalDate.parse(fromDateStr);
+		toDate = LocalDate.parse(toDateStr);
+		
 		Page<Order> pageOrders = repository
-				.findAllByCustomerAndStatus(
+				.findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(
 						customer, 
-						status,  
+						status,
+						fromDate,
+						toDate,
 						paging);
 		
 		List<Order> orders = pageOrders.getContent();

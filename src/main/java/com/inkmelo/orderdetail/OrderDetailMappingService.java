@@ -54,7 +54,7 @@ public class OrderDetailMappingService {
 				.quantity(orderDetail.getQuantity())
 				.itemPrice(orderDetail.getItemPrice())
 				.totalPrice(orderDetail.getTotalPrice())
-				.bookPackage(bookPackageMapping.bookPackageToBookPackageResponseDTO(
+				.bookPackage(bookPackageMapping.bookPackageToBookPackageOrderResponseDTO(
 						orderDetail.getBookPackage()))
 				.build();
 	}

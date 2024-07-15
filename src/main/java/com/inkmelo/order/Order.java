@@ -8,6 +8,7 @@ import com.inkmelo.customer.Customer;
 import com.inkmelo.orderdetail.OrderDetail;
 import com.inkmelo.payment.Payment;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -103,7 +104,7 @@ public class Order {
 	)
 	private OrderStatus status;
 	
-	@OneToMany(mappedBy = "order")
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	private List<OrderDetail> orderDetails;
 	
