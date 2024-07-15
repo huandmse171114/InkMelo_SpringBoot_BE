@@ -9,12 +9,14 @@ import lombok.Builder;
 @Builder
 public record OrderResponseDTO(
 			Integer id,
+			String ghnOrderCode,
 			float orderPrice,
 			float shippingFee,
 			float totalPrice,
 			List<OrderDetailResponseDTO> detail,
 			Date deliveredDate,
-			Date createdAt
+			Date createdAt,
+			String ghnOrderStatus
 			
 		) {
 

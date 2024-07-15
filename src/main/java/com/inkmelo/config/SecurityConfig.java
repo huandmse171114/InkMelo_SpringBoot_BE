@@ -88,7 +88,7 @@ public class SecurityConfig {
 //        				"/api/v1/admin/books/**",
 //						"/api/v1/admin/publishers/**").hasAuthority(UserRole.MANAGER.toString())
 //                .requestMatchers("/api/v1/sign-in").permitAll()
-                .anyRequest().permitAll());
+                .anyRequest().authenticated());
 		http.sessionManagement(
 		        session ->
 		                session.sessionCreationPolicy(

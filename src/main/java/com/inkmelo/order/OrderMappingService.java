@@ -47,8 +47,12 @@ public class OrderMappingService {
 	}
 	
 	public OrderResponseDTO orderToOrderResponseDTO(Order order) {
+		
+		
+		
 		return OrderResponseDTO.builder()
 				.id(order.getId())
+				.ghnOrderCode(order.getGhbOrderCode())
 				.orderPrice(order.getOrderPrice())
 				.shippingFee(order.getShippingFee())
 				.totalPrice(order.getTotalPrice())

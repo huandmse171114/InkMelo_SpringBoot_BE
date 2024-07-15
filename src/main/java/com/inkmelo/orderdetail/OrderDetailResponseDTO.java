@@ -1,5 +1,6 @@
 package com.inkmelo.orderdetail;
 
+import com.inkmelo.bookpackage.BookPackageOrderResponseDTO;
 import com.inkmelo.bookpackage.BookPackageResponseDTO;
 
 import lombok.Builder;
@@ -10,7 +11,7 @@ public record OrderDetailResponseDTO(
 			int quantity,
 			float itemPrice,
 			float totalPrice,
-			BookPackageResponseDTO bookPackage
+			BookPackageOrderResponseDTO bookPackage
 		) {
 
 }
