@@ -60,23 +60,24 @@ public class UserService {
 		User userDB = repository.save(user);
 		
 		if (user.getRole() == UserRole.CUSTOMER) {
+			
+			Cart cart = Cart.builder()
+					.build();
+			
+			Cart cartDB = cartRepository.save(cart);
+			
 			Customer customer = Customer.builder()
 					.fullname(user.getFullname())
 					.email(user.getEmail())
 					.user(user)
+					.cart(cartDB)
 					.createdAt(Date.valueOf(LocalDate.now()))
 					.lastChangedBy("HUANDM")
 					.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 					.build();
 			
 			Customer customerDB = customerRepository.save(customer);
-			
-			Cart cart = Cart.builder()
-					.customer(customerDB)
-					.build();
-			
-			cartRepository.save(cart);
-			
+
 			Shipment shipment = Shipment.builder()
 					.receiverName(user.getFullname())
 					.contactNumber("0977588901")
