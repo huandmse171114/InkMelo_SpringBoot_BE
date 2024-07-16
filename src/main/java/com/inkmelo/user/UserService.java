@@ -56,8 +56,8 @@ public class UserService {
 		return userOptional.get();
 	}
 
-	public void createUser(User user) {
-		repository.save(user);
+	public User createUser(User user) {
+		User userDB = repository.save(user);
 		
 		if (user.getRole() == UserRole.CUSTOMER) {
 			Customer customer = Customer.builder()
@@ -78,7 +78,7 @@ public class UserService {
 			cartRepository.save(cart);
 			
 			Shipment shipment = Shipment.builder()
-					.receiverName("Huan Minh Dinh")
+					.receiverName(user.getFullname())
 					.contactNumber("0977588901")
 					.description("Nha rieng")
 					.street("so XX duong YY")
@@ -97,6 +97,8 @@ public class UserService {
 			
 			shipmentRepository.save(shipment);
 		}
+		
+		return userDB;
 	}
 
 	public void saveUser(UserCreateBodyDTO userDTO) throws DataIntegrityViolationException,
