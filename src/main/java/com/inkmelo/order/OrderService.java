@@ -1,23 +1,23 @@
 package com.inkmelo.order;
 
-import java.awt.print.Pageable;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inkmelo.VnPay.VnPayService;
 import com.inkmelo.cartdetail.CartDetail;
+import com.inkmelo.cartdetail.CartDetailCreateUpdateBodyDTO;
 import com.inkmelo.cartdetail.CartDetailRepository;
+import com.inkmelo.cartdetail.CartDetailService;
+import com.inkmelo.cartdetail.CartDetailStatus;
 import com.inkmelo.customer.Customer;
 import com.inkmelo.customer.CustomerRepository;
 import com.inkmelo.exception.BookPackageOutOfStockException;
@@ -25,10 +25,6 @@ import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.exception.NoUserFoundException;
-import com.inkmelo.ghn.GHNApis;
-import com.inkmelo.ghn.GHNCalculateFeeResponse;
-import com.inkmelo.ghn.GHNService;
-import com.inkmelo.ghn.GHNServiceResponse;
 import com.inkmelo.orderdetail.OrderDetail;
 import com.inkmelo.orderdetail.OrderDetailMappingService;
 import com.inkmelo.orderdetail.OrderDetailRepository;
@@ -50,6 +46,7 @@ public class OrderService {
 	private final OrderMappingService mappingService;
 	private final VnPayService vnpayService;
 	private final CartDetailRepository cartDetailRepository;
+	private final CartDetailService cartDetailService;
 	private final OrderDetailRepository orderDetailRepository;
 	private final int DEFAULT_PAGE = 0;
 	private final int DEFALT_SIZE = 5;
@@ -60,7 +57,7 @@ public class OrderService {
 		
 		Order order = mappingService.orderCreateBodyDTOToOrder(orderDTO);
 		
-		List<CartDetail> cartDetails = cartDetailRepository.findAllByIdIn(orderDTO.items());
+		List<CartDetail> cartDetails = cartDetailRepository.findAllByStatusAndIdIn(CartDetailStatus.ACTIVE, orderDTO.items());
 		
 		if (cartDetails.size() < orderDTO.items().size()) {
 			System.out.println("error found");
@@ -91,28 +88,38 @@ public class OrderService {
 		return paymentUrl;
 	}
 	
-	public ResponseEntity<?> findAllOrdersByCustomer(String username, OrderStatus finished, Integer page, Integer size,
-			Date fromDate, Date toDate) {
+	public ResponseEntity<?> findAllOrdersByCustomer(String username, OrderStatus status, Integer page, Integer size,
+			String fromDateStr, String toDateStr) {
 //		Kiem tra nguoi dung co ton tai hay khong
 		Customer customer = getCustomer(username);
+		
+		LocalDate fromDate;
+		LocalDate toDate;
 		
 		if (page == null) page = DEFAULT_PAGE;
 		if (size == null) size = DEFALT_SIZE;
 		
-		org.springframework.data.domain.Pageable paging = PageRequest.of(page, size);
+		Pageable paging = PageRequest.of(page, size);
 		
-		if (fromDate == null) {
+		if (fromDateStr.isEmpty()) {
 			LocalDate todayDate = LocalDate.now();
 //			Neu nguoi dung khong nhap ngay cu the, lay ngay dau tien trong thang
-			fromDate = Date.valueOf(todayDate.withDayOfMonth(1));
+			fromDate = todayDate.withDayOfMonth(1);
 		}
+		
+		if (toDateStr.isEmpty()) {
+			toDate = LocalDate.now();
+		}
+		
+		fromDate = LocalDate.parse(fromDateStr);
+		toDate = LocalDate.parse(toDateStr);
 		
 		Page<Order> pageOrders = repository
 				.findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(
 						customer, 
-						finished, 
-						toDate, 
-						toDate, 
+						status,
+						fromDate,
+						toDate,
 						paging);
 		
 		List<Order> orders = pageOrders.getContent();
@@ -127,7 +134,7 @@ public class OrderService {
 		
 		return Utils.generatePagingListResponseEntity(
 				pageOrders.getTotalElements(), 
-				orders, 
+				response, 
 				pageOrders.getTotalPages(), 
 				pageOrders.getNumber(), 
 				HttpStatus.OK);

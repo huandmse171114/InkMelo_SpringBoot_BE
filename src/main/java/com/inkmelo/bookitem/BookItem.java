@@ -3,6 +3,8 @@ package com.inkmelo.bookitem;
 import java.sql.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.inkmelo.book.Book;
 import com.inkmelo.bookpackage.BookPackage;
 
@@ -68,10 +70,12 @@ public class BookItem {
 	private BookItemStatus status;
 	
 	@ManyToMany(mappedBy = "items")
+	@JsonBackReference
 	private List<BookPackage> bookPackages;
 	
 	@ManyToOne
 	@JoinColumn(name = "book_id")
+	@JsonManagedReference
 	private Book book;
 	
 	@Override
