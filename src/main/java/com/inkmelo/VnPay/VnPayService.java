@@ -13,6 +13,7 @@ import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -24,6 +25,9 @@ public class VnPayService {
 
     @Autowired
     private VnPayConfig vnPayconfig;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public String createPayment(HttpServletRequest req, String returnUrl) throws Exception {
         String vnp_Version = "2.1.0";
@@ -73,13 +77,23 @@ public class VnPayService {
         vnp_Params.put("vnp_ReturnUrl", vnPayconfig.getReturnUrl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
+        // Call API to get current time in Vietnam
+        String timeApiUrl = "https://www.timeapi.io/api/Time/current/zone?timeZone=Asia/Ho_Chi_Minh";
+        String response = restTemplate.getForObject(timeApiUrl, String.class);
+
+        // Parse the response to get the current date and time
+        JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class);
+        String dateTime = jsonObject.get("dateTime").getAsString();
+        
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        cld.setTime(inputFormat.parse(dateTime));
+        String vnp_CreateDate = outputFormat.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
         cld.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
+        String vnp_ExpireDate = outputFormat.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
@@ -117,10 +131,9 @@ public class VnPayService {
         
         String amountStr = Math.floor(totalPayment) + "";
         
-        
         long amount;
         try {
-        	long amountLong = (long) totalPayment;
+            long amountLong = (long) totalPayment;
             amount = amountLong * 100;
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid amount value");
@@ -156,13 +169,23 @@ public class VnPayService {
         vnp_Params.put("vnp_ReturnUrl", vnPayconfig.getReturnUrl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
+        // Call API to get current time in Vietnam
+        String timeApiUrl = "https://www.timeapi.io/api/Time/current/zone?timeZone=Asia/Ho_Chi_Minh";
+        String response = restTemplate.getForObject(timeApiUrl, String.class);
+
+        // Parse the response to get the current date and time
+        JsonObject jsonObject = new Gson().fromJson(response, JsonObject.class);
+        String dateTime = jsonObject.get("dateTime").getAsString();
+        
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        cld.setTime(inputFormat.parse(dateTime));
+        String vnp_CreateDate = outputFormat.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
         cld.add(Calendar.MINUTE, 5);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
+        String vnp_ExpireDate = outputFormat.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
