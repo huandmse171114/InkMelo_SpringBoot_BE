@@ -37,6 +37,7 @@ import com.inkmelo.genre.GenreStatus;
 import com.inkmelo.publisher.Publisher;
 import com.inkmelo.publisher.PublisherRepository;
 import com.inkmelo.publisher.PublisherStatus;
+import com.inkmelo.user.ProviderType;
 import com.inkmelo.user.User;
 import com.inkmelo.user.UserRole;
 import com.inkmelo.user.UserService;
@@ -1459,6 +1460,7 @@ public class DataLoader implements CommandLineRunner {
         		.createdAt(Date.valueOf(LocalDate.now()))
         		.lastChangedBy("anonymous")
         		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.provider(ProviderType.OWNED)
         		.build();
         
         User admin = User.builder()
@@ -1471,6 +1473,7 @@ public class DataLoader implements CommandLineRunner {
         		.createdAt(Date.valueOf(LocalDate.now()))
         		.lastChangedBy("anonymous")
         		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.provider(ProviderType.OWNED)
         		.build();
         
         User manager = User.builder()
@@ -1483,6 +1486,7 @@ public class DataLoader implements CommandLineRunner {
         		.createdAt(Date.valueOf(LocalDate.now()))
         		.lastChangedBy("anonymous")
         		.lastUpdatedTime(Date.valueOf(LocalDate.now()))
+        		.provider(ProviderType.OWNED)
         		.build();
 
         userService.createUser(user);

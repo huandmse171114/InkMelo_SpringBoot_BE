@@ -21,18 +21,20 @@ import com.inkmelo.utils.Utils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Authentication", description = "Authentication Management APIs")
 @RestController
+@RequiredArgsConstructor
 public class AuthController {
 	
 	private final JwtUtils jwtUtils;
 	private final AuthenticationManager authenticationManager;
-
-	public AuthController(JwtUtils jwtUtils, AuthenticationManager authenticationManager) {
-		super();
-		this.jwtUtils = jwtUtils;
-		this.authenticationManager = authenticationManager;
+	private final AuthService service;
+	
+	@PostMapping("/store/api/v1/oauth2/google")
+	public ResponseEntity<?> authenticateGoogleUser(@RequestBody GoogleTokenBodyDTO tokenDTO) {
+		return service.authenticateGoogleUser(tokenDTO);
 	}
 
 	@Operation(summary = "Authentication User", description = "This endpoint is used for user to sign in. Return JWT Token in response")

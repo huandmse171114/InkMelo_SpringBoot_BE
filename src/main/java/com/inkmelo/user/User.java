@@ -38,7 +38,7 @@ public class User implements UserDetails {
 	@Column(unique = true, nullable = false, length = 100)
 	private String username;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String password;
 
 	@Column(length = 150)
@@ -50,6 +50,10 @@ public class User implements UserDetails {
 	private String resetPassword;
 
 	private Date resetPasswordExpiry;
+	
+	private String profileImg;
+	
+	private ProviderType provider;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 50)
