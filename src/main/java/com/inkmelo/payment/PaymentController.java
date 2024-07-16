@@ -40,7 +40,7 @@ public class PaymentController {
 		model.addAttribute("message", "<h3>Hello Thymeleaf</h3>");
 		
 		if (redirectUrl.isEmpty()) {
-			return "payment-success";			
+			return "vnpay_return";			
 		}else {
 			return new RedirectView(redirectUrl);
 		}
