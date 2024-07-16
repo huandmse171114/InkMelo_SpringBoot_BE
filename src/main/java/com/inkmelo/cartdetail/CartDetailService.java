@@ -136,7 +136,7 @@ public class CartDetailService {
 				}
 
 				CartDetail newCartDetail = mappingService.cartDetailCreateBodyDTOToCartDetail(cart, bookPackage, cartDetailDTO.getQuantity());
-				
+				newCartDetail.setCart(cart);
 				repository.save(newCartDetail);
 				
 				message = "Thêm vào giỏ hàng thành công";

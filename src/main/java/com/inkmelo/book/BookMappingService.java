@@ -1,18 +1,15 @@
 package com.inkmelo.book;
 
-import java.lang.StackWalker.Option;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.bookrating.BookRating;
-import com.inkmelo.bookrating.BookRatingResponseDTO;
 import com.inkmelo.bookrating.BookRatingService;
 import com.inkmelo.bookrating.BookRatingStatus;
 import com.inkmelo.exception.NoGenreFoundException;
@@ -65,6 +62,20 @@ public class BookMappingService {
                         .map(genre -> genreMappingService.genreToGenreResponseDTO(genre))
                         .collect(Collectors.toList()))
                 .status(book.getStatus())
+                .build();
+    }
+    
+    public BookOrderResponseDTO bookToBookOrderResponseDTO(Book book) {
+        return BookOrderResponseDTO.builder()
+                .id(book.getId())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .bookCoverImg(book.getBookCoverImg())
+                .publisherName(book.getPublisher().getName())
+                .genres(book.getGenres().stream()
+                        .filter(genre -> genre.getStatus() == GenreStatus.ACTIVE)
+                        .map(genre -> genreMappingService.genreToGenreResponseDTO(genre))
+                        .collect(Collectors.toList()))
                 .build();
     }
 

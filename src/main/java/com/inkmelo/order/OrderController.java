@@ -1,6 +1,9 @@
 package com.inkmelo.order;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 
 import org.springframework.http.HttpStatus;
@@ -14,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoCategoryFoundException;
+import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
+import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.utils.Utils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,11 +66,14 @@ public class OrderController {
 	@GetMapping("/store/api/v1/customers/{username}/orders")
 	public ResponseEntity<?> getAllOrdersByCustomer(
 				@PathVariable(name = "username") String username,
-				@RequestParam(required = false) Integer page,
-				@RequestParam(required = false) Integer size,
-				@RequestParam(required = false) Date fromDate,
-				@RequestParam(required = false) Date toDate
+				@RequestParam(required = false, defaultValue = "0") Integer page,
+				@RequestParam(required = false, defaultValue = "5") Integer size,
+				@RequestParam(required = false, defaultValue = "2024-03-21") String fromDate,
+				@RequestParam(required = false, defaultValue = "2024-07-14") String toDate
 			) {
+		if (fromDate == null) fromDate = "";
+		if (toDate == null) toDate = "";
+		
 		return service.findAllOrdersByCustomer(username, OrderStatus.PAYMENT_FINISHED, page, size, fromDate, toDate);
 	}
 	
@@ -80,6 +88,36 @@ public class OrderController {
 		return Utils.generateMessageResponseEntity(
 				ex.getMessage(), 
 				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoUserFoundException.class)
+	public ResponseEntity<?> handleNoUserFoundException(
+			NoUserFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoCustomerFoundException.class)
+	public ResponseEntity<?> handleNoCustomerFoundException(
+			NoCustomerFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(DateTimeParseException.class)
+	public ResponseEntity<?> handleDateTimeParseExceptionn(
+			DateTimeParseException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				"Định dạng ngày không hợp lệ (yyy-MM-dd).", 
+				HttpStatus.BAD_REQUEST);
 	}
 	
 	

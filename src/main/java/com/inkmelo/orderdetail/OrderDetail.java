@@ -1,5 +1,6 @@
 package com.inkmelo.orderdetail;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.inkmelo.book.Book;
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.order.Order;
@@ -48,6 +49,7 @@ public class OrderDetail {
 			name = "order_id",
 			nullable = false
 	)
+	@JsonBackReference
 	private Order order;
 	
 }
