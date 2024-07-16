@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.exception.NoShipmentFoundException;
+import com.inkmelo.orderdetail.OrderDetailMappingService;
 import com.inkmelo.shipment.Shipment;
 import com.inkmelo.shipment.ShipmentRepository;
 
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderMappingService {
 	private final ShipmentRepository shipmentRepository;
+	private final OrderDetailMappingService detailMapping;
 	
 	public Order orderCreateBodyDTOToOrder(OrderCreateBodyDTO orderDTO) {
 		Optional<Shipment> shipmentOptional = shipmentRepository.findById(orderDTO.shipmentId());
@@ -41,6 +43,19 @@ public class OrderMappingService {
 				.ghnServiceId(orderDTO.serviceId())
 				.createdAt(Date.valueOf(LocalDate.now()))
 				.status(OrderStatus.PAYMENT_PENDING)
+				.build();
+	}
+	
+	public OrderResponseDTO orderToOrderResponseDTO(Order order) {
+		return OrderResponseDTO.builder()
+				.id(order.getId())
+				.orderPrice(order.getOrderPrice())
+				.shippingFee(order.getShippingFee())
+				.totalPrice(order.getTotalPrice())
+				.detail(order.getOrderDetails().stream()
+						.map(detail -> detailMapping
+								.orderDetailToOrderDetailResponseDTO(detail))
+						.toList())
 				.build();
 	}
 }

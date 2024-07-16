@@ -55,6 +55,11 @@ public class BookPackageController {
 		return service.findAllBookPackageByStatus(BookPackageStatus.ACTIVE, page, size, categoryId, genreId, modeId, keyword);
 	}
 	
+	@GetMapping("store/api/v1/book-packages/{id}")
+	public ResponseEntity<?> getActiveBookPackageById(@PathVariable("id") Integer id) {
+		return service.findBookPackageByIdAndStatus(id, BookPackageStatus.ACTIVE);
+	}
+	
 	@Operation(summary = "Get Book Packages",
 			description = "This endpoint will return all book packages in DB, with paging option and search with corresponding value | (Authority) ADMIN, MANAGER.")
 	@GetMapping("/admin/api/v1/book-packages")
@@ -86,18 +91,18 @@ public class BookPackageController {
 		return service.findAllBookPackageMode();
 	}
 	
-	@Operation(summary = "Search Book Packages",
-			description = "This endpoint will return book packages that have ACTIVE status and corresponding search value in DB | (Authority) ALL.")
-	@GetMapping("/store/api/v1/book-packages/search")
-	public List<BookPackageResponseDTO> findAllBookPackageByCategory(
-				@RequestParam(name = "category", required = false) Integer categoryId,
-				@RequestParam(name = "genre", required = false) Integer genreId,
-				@RequestParam(name = "mode", required = false) Integer modeId,
-				@RequestParam(name = "query", required = false) String keyword
-			) {
-		if (keyword == null) keyword = "";
-		return service.findAllBookPackageByCriteria(categoryId, genreId, modeId, keyword);
-	}
+//	@Operation(summary = "Search Book Packages",
+//			description = "This endpoint will return book packages that have ACTIVE status and corresponding search value in DB | (Authority) ALL.")
+//	@GetMapping("/store/api/v1/book-packages/search")
+//	public List<BookPackageResponseDTO> findAllBookPackageByCategory(
+//				@RequestParam(name = "category", required = false) Integer categoryId,
+//				@RequestParam(name = "genre", required = false) Integer genreId,
+//				@RequestParam(name = "mode", required = false) Integer modeId,
+//				@RequestParam(name = "query", required = false) String keyword
+//			) {
+//		if (keyword == null) keyword = "";
+//		return service.findAllBookPackageByCriteria(categoryId, genreId, modeId, keyword);
+//	}
 	
 	@Operation(summary = "Create new Book Package",
 			description = "This endpoint will create new book package with the given information | (Authority) ADMIN, MANAGER.")

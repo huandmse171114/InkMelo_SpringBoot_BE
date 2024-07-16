@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -605,6 +606,26 @@ public class BookPackageService {
 		bookPackage.setLastChangedBy(SecurityContextHolder.getContext().getAuthentication().getName());
 		
 		repository.save(bookPackage);
+	}
+
+	public ResponseEntity<?> findBookPackageByIdAndStatus(Integer id, BookPackageStatus status) {
+		
+		Optional<BookPackage> bookPackageOptional = repository.findByIdAndStatus(id, status);
+		
+		if (bookPackageOptional.isEmpty()) {
+			throw new NoBookPackageFoundException("Không tìm thấy gói sách tương ứng.");
+		}
+		
+		BookPackage bookPackage = bookPackageOptional.get();
+		
+		var response = new HashMap<String, Object>();
+		
+		response.put("data", mappingService.bookPackageToBookPackageResponseDTO(bookPackage));
+		response.put("timestamp", Utils.getCurrentTimestamp());
+		response.put("status", HttpStatus.OK.value());
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
+		
 	}
 	
 }

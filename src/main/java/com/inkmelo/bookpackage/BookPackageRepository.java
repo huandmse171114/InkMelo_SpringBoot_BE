@@ -16,6 +16,8 @@ import com.inkmelo.bookpackage.BookPackageStatus;
 
 public interface BookPackageRepository extends JpaRepository<BookPackage, Integer> {
 	
+	Optional<BookPackage> findByIdAndStatus(Integer id, BookPackageStatus status);
+	
 	List<BookPackage> findAllByStatus(BookPackageStatus status);
 	
 	Optional<BookPackage> findByBookAndItemsAndStatus(Book book, Collection<BookItem> items, BookPackageStatus status);
