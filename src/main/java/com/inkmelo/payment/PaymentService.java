@@ -18,6 +18,8 @@ import com.inkmelo.bookitem.BookItemType;
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookpackage.BookPackageMode;
 import com.inkmelo.bookpackage.BookPackageService;
+import com.inkmelo.cartdetail.CartDetailCreateUpdateBodyDTO;
+import com.inkmelo.cartdetail.CartDetailService;
 import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.ghn.GHNApis;
 import com.inkmelo.ghn.GHNOrderResponse;
@@ -41,6 +43,7 @@ public class PaymentService {
 	private final BookItemRepository bookItemRepository;
 	private final BookPackageService bookPackageService;
 	private boolean isHavingPaperBook = false;
+	private final CartDetailService cartDetailService;
 
 	public String handleVNPayResponse(Long vnp_Amount, String vnp_BankCode, String vnp_BankTranNo, String vnp_CardType,
 			String vnp_OrderInfo, String vnp_PayDate, String vnp_ResponseCode, String vnp_TmnCode,
@@ -163,9 +166,19 @@ public class PaymentService {
 				emailService.sendPaymentConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
 			}
 			
+//			xoa cart detail sau khi thanh toan
+			order.getOrderDetails().forEach(detail -> {
+				cartDetailService.modifyCartDetails(CartDetailCreateUpdateBodyDTO.builder()
+						.bookPackageId(detail.getBookPackage().getId())
+						.quantity(0)
+						.build(), order.getCustomer().getUser().getUsername());				
+			});
+			
 		}else {
 			orderRepository.delete(order);
 		}
+		
+		
 
 		return redirectURL;
 	}

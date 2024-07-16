@@ -83,7 +83,8 @@ public class SecurityConfig {
         				"/v3/api-docs/**",
         				"/store/api/v1/auth/sign-in",
         				"/store/api/v1/users/register",
-        				"/store/api/v1/**").permitAll()
+        				"/store/api/v1/**",
+        				"/store/api/v1/payment/vnpay/response").permitAll()
 //        		.requestMatchers("/admin/api/v1/**").hasAuthority(UserRole.ADMIN.toString())
 //        		.requestMatchers(
 //        				"/admin/api/v1/books/**",
