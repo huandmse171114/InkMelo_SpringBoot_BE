@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import com.inkmelo.VnPay.VnPayService;
 import com.inkmelo.cartdetail.CartDetail;
+import com.inkmelo.cartdetail.CartDetailCreateUpdateBodyDTO;
 import com.inkmelo.cartdetail.CartDetailRepository;
+import com.inkmelo.cartdetail.CartDetailService;
+import com.inkmelo.cartdetail.CartDetailStatus;
 import com.inkmelo.customer.Customer;
 import com.inkmelo.customer.CustomerRepository;
 import com.inkmelo.exception.BookPackageOutOfStockException;
@@ -43,6 +46,7 @@ public class OrderService {
 	private final OrderMappingService mappingService;
 	private final VnPayService vnpayService;
 	private final CartDetailRepository cartDetailRepository;
+	private final CartDetailService cartDetailService;
 	private final OrderDetailRepository orderDetailRepository;
 	private final int DEFAULT_PAGE = 0;
 	private final int DEFALT_SIZE = 5;
@@ -53,7 +57,7 @@ public class OrderService {
 		
 		Order order = mappingService.orderCreateBodyDTOToOrder(orderDTO);
 		
-		List<CartDetail> cartDetails = cartDetailRepository.findAllByIdIn(orderDTO.items());
+		List<CartDetail> cartDetails = cartDetailRepository.findAllByStatusAndIdIn(CartDetailStatus.ACTIVE, orderDTO.items());
 		
 		if (cartDetails.size() < orderDTO.items().size()) {
 			System.out.println("error found");

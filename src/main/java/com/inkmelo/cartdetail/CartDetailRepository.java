@@ -22,4 +22,6 @@ public interface CartDetailRepository extends JpaRepository<CartDetail, Integer>
 	Optional<CartDetail> findByBookPackageAndCart(BookPackage bookPackage, Cart cart);
 	
 	List<CartDetail> findAllByIdIn(Collection<Integer> id);
+	
+	List<CartDetail> findAllByStatusAndIdIn(CartDetailStatus status, Collection<Integer> id);
 }
