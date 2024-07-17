@@ -50,12 +50,12 @@ public class BookItemService {
 			
 			List<BookItem> bookItems;
 			
-			var books = bookRepository.findAllByStatusAndTitleContainingIgnoreCase(BookStatus.ACTIVE, title);
+			var books = bookRepository.findAllByStatusAndTitleContainingIgnoreCaseOrderByIdAsc(BookStatus.ACTIVE, title);
 			
 			if (type != null) {
-				bookItems = repository.findAllByStatusAndTypeAndBookIn(status, type, books);				
+				bookItems = repository.findAllByStatusAndTypeAndBookInOrderByIdAsc(status, type, books);				
 			} else {
-				bookItems = repository.findAllByStatusAndBookIn(status, books);
+				bookItems = repository.findAllByStatusAndBookInOrderByIdAsc(status, books);
 			}
 			
 			if (bookItems.isEmpty()) {
@@ -83,16 +83,16 @@ public class BookItemService {
 			Page<BookItem> pageBookItems;
 			List<BookItem> bookItems;
 			
-			var books = bookRepository.findAllByStatusAndTitleContainingIgnoreCase(BookStatus.ACTIVE, title);
+			var books = bookRepository.findAllByStatusAndTitleContainingIgnoreCaseOrderByIdAsc(BookStatus.ACTIVE, title);
 			
 //			Search with type and book title
 			if (type != null) {
-				pageBookItems = repository.findAllByStatusAndTypeAndBookIn(status, type, books, paging);
+				pageBookItems = repository.findAllByStatusAndTypeAndBookInOrderByIdAsc(status, type, books, paging);
 				bookItems = pageBookItems.getContent();
 				
 //			Search with book title only
 			} else {
-				pageBookItems = repository.findAllByStatusAndBookIn(status, books, paging);
+				pageBookItems = repository.findAllByStatusAndBookInOrderByIdAsc(status, books, paging);
 				bookItems = pageBookItems.getContent();
 			}
 			
@@ -129,12 +129,12 @@ public class BookItemService {
 			
 			List<BookItem> bookItems;
 			
-			var books = bookRepository.findAllByTitleContainingIgnoreCase(title);
+			var books = bookRepository.findAllByTitleContainingIgnoreCaseOrderByIdAsc(title);
 			
 			if (type != null) {
-				bookItems = repository.findAllByTypeAndBookIn(type, books);				
+				bookItems = repository.findAllByTypeAndBookInOrderByIdAsc(type, books);				
 			} else {
-				bookItems = repository.findAllByBookIn(books);
+				bookItems = repository.findAllByBookInOrderByIdAsc(books);
 			}
 			
 			if (bookItems.isEmpty()) {
@@ -162,16 +162,16 @@ public class BookItemService {
 			Page<BookItem> pageBookItems;
 			List<BookItem> bookItems;
 			
-			var books = bookRepository.findAllByTitleContainingIgnoreCase(title);
+			var books = bookRepository.findAllByTitleContainingIgnoreCaseOrderByIdAsc(title);
 			
 //			Search with type and book title
 			if (type != null) {
-				pageBookItems = repository.findAllByTypeAndBookIn(type, books, paging);
+				pageBookItems = repository.findAllByTypeAndBookInOrderByIdAsc(type, books, paging);
 				bookItems = pageBookItems.getContent();
 				
 //			Search with book title only
 			} else {
-				pageBookItems = repository.findAllByBookIn(books, paging);
+				pageBookItems = repository.findAllByBookInOrderByIdAsc(books, paging);
 				bookItems = pageBookItems.getContent();
 			}
 			
@@ -217,7 +217,7 @@ public class BookItemService {
 		
 		BookItem bookItem = mappingService.bookItemCreateBodyDTOToBookItem(bookItemDTO);
 		
-		Optional<BookItem> bookItemDB = repository.findByBookAndType(bookItem.getBook(), bookItem.getType());
+		Optional<BookItem> bookItemDB = repository.findByBookAndTypeOrderByIdAsc(bookItem.getBook(), bookItem.getType());
 		
 		if (bookItemDB.isPresent()) {
 			throw new DuplicatedBookItemException("Tạo mới tài nguyên sách thất bại. Tài nguyên sách loại " 
@@ -291,7 +291,7 @@ public class BookItemService {
 		bookItem.setStatus(bookItemDTO.status());
 		
 		if (bookItem.getType() != bookItemDTO.type()) {
-			Optional<BookItem> bookItemDB = repository.findByBookAndType(bookItem.getBook(), bookItem.getType());
+			Optional<BookItem> bookItemDB = repository.findByBookAndTypeOrderByIdAsc(bookItem.getBook(), bookItem.getType());
 			
 			if (bookItemDB.isPresent()) {
 				if (bookItemDB.get().getId() != bookItemDTO.id()) {

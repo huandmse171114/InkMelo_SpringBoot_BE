@@ -57,7 +57,7 @@ public class OrderService {
 		
 		Order order = mappingService.orderCreateBodyDTOToOrder(orderDTO);
 		
-		List<CartDetail> cartDetails = cartDetailRepository.findAllByStatusAndIdIn(CartDetailStatus.ACTIVE, orderDTO.items());
+		List<CartDetail> cartDetails = cartDetailRepository.findAllByStatusAndIdInOrderByIdAsc(CartDetailStatus.ACTIVE, orderDTO.items());
 		
 		if (cartDetails.size() < orderDTO.items().size()) {
 			System.out.println("error found");
@@ -165,7 +165,7 @@ public class OrderService {
 
 	public ResponseEntity<?> findAllOrders(String username, String fromDate, String toDate, Integer page,
 			Integer size) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
