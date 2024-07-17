@@ -128,6 +128,10 @@ public class ShipmentService {
 			throw new NoShipmentFoundException("Không tìm thấy thông tin vận chuyển cần chỉnh sửa");
 		}
 		
+		if (shipmentDTO.status() == null) {
+			throw new NoShipmentFoundException("không được để trống thông tin status của thông tin giao hàng.");
+		}
+		
 		Shipment shipment = shipmentOption.get();
 
 //		Need to update default shipment
@@ -145,14 +149,15 @@ public class ShipmentService {
 				}
 //			Update to not be default shipment
 			}else {
-				Optional<Shipment> newDefaultShipmentOptional = repository.findByCustomerAndIdNot(customer, shipment.getId());
+				List<Shipment> newDefaultShipmentOptional = repository.findAllByCustomerAndIdNot(customer, shipment.getId());
 				
 //				If there is one another shipment
-				if (newDefaultShipmentOptional.isPresent()) {
-					Shipment newDefaultShipment = newDefaultShipmentOptional.get();
+				if (!newDefaultShipmentOptional.isEmpty()) {
+					Shipment newDefaultShipment = newDefaultShipmentOptional.get(0);
 					newDefaultShipment.setDefault(true);
 					newDefaultShipment.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
 					repository.save(newDefaultShipment);
+					
 //				If there is not another shipment
 				}else {
 					throw new DefaultShipmentUpdateException("Không thể thay đổi địa chỉ mặc định. Địa chỉ này là duy nhất.");
@@ -195,11 +200,11 @@ public class ShipmentService {
 		
 		repository.save(shipment);
 		
-		Optional<Shipment> newDefaultShipmentOptional = repository.findByCustomerAndIdNot(customer, shipment.getId());
+		List<Shipment> newDefaultShipmentOptional = repository.findAllByCustomerAndIdNot(customer, shipment.getId());
 		
 //		If there is one another shipment
-		if (newDefaultShipmentOptional.isPresent()) {
-			Shipment newDefaultShipment = newDefaultShipmentOptional.get();
+		if (!newDefaultShipmentOptional.isEmpty()) {
+			Shipment newDefaultShipment = newDefaultShipmentOptional.get(0);
 			newDefaultShipment.setDefault(true);
 			newDefaultShipment.setLastUpdatedTime(Date.valueOf(LocalDate.now()));
 			repository.save(newDefaultShipment);

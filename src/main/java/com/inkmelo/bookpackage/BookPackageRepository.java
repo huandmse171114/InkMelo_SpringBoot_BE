@@ -18,6 +18,10 @@ public interface BookPackageRepository extends JpaRepository<BookPackage, Intege
 	
 	Optional<BookPackage> findByIdAndStatus(Integer id, BookPackageStatus status);
 	
+	List<BookPackage> findAllByTitleContainingIgnoreCaseAndBookIn(String title, Collection<Book> book);
+	
+	List<BookPackage> findAllByTitleContainingIgnoreCase(String title);
+	
 	List<BookPackage> findAllByStatusOrderByIdAsc(BookPackageStatus status);
 	
 	Optional<BookPackage> findByBookAndItemsAndStatus(Book book, Collection<BookItem> items, BookPackageStatus status);

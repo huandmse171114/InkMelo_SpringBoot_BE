@@ -17,5 +17,5 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Integer> {
 	
 	Optional<Shipment> findByCustomerAndIsDefault(Customer customer, boolean isDefault);
 	
-	Optional<Shipment> findByCustomerAndIdNot(Customer customer, Integer id);
+	List<Shipment> findAllByCustomerAndIdNot(Customer customer, Integer id);
 }

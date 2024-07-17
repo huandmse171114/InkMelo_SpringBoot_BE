@@ -58,14 +58,16 @@ public class OrderController {
 				@RequestParam(name = "size", defaultValue = "5") Integer size,
 				@RequestParam(name = "username", required = false) String username,
 				@RequestParam(required = false, defaultValue = "2024-01-01") String fromDate,
-				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate
+				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate,
+				@RequestParam(required = false) String bookTitle,
+				@RequestParam(required = false) String bookPackageTitle
 			) {
 		
 		if (fromDate == null) fromDate = "";
 		if (toDate == null) toDate = "";
 		if (username == null) username = "";
 		
-		return service.findAllOrders(username, fromDate, toDate, page, size);
+		return service.findAllOrders(username, fromDate, toDate, page, size, bookTitle, bookPackageTitle);
 	}
 	
 	@GetMapping("/store/api/v1/customers/{username}/orders")

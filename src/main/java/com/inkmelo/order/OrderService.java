@@ -2,8 +2,12 @@ package com.inkmelo.order;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.VnPay.VnPayService;
+import com.inkmelo.book.Book;
+import com.inkmelo.book.BookRepository;
+import com.inkmelo.bookpackage.BookPackage;
+import com.inkmelo.bookpackage.BookPackageRepository;
 import com.inkmelo.cartdetail.CartDetail;
 import com.inkmelo.cartdetail.CartDetailCreateUpdateBodyDTO;
 import com.inkmelo.cartdetail.CartDetailRepository;
@@ -21,6 +29,8 @@ import com.inkmelo.cartdetail.CartDetailStatus;
 import com.inkmelo.customer.Customer;
 import com.inkmelo.customer.CustomerRepository;
 import com.inkmelo.exception.BookPackageOutOfStockException;
+import com.inkmelo.exception.NoBookFoundException;
+import com.inkmelo.exception.NoBookPackageFoundException;
 import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
@@ -46,8 +56,9 @@ public class OrderService {
 	private final OrderMappingService mappingService;
 	private final VnPayService vnpayService;
 	private final CartDetailRepository cartDetailRepository;
-	private final CartDetailService cartDetailService;
 	private final OrderDetailRepository orderDetailRepository;
+	private final BookPackageRepository bookPackageRepository;
+	private final BookRepository bookRepository;
 	private final int DEFAULT_PAGE = 0;
 	private final int DEFALT_SIZE = 5;
 
@@ -164,9 +175,65 @@ public class OrderService {
 	}
 
 	public ResponseEntity<?> findAllOrders(String username, String fromDate, String toDate, Integer page,
-			Integer size) {
+			Integer size, String bookTitle, String bookPackageTitle) {
+		List<BookPackage> bookPackages = new LinkedList<>();
+		List<Book> books = new LinkedList<>();
+		Page<Order> pageOrders;
 		
-		return null;
+		Pageable paging = PageRequest.of(page, size);
+		
+		books = bookRepository.findAllByTitleContainingIgnoreCase(bookTitle);
+		
+		if (!books.isEmpty()) {
+			bookPackages = bookPackageRepository.findAllByTitleContainingIgnoreCaseAndBookIn(bookPackageTitle, books);				
+		}else {
+			throw new NoBookFoundException("Không tìm thấy cuốn sách phù hợp.");
+		}
+		
+		if (!bookPackages.isEmpty()) {
+			
+			List<OrderDetail> details = orderDetailRepository.findAllByBookPackageIn(bookPackages);
+			
+			if (details.isEmpty()) {
+				throw new NoOrderFoundException("Không tìm thấy đơn hàng phù hợp.");
+			}else {
+				
+				List<Integer> orderIdsList =  details.stream()
+						.map(detail -> detail.getOrder().getId())
+						.toList();
+						
+				Set<Integer> orderIds = new HashSet<>(orderIdsList);
+				
+				if (!username.isEmpty()) {
+					Customer customer = getCustomer(username);
+					pageOrders = repository.findAllByCustomerAndIdIn(customer, orderIds, paging);
+				}else {
+					pageOrders = repository.findAllByIdIn(orderIds, paging);
+				}
+			}
+			
+			List<Order> orders = pageOrders.getContent();
+			
+			var response = orders.stream()
+					.map(order -> mappingService.orderToOrderAdminResponseDTO(order))
+					.toList();
+			
+			if (orders.isEmpty()) {
+				throw new NoOrderFoundException("Không tìm thấy đơn hàng phù hợp.");
+			}
+			
+			return Utils.generatePagingListResponseEntity(
+					DEFALT_SIZE, 
+					orders, 
+					DEFAULT_PAGE, 
+					DEFALT_SIZE, 
+					null);
+			
+		}else {
+			throw new NoBookPackageFoundException("Không tìm thấy gói sách phù hợp.");
+		}
+		
+		
 	}
 
 	public ResponseEntity<?> findByCustomerAndId(String username, Integer id) {
