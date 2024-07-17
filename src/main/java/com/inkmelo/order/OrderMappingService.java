@@ -1,5 +1,6 @@
 package com.inkmelo.order;
 
+import java.lang.StackWalker.Option;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -10,12 +11,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inkmelo.customer.CustomerMappingService;
+import com.inkmelo.exception.NoPaymentFoundException;
 import com.inkmelo.exception.NoShipmentFoundException;
 import com.inkmelo.ghn.GHNApis;
 import com.inkmelo.ghn.GHNTrackingOrderDTO;
 import com.inkmelo.ghn.OrderTrackingStatus;
 import com.inkmelo.orderdetail.OrderDetailMappingService;
 import com.inkmelo.payment.PaymentMappingService;
+import com.inkmelo.payment.PaymentRepository;
+import com.inkmelo.payment.VNPayPayment;
+import com.inkmelo.payment.VNPayPaymentRepository;
+import com.inkmelo.payment.VNPayPaymentResponseDTO;
 import com.inkmelo.shipment.Shipment;
 import com.inkmelo.shipment.ShipmentRepository;
 
@@ -30,6 +36,7 @@ public class OrderMappingService {
 	private final OrderRepository orderRepository;
 	private final CustomerMappingService customerMapping;
 	private final PaymentMappingService paymentMapping;
+	private final VNPayPaymentRepository vnpayPaymentRepository;
 	
 	public Order orderCreateBodyDTOToOrder(OrderCreateBodyDTO orderDTO) {
 		Optional<Shipment> shipmentOptional = shipmentRepository.findById(orderDTO.shipmentId());
@@ -139,6 +146,12 @@ public class OrderMappingService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		
+		Optional<VNPayPayment> payment = vnpayPaymentRepository.findById(order.getPayment().getId());
+		
+		if (payment.isEmpty()) {
+			throw new NoPaymentFoundException("Không tìm thấy thông tin thanh toán.");
+		}
+		
 		if (order.getGhnOrderCode() != null) {
 			
 			String trackingOrderDetail = ghnApis.trackOrder(order.getGhnOrderCode());
@@ -153,6 +166,7 @@ public class OrderMappingService {
 					order.setTag(trackingOrderDTO.getData().getTag());
 					
 					orderRepository.save(order);
+					
 					
 					return OrderAdminResponseDTO.builder()
 							.id(order.getId())
@@ -183,7 +197,7 @@ public class OrderMappingService {
 									.map(detail -> detailMapping
 											.orderDetailToOrderDetailResponseDTO(detail))
 									.toList())
-							.payment(paymentMapping.paymentToVNPayPaymentResponseDTO(order.getPayment()))
+							.payment(paymentMapping.paymentToVNPayPaymentResponseDTO(payment.get()))
 							.build();
 					
 				} catch (JsonProcessingException e) {
@@ -222,7 +236,7 @@ public class OrderMappingService {
 								.map(detail -> detailMapping
 										.orderDetailToOrderDetailResponseDTO(detail))
 								.toList())
-						.payment(paymentMapping.paymentToVNPayPaymentResponseDTO(order.getPayment()))
+						.payment(paymentMapping.paymentToVNPayPaymentResponseDTO(payment.get()))
 						.build();
 			}
 		} else {
@@ -251,7 +265,7 @@ public class OrderMappingService {
 							.map(detail -> detailMapping
 									.orderDetailToOrderDetailResponseDTO(detail))
 							.toList())
-					.payment(paymentMapping.paymentToVNPayPaymentResponseDTO(order.getPayment()))
+					.payment(paymentMapping.paymentToVNPayPaymentResponseDTO(payment.get()))
 					.build();
 		}
 	}
