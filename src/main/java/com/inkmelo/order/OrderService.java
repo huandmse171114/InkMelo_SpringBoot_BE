@@ -162,5 +162,16 @@ public class OrderService {
 		
 		return customerOption.get();
 	}
+
+	public ResponseEntity<?> findAllOrders(String username, String fromDate, String toDate, Integer page,
+			Integer size) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResponseEntity<?> findByCustomerAndId(String username, Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

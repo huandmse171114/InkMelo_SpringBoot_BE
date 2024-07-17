@@ -1,6 +1,7 @@
 package com.inkmelo.order;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import com.inkmelo.orderdetail.OrderDetailResponseDTO;
 
@@ -15,6 +16,8 @@ public record OrderResponseDTO(
 			float totalPrice,
 			List<OrderDetailResponseDTO> detail,
 			Date deliveredDate,
+			Timestamp pickupTime,
+			List<String> tag,
 			Date createdAt,
 			String ghnOrderStatus
 			

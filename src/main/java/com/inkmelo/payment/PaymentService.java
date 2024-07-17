@@ -158,7 +158,7 @@ public class PaymentService {
 				order.setExpectedDeliveryTime(orderResponse.getData().getExpected_delivery_time());
 				order.setExpectedDaysToDelivery((order.getExpectedDeliveryTime().getTime() - currentDate) / 
 						(1000 * 60 * 60 * 24) );
-				order.setGhbOrderCode(orderResponse.getData().getOrder_code());
+				order.setGhnOrderCode(orderResponse.getData().getOrder_code());
 				order.setShippingFee(orderResponse.getData().getTotal_fee());
 				order.setTotalPrice(order.getOrderPrice() + order.getShippingFee());
 				orderRepository.save(order);

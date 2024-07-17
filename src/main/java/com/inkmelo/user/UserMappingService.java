@@ -4,16 +4,21 @@ import java.sql.Date;
 import java.time.LocalDate;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserMappingService {
 
+	private final PasswordEncoder passwordEncoder;
 		
 	public User userCreateBodyDTOToUser(UserCreateBodyDTO userDTO) {
 		return User.builder()
 				.username(userDTO.username())
-				.password(userDTO.password())
+				.password(passwordEncoder.encode(userDTO.password()))
 				.email(userDTO.email())
 				.fullname(userDTO.fullname())
 				.role(userDTO.role() == null ? 

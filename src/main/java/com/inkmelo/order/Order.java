@@ -1,6 +1,7 @@
 package com.inkmelo.order;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -83,7 +84,11 @@ public class Order {
 	@Column(nullable = false)
 	private Integer ghnServiceId;
 	
-	private String ghbOrderCode;
+	private String ghnOrderCode;
+	
+	private Timestamp pickupTime;
+	
+	private List<String> tag;
 	
 	@Column(
 			length = 12,
