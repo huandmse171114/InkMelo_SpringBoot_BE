@@ -48,7 +48,7 @@ public class BookService {
 //		Get books, without paging
 		if (page == null & size == null) {
 			var books = repository
-					.findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
+					.findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(
 							status, 
 							keyword, 
 							keyword);
@@ -76,7 +76,7 @@ public class BookService {
 			Pageable paging = PageRequest.of(page, size);
 			
 			Page<Book> pageBooks = repository
-					.findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
+					.findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(
 							status, 
 							keyword, 
 							keyword,
@@ -115,7 +115,7 @@ public class BookService {
 //		Get books, without paging
 		if (page == null & size == null) {
 			var books = repository
-					.findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword);
+					.findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(keyword, keyword);
 			
 			if (books.isEmpty()) {
 				throw new NoBookExistException("Dữ liệu về sách hiện đang rỗng.");
@@ -139,7 +139,7 @@ public class BookService {
 			Pageable paging = PageRequest.of(page, size);
 			
 			var pageBooks = repository
-					.findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(keyword, keyword, paging);
+					.findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(keyword, keyword, paging);
 			
 			var books = pageBooks.getContent();
 			
@@ -170,11 +170,11 @@ public class BookService {
 	
 	public List<BookResponseDTO> searchBook(String keyword) 
 			throws NoBookFoundException{
-		Stream<BookResponseDTO> booksByTitle = repository.findAllByTitleContainingIgnoreCase(keyword)
+		Stream<BookResponseDTO> booksByTitle = repository.findAllByTitleContainingIgnoreCaseOrderByIdAsc(keyword)
 				.stream()
 				.map(book -> mappingService.bookToBookResponseDTO(book));
 		
-		Stream<BookResponseDTO> booksByAuthor = repository.findAllByAuthorContainingIgnoreCase(keyword)
+		Stream<BookResponseDTO> booksByAuthor = repository.findAllByAuthorContainingIgnoreCaseOrderByIdAsc(keyword)
 				.stream()
 				.map(book -> mappingService.bookToBookResponseDTO(book));
 				
@@ -224,7 +224,7 @@ public class BookService {
 		
 		if (!oldGenreIds.containsAll(bookDTO.genreIds()) |
 				!bookDTO.genreIds().containsAll(oldGenreIds)) {
-			var newGenres = genreRepository.findAllByIdIn(bookDTO.genreIds());
+			var newGenres = genreRepository.findAllByIdInOrderByIdAsc(bookDTO.genreIds());
 			if (newGenres.size() < bookDTO.genreIds().size()) {
 				throw new NoGenreFoundException("Cập nhật sách thất bại. Một số thể loại sách không tồn tại.");
 			}

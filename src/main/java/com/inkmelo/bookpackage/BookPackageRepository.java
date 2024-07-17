@@ -18,32 +18,38 @@ public interface BookPackageRepository extends JpaRepository<BookPackage, Intege
 	
 	Optional<BookPackage> findByIdAndStatus(Integer id, BookPackageStatus status);
 	
-	List<BookPackage> findAllByStatus(BookPackageStatus status);
+	List<BookPackage> findAllByTitleContainingIgnoreCaseAndBookIn(String title, Collection<Book> book);
+	
+	List<BookPackage> findAllByTitleContainingIgnoreCase(String title);
+	
+	List<BookPackage> findAllByStatusOrderByIdAsc(BookPackageStatus status);
 	
 	Optional<BookPackage> findByBookAndItemsAndStatus(Book book, Collection<BookItem> items, BookPackageStatus status);
 	
-	List<BookPackage> findAllByCategoryAndStatus(Category category, BookPackageStatus status);
+	List<BookPackage> findAllByCategoryAndStatusOrderByIdAsc(Category category, BookPackageStatus status);
 	
-	List<BookPackage> findAllByCategory(Category category);
+	List<BookPackage> findAllByCategoryOrderByIdAsc(Category category);
 	
-	List<BookPackage> findAllByModeAndStatus(int mode, BookPackageStatus status);
+	List<BookPackage> findAllByModeAndStatusOrderByIdAsc(int mode, BookPackageStatus status);
 	
-	List<BookPackage> findAllByMode(int mode);
+	List<BookPackage> findAllByModeOrderByIdAsc(int mode);
 	
-	List<BookPackage> findAllByBookInAndStatus(Collection<Book> books, BookPackageStatus status);
+	List<BookPackage> findAllByBookInAndStatusOrderByIdAsc(Collection<Book> books, BookPackageStatus status);
 	
-	List<BookPackage> findAllByBookIn(Collection<Book> books);
+	List<BookPackage> findAllByBookInOrderByIdAsc(Collection<Book> books);
 	
-	List<BookPackage> findAllByCategoryAndBookInAndStatus(Category category, Collection<Book> books, BookPackageStatus status);
+	List<BookPackage> findAllByCategoryAndBookInAndStatusOrderByIdAsc(Category category, Collection<Book> books, BookPackageStatus status);
 	
-	List<BookPackage> findAllByCategoryAndBookIn(Category category, Collection<Book> books);
+	List<BookPackage> findAllByCategoryAndBookInOrderByIdAsc(Category category, Collection<Book> books);
 	
-	List<BookPackage> findAllByModeAndBookInAndStatus(int mode, Collection<Book> books, BookPackageStatus status);
+	List<BookPackage> findAllByModeAndBookInAndStatusOrderByIdAsc(int mode, Collection<Book> books, BookPackageStatus status);
 	
-	List<BookPackage> findAllByModeAndBookIn(int mode, Collection<Book> books);
+	List<BookPackage> findAllByModeAndBookInOrderByIdAsc(int mode, Collection<Book> books);
 
-	List<BookPackage> findAllByModeAndCategoryAndBookInAndStatus(int value, Category category, Collection<Book> booksByTitle, BookPackageStatus status);
+	List<BookPackage> findAllByModeAndCategoryAndBookInAndStatusOrderByIdAsc(int value, Category category, Collection<Book> booksByTitle, BookPackageStatus status);
 	
-	List<BookPackage> findAllByModeAndCategoryAndBookIn(int value, Category category, Collection<Book> booksByTitle);
+	List<BookPackage> findAllByModeAndCategoryAndBookInOrderByIdAsc(int value, Category category, Collection<Book> booksByTitle);
+
+	List<BookPackage> findAllByOrderById();
 
 }

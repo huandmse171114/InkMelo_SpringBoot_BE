@@ -86,6 +86,8 @@ public class Order {
 	
 	private String ghnOrderCode;
 	
+	private String ghnOrderStatus;
+	
 	private Timestamp pickupTime;
 	
 	private List<String> tag;

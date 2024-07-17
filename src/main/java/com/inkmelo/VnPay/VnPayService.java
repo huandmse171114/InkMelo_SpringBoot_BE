@@ -129,8 +129,6 @@ public class VnPayService {
         String vnp_Command = "pay";
         String orderType = "other";
         
-        String amountStr = Math.floor(totalPayment) + "";
-        
         long amount;
         try {
             long amountLong = (long) totalPayment;

@@ -33,7 +33,7 @@ public class GenreService {
 
 //		Get genres, no paging
 		if (page == null & size == null) {
-			var genres = repository.findAllByStatusAndNameContainingIgnoreCase(status, keyword);
+			var genres = repository.findAllByStatusAndNameContainingIgnoreCaseOrderByIdAsc(status, keyword);
 			
 			if (genres.isEmpty()) {
 				throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
@@ -56,7 +56,7 @@ public class GenreService {
 			
 			Pageable paging = PageRequest.of(page, size); 
 			
-			var pageGenres = repository.findAllByStatusAndNameContainingIgnoreCase(status, keyword, paging);
+			var pageGenres = repository.findAllByStatusAndNameContainingIgnoreCaseOrderByIdAsc(status, keyword, paging);
 			
 			return getGenreResponseDTO(pageGenres);
 		}
@@ -68,7 +68,7 @@ public class GenreService {
 //		Get genres, no paging
 		if (page == null & size == null) {
 				
-			var genres = repository.findAllByNameContainingIgnoreCase(keyword);
+			var genres = repository.findAllByNameContainingIgnoreCaseOrderByIdAsc(keyword);
 			
 			if (genres.isEmpty()) {
 				throw new NoGenreExistException("Dữ liệu về thể loại sách hiện đang rỗng.");
@@ -91,7 +91,7 @@ public class GenreService {
 			
 			Pageable paging = PageRequest.of(page, size); 
 			
-			var pageGenres = repository.findAllByNameContainingIgnoreCase(keyword, paging);
+			var pageGenres = repository.findAllByNameContainingIgnoreCaseOrderByIdAsc(keyword, paging);
 			
 			return getGenreAdminResponseDTO(pageGenres);
 			

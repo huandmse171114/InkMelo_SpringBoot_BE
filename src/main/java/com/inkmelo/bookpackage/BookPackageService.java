@@ -90,7 +90,7 @@ public class BookPackageService {
 			bookPackages = findAllByCategoryAndGenre(status, categoryId, genreId);
 //		Case 11: not support case will return all data
 		}else {
-			bookPackages = repository.findAllByStatus(status);
+			bookPackages = repository.findAllByStatusOrderByIdAsc(status);
 		}
 		
 		var response = getResponse(bookPackages);
@@ -160,7 +160,7 @@ public class BookPackageService {
 			bookPackages = findAllByCategoryAndGenre(null, categoryId, genreId);
 //		Case 11: not support case will return all data
 		}else {
-			bookPackages = repository.findAll();
+			bookPackages = repository.findAllByOrderById();
 		}
 		
 		var response = getAdminResponse(bookPackages);
@@ -266,7 +266,7 @@ public class BookPackageService {
 		if (!oldItemIds
 				.containsAll(bookPackageDTO.itemIds()) |
 				!bookPackageDTO.itemIds().containsAll(oldItemIds)) {
-			List<BookItem> newItems = bookItemRepository.findAllByIdIn(bookPackageDTO.itemIds());
+			List<BookItem> newItems = bookItemRepository.findAllByIdInOrderByIdAsc(bookPackageDTO.itemIds());
 			
 			if (newItems.size() < bookPackageDTO.itemIds().size()) {
 				throw new NoBookItemFoundException("Cập nhật gói tài nguyên sách thất bại. Một số tài nguyên sách không tồn tại.");
@@ -308,9 +308,9 @@ public class BookPackageService {
 		List<BookPackage> bookPackages = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackages = repository.findAllByCategoryAndStatus(category, status);			
+			bookPackages = repository.findAllByCategoryAndStatusOrderByIdAsc(category, status);			
 		}else {
-			bookPackages = repository.findAllByCategory(category);	
+			bookPackages = repository.findAllByCategoryOrderByIdAsc(category);	
 		}
 		
 		return bookPackages;
@@ -323,9 +323,9 @@ public class BookPackageService {
 		List<BookPackage> bookPackages = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackages = repository.findAllByModeAndStatus(mode.getValue(), status);			
+			bookPackages = repository.findAllByModeAndStatusOrderByIdAsc(mode.getValue(), status);			
 		}else {
-			bookPackages = repository.findAllByMode(mode.getValue());			
+			bookPackages = repository.findAllByModeOrderByIdAsc(mode.getValue());			
 		}
 		
 		
@@ -333,19 +333,19 @@ public class BookPackageService {
 	}
 	
 	private List<BookPackage> findAllBookPackageByBookTitleOrAuthor(BookPackageStatus status, String keyword) {
-		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCaseOrderByIdAsc(keyword);
 		
-		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCaseOrderByIdAsc(keyword);
 		
 		List<BookPackage> bookPackagesByBookTitle = new ArrayList<>();
 		List<BookPackage> bookPackagesByBookAuthor = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackagesByBookTitle = repository.findAllByBookInAndStatus(booksByTitle, status);
-			bookPackagesByBookAuthor = repository.findAllByBookInAndStatus(booksByAuthor, status);			
+			bookPackagesByBookTitle = repository.findAllByBookInAndStatusOrderByIdAsc(booksByTitle, status);
+			bookPackagesByBookAuthor = repository.findAllByBookInAndStatusOrderByIdAsc(booksByAuthor, status);			
 		}else {
-			bookPackagesByBookTitle = repository.findAllByBookIn(booksByTitle);
-			bookPackagesByBookAuthor = repository.findAllByBookIn(booksByAuthor);	
+			bookPackagesByBookTitle = repository.findAllByBookInOrderByIdAsc(booksByTitle);
+			bookPackagesByBookAuthor = repository.findAllByBookInOrderByIdAsc(booksByAuthor);	
 		}
 		
 		
@@ -362,14 +362,14 @@ public class BookPackageService {
 		List<Genre> genres = new ArrayList<>();
 		genres.add(checkExistGenre(genreId));
 		
-		List<Book> books = bookRepository.findAllByGenres(genres);
+		List<Book> books = bookRepository.findAllByGenresOrderByIdAsc(genres);
 		
 		List<BookPackage> bookPackages = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackages = repository.findAllByBookInAndStatus(books, status);			
+			bookPackages = repository.findAllByBookInAndStatusOrderByIdAsc(books, status);			
 		}else {
-			bookPackages = repository.findAllByBookIn(books);
+			bookPackages = repository.findAllByBookInOrderByIdAsc(books);
 		}
 		
 		return bookPackages;
@@ -377,9 +377,9 @@ public class BookPackageService {
 	}
 	
 	private List<BookPackage> findAllBookPackageByBookTitleOrAuthorAndCategory(BookPackageStatus status, String keyword, Integer categoryId) {
-		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCaseOrderByIdAsc(keyword);
 		
-		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCaseOrderByIdAsc(keyword);
 		
 		Category category = checkExistCategory(categoryId);
 		
@@ -387,11 +387,11 @@ public class BookPackageService {
 		List<BookPackage> bookPackagesByBookAuthor = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackagesByBookTitle = repository.findAllByCategoryAndBookInAndStatus(category, booksByTitle, status);
-			bookPackagesByBookAuthor = repository.findAllByCategoryAndBookInAndStatus(category, booksByAuthor, status);			
+			bookPackagesByBookTitle = repository.findAllByCategoryAndBookInAndStatusOrderByIdAsc(category, booksByTitle, status);
+			bookPackagesByBookAuthor = repository.findAllByCategoryAndBookInAndStatusOrderByIdAsc(category, booksByAuthor, status);			
 		}else {
-			bookPackagesByBookTitle = repository.findAllByCategoryAndBookIn(category, booksByTitle);
-			bookPackagesByBookAuthor = repository.findAllByCategoryAndBookIn(category, booksByAuthor);			
+			bookPackagesByBookTitle = repository.findAllByCategoryAndBookInOrderByIdAsc(category, booksByTitle);
+			bookPackagesByBookAuthor = repository.findAllByCategoryAndBookInOrderByIdAsc(category, booksByAuthor);			
 		}
 		
 		
@@ -404,9 +404,9 @@ public class BookPackageService {
 	}
 	
 	private List<BookPackage> findAllBookPackageByBookTitleOrAuthorAndMode(BookPackageStatus status, String keyword, Integer modeId) {
-		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCaseOrderByIdAsc(keyword);
 		
-		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCaseOrderByIdAsc(keyword);
 		
 		BookPackageMode mode = BookPackageMode.fromValue(modeId);
 		
@@ -414,11 +414,11 @@ public class BookPackageService {
 		List<BookPackage> bookPackagesByBookAuthor = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackagesByBookTitle = repository.findAllByModeAndBookInAndStatus(mode.getValue(), booksByTitle, status);
-			bookPackagesByBookAuthor = repository.findAllByModeAndBookInAndStatus(mode.getValue(), booksByAuthor, status);
+			bookPackagesByBookTitle = repository.findAllByModeAndBookInAndStatusOrderByIdAsc(mode.getValue(), booksByTitle, status);
+			bookPackagesByBookAuthor = repository.findAllByModeAndBookInAndStatusOrderByIdAsc(mode.getValue(), booksByAuthor, status);
 		}else {
-			bookPackagesByBookTitle = repository.findAllByModeAndBookIn(mode.getValue(), booksByTitle);
-			bookPackagesByBookAuthor = repository.findAllByModeAndBookIn(mode.getValue(), booksByAuthor);
+			bookPackagesByBookTitle = repository.findAllByModeAndBookInOrderByIdAsc(mode.getValue(), booksByTitle);
+			bookPackagesByBookAuthor = repository.findAllByModeAndBookInOrderByIdAsc(mode.getValue(), booksByAuthor);
 		}
 		
 		
@@ -431,9 +431,9 @@ public class BookPackageService {
 	}
 	
 	private List<BookPackage> findAllBookPackageByBookTitleOrAuthorAndCategoryAndMode(BookPackageStatus status, String keyword, Integer categoryId, Integer modeId) {
-		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCase(keyword);
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCaseOrderByIdAsc(keyword);
 		
-		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCase(keyword);
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCaseOrderByIdAsc(keyword);
 		
 		BookPackageMode mode = BookPackageMode.fromValue(modeId);
 		
@@ -443,11 +443,11 @@ public class BookPackageService {
 		List<BookPackage> bookPackagesByBookAuthor = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackagesByBookTitle = repository.findAllByModeAndCategoryAndBookInAndStatus(mode.getValue(), category, booksByTitle, status);
-			bookPackagesByBookAuthor = repository.findAllByModeAndCategoryAndBookInAndStatus(mode.getValue(), category, booksByAuthor, status);
+			bookPackagesByBookTitle = repository.findAllByModeAndCategoryAndBookInAndStatusOrderByIdAsc(mode.getValue(), category, booksByTitle, status);
+			bookPackagesByBookAuthor = repository.findAllByModeAndCategoryAndBookInAndStatusOrderByIdAsc(mode.getValue(), category, booksByAuthor, status);
 		}else {
-			bookPackagesByBookTitle = repository.findAllByModeAndCategoryAndBookIn(mode.getValue(), category, booksByTitle);
-			bookPackagesByBookAuthor = repository.findAllByModeAndCategoryAndBookIn(mode.getValue(), category, booksByAuthor);
+			bookPackagesByBookTitle = repository.findAllByModeAndCategoryAndBookInOrderByIdAsc(mode.getValue(), category, booksByTitle);
+			bookPackagesByBookAuthor = repository.findAllByModeAndCategoryAndBookInOrderByIdAsc(mode.getValue(), category, booksByAuthor);
 		}
 		
 		
@@ -464,19 +464,19 @@ public class BookPackageService {
 		List<Genre> genres = new ArrayList<>();
 		genres.add(checkExistGenre(genreId));
 		
-		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCaseAndGenres(keyword, genres);
+		var booksByTitle = bookRepository.findAllByTitleContainingIgnoreCaseAndGenresOrderByIdAsc(keyword, genres);
 		
-		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCaseAndGenres(keyword, genres);
+		var booksByAuthor = bookRepository.findAllByAuthorContainingIgnoreCaseAndGenresOrderByIdAsc(keyword, genres);
 		
 		List<BookPackage> bookPackagesByBookTitle = new ArrayList<>();
 		List<BookPackage> bookPackagesByBookAuthor = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackagesByBookTitle = repository.findAllByBookInAndStatus(booksByTitle, status);
-			bookPackagesByBookAuthor = repository.findAllByBookInAndStatus(booksByAuthor, status);
+			bookPackagesByBookTitle = repository.findAllByBookInAndStatusOrderByIdAsc(booksByTitle, status);
+			bookPackagesByBookAuthor = repository.findAllByBookInAndStatusOrderByIdAsc(booksByAuthor, status);
 		}else {
-			bookPackagesByBookTitle = repository.findAllByBookIn(booksByTitle);
-			bookPackagesByBookAuthor = repository.findAllByBookIn(booksByAuthor);
+			bookPackagesByBookTitle = repository.findAllByBookInOrderByIdAsc(booksByTitle);
+			bookPackagesByBookAuthor = repository.findAllByBookInOrderByIdAsc(booksByAuthor);
 		}
 		
 		Set<BookPackage> response = new LinkedHashSet<>();
@@ -494,19 +494,19 @@ public class BookPackageService {
 		List<Genre> genres = new ArrayList<>();
 		genres.add(checkExistGenre(genreId));
 		
-		var booksByTitleAndGenre = bookRepository.findAllByTitleContainingIgnoreCaseAndGenres(keyword, genres);
+		var booksByTitleAndGenre = bookRepository.findAllByTitleContainingIgnoreCaseAndGenresOrderByIdAsc(keyword, genres);
 		
-		var booksByAuthorAndGenre = bookRepository.findAllByAuthorContainingIgnoreCaseAndGenres(keyword, genres);
+		var booksByAuthorAndGenre = bookRepository.findAllByAuthorContainingIgnoreCaseAndGenresOrderByIdAsc(keyword, genres);
 		
 		List<BookPackage> bookPackagesByBookTitleAndGenre = new ArrayList<>();
 		List<BookPackage> bookPackagesByBookAuthorAndGenre = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackagesByBookTitleAndGenre = repository.findAllByCategoryAndBookInAndStatus(category, booksByTitleAndGenre, status);
-			bookPackagesByBookAuthorAndGenre = repository.findAllByCategoryAndBookInAndStatus(category, booksByAuthorAndGenre, status);
+			bookPackagesByBookTitleAndGenre = repository.findAllByCategoryAndBookInAndStatusOrderByIdAsc(category, booksByTitleAndGenre, status);
+			bookPackagesByBookAuthorAndGenre = repository.findAllByCategoryAndBookInAndStatusOrderByIdAsc(category, booksByAuthorAndGenre, status);
 		}else {
-			bookPackagesByBookTitleAndGenre = repository.findAllByCategoryAndBookIn(category, booksByTitleAndGenre);
-			bookPackagesByBookAuthorAndGenre = repository.findAllByCategoryAndBookIn(category, booksByAuthorAndGenre);
+			bookPackagesByBookTitleAndGenre = repository.findAllByCategoryAndBookInOrderByIdAsc(category, booksByTitleAndGenre);
+			bookPackagesByBookAuthorAndGenre = repository.findAllByCategoryAndBookInOrderByIdAsc(category, booksByAuthorAndGenre);
 		}
 		
 		Set<BookPackage> response = new LinkedHashSet<>();
@@ -524,14 +524,14 @@ public class BookPackageService {
 		List<Genre> genres = new ArrayList<>();
 		genres.add(checkExistGenre(genreId));
 		
-		List<Book> booksByGenre = bookRepository.findAllByGenres(genres);
+		List<Book> booksByGenre = bookRepository.findAllByGenresOrderByIdAsc(genres);
 		
 		List<BookPackage> bookPackages = new ArrayList<>();
 		
 		if (status != null) {
-			bookPackages = repository.findAllByCategoryAndBookInAndStatus(category, booksByGenre, status);
+			bookPackages = repository.findAllByCategoryAndBookInAndStatusOrderByIdAsc(category, booksByGenre, status);
 		}else {
-			bookPackages = repository.findAllByCategoryAndBookIn(category, booksByGenre);
+			bookPackages = repository.findAllByCategoryAndBookInOrderByIdAsc(category, booksByGenre);
 		}
 		
 		

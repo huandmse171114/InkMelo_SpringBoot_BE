@@ -1,8 +1,5 @@
 package com.inkmelo.order;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 
@@ -16,19 +13,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inkmelo.exception.NoBookFoundException;
+import com.inkmelo.exception.NoBookPackageFoundException;
 import com.inkmelo.exception.NoCartDetailFoundException;
-import com.inkmelo.exception.NoCategoryFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.utils.Utils;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Order", description = "Order Management APIs")
 public class OrderController {
 	private final OrderService service;
 	
@@ -37,14 +37,11 @@ public class OrderController {
 				HttpServletRequest req,
 				@PathVariable("username") String username,
 				@Valid @RequestBody OrderCreateBodyDTO orderDTO
-			) {
+			) throws Exception {
 		String paymentUrl = "";
-		try {
-			paymentUrl = service.saveOrder(req, orderDTO, username);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println(orderDTO.totalPrice());
+		paymentUrl = service.saveOrder(req, orderDTO, username);
+		
 		
 		var response = new HashMap<String, Object>();
 		response.put("paymentUrl", paymentUrl);
@@ -56,18 +53,22 @@ public class OrderController {
 	
 	@GetMapping("/admin/api/v1/orders")
 	public ResponseEntity<?> getAllOrders(
-				@RequestParam(name = "page", required = false) Integer page,
-				@RequestParam(name = "size", required = false) Integer size,
+				@RequestParam(name = "page", defaultValue = "0") Integer page,
+				@RequestParam(name = "size", defaultValue = "5") Integer size,
 				@RequestParam(name = "username", required = false) String username,
 				@RequestParam(required = false, defaultValue = "2024-01-01") String fromDate,
-				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate
+				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate,
+				@RequestParam(required = false) String bookTitle,
+				@RequestParam(required = false) String bookPackageTitle
 			) {
 		
 		if (fromDate == null) fromDate = "";
 		if (toDate == null) toDate = "";
 		if (username == null) username = "";
+		if (bookTitle == null) bookTitle = "";
+		if (bookPackageTitle == null) bookPackageTitle = "";
 		
-		return service.findAllOrders(username, fromDate, toDate, page, size);
+		return service.findAllOrders(username, fromDate, toDate, page, size, bookTitle, bookPackageTitle);
 	}
 	
 	@GetMapping("/store/api/v1/customers/{username}/orders")
@@ -95,6 +96,26 @@ public class OrderController {
 	@ExceptionHandler(NoOrderFoundException.class)
 	public ResponseEntity<?> handleNoOrderFoundException(
 			NoOrderFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoBookPackageFoundException.class)
+	public ResponseEntity<?> handleNoBookPackageFoundException(
+			NoBookPackageFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoBookFoundException.class)
+	public ResponseEntity<?> handleNoBookFoundException(
+			NoBookFoundException ex
 			) {
 		
 		return Utils.generateMessageResponseEntity(
@@ -142,5 +163,14 @@ public class OrderController {
 				HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<?> handleException(
+			Exception ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
+	}
 	
 }
