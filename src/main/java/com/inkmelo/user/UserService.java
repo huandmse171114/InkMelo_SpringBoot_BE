@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.cart.Cart;
@@ -45,6 +46,7 @@ public class UserService {
 	private final CartRepository cartRepository;
 	private final SendEmailService sendEmailService;
 	private final ShipmentRepository shipmentRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	public User loadUserByUsername(String username) {
 		Optional<User> userOptional = repository.findByUsername(username);
@@ -56,29 +58,30 @@ public class UserService {
 		return userOptional.get();
 	}
 
-	public void createUser(User user) {
-		repository.save(user);
+	public User createUser(User user) {
+		User userDB = repository.save(user);
 		
 		if (user.getRole() == UserRole.CUSTOMER) {
+			
+			Cart cart = Cart.builder()
+					.build();
+			
+			Cart cartDB = cartRepository.save(cart);
+			
 			Customer customer = Customer.builder()
 					.fullname(user.getFullname())
 					.email(user.getEmail())
 					.user(user)
+					.cart(cartDB)
 					.createdAt(Date.valueOf(LocalDate.now()))
 					.lastChangedBy("HUANDM")
 					.lastUpdatedTime(Date.valueOf(LocalDate.now()))
 					.build();
 			
 			Customer customerDB = customerRepository.save(customer);
-			
-			Cart cart = Cart.builder()
-					.customer(customerDB)
-					.build();
-			
-			cartRepository.save(cart);
-			
+
 			Shipment shipment = Shipment.builder()
-					.receiverName("Huan Minh Dinh")
+					.receiverName(user.getFullname())
 					.contactNumber("0977588901")
 					.description("Nha rieng")
 					.street("so XX duong YY")
@@ -97,6 +100,8 @@ public class UserService {
 			
 			shipmentRepository.save(shipment);
 		}
+		
+		return userDB;
 	}
 
 	public void saveUser(UserCreateBodyDTO userDTO) throws DataIntegrityViolationException,
@@ -211,9 +216,7 @@ public class UserService {
     }
 
     public void updatePassword(User user, String newPassword) throws MessagingException {
-        BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = pwdEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
 
         user.setResetPassword(null);
         user.setResetPasswordExpiry(null);

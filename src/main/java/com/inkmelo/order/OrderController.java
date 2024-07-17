@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCategoryFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
@@ -57,10 +58,16 @@ public class OrderController {
 	public ResponseEntity<?> getAllOrders(
 				@RequestParam(name = "page", required = false) Integer page,
 				@RequestParam(name = "size", required = false) Integer size,
-				@RequestParam(name = "username", required = false) String username
+				@RequestParam(name = "username", required = false) String username,
+				@RequestParam(required = false, defaultValue = "2024-01-01") String fromDate,
+				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate
 			) {
 		
-		return null;
+		if (fromDate == null) fromDate = "";
+		if (toDate == null) toDate = "";
+		if (username == null) username = "";
+		
+		return service.findAllOrders(username, fromDate, toDate, page, size);
 	}
 	
 	@GetMapping("/store/api/v1/customers/{username}/orders")
@@ -68,14 +75,19 @@ public class OrderController {
 				@PathVariable(name = "username") String username,
 				@RequestParam(required = false, defaultValue = "0") Integer page,
 				@RequestParam(required = false, defaultValue = "5") Integer size,
-				@RequestParam(required = false, defaultValue = "2024-03-21") String fromDate,
-				@RequestParam(required = false, defaultValue = "2024-07-14") String toDate
+				@RequestParam(required = false, defaultValue = "2024-01-01") String fromDate,
+				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate
 			) {
 		if (fromDate == null) fromDate = "";
 		if (toDate == null) toDate = "";
 		
 		return service.findAllOrdersByCustomer(username, OrderStatus.PAYMENT_FINISHED, page, size, fromDate, toDate);
 	}
+	
+	@GetMapping("/store/api/v1/customers/{username}/orders/{id}")
+	public ResponseEntity<?> getOrdersByCustomerAndId(@PathVariable("username") String username, @PathVariable("id") Integer id) {
+		return service.findByCustomerAndId(username, id);
+	};
 	
 	
 //	====================================== Exception Handler ===================================
@@ -113,6 +125,16 @@ public class OrderController {
 	@ExceptionHandler(DateTimeParseException.class)
 	public ResponseEntity<?> handleDateTimeParseExceptionn(
 			DateTimeParseException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				"Định dạng ngày không hợp lệ (yyy-MM-dd).", 
+				HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(NoCartDetailFoundException.class)
+	public ResponseEntity<?> handleNoCartDetailFoundException(
+			NoCartDetailFoundException ex
 			) {
 		
 		return Utils.generateMessageResponseEntity(

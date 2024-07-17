@@ -15,7 +15,6 @@ public record BookPackageOrderResponseDTO(
 		String description,
 		float price,
 		int modeId,
-		int stock,
 		BookOrderResponseDTO book,
 		List<BookItemOrderResponseDTO> items,
 		CategoryResponseDTO category
