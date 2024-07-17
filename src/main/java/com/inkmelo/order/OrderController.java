@@ -58,10 +58,16 @@ public class OrderController {
 	public ResponseEntity<?> getAllOrders(
 				@RequestParam(name = "page", required = false) Integer page,
 				@RequestParam(name = "size", required = false) Integer size,
-				@RequestParam(name = "username", required = false) String username
+				@RequestParam(name = "username", required = false) String username,
+				@RequestParam(required = false, defaultValue = "2024-01-01") String fromDate,
+				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate
 			) {
 		
-		return null;
+		if (fromDate == null) fromDate = "";
+		if (toDate == null) toDate = "";
+		if (username == null) username = "";
+		
+		return service.findAllOrders(username, fromDate, toDate, page, size);
 	}
 	
 	@GetMapping("/store/api/v1/customers/{username}/orders")
@@ -77,6 +83,11 @@ public class OrderController {
 		
 		return service.findAllOrdersByCustomer(username, OrderStatus.PAYMENT_FINISHED, page, size, fromDate, toDate);
 	}
+	
+	@GetMapping("/store/api/v1/customers/{username}/orders/{id}")
+	public ResponseEntity<?> getOrdersByCustomerAndId(@PathVariable("username") String username, @PathVariable("id") Integer id) {
+		return service.findByCustomerAndId(username, id);
+	};
 	
 	
 //	====================================== Exception Handler ===================================

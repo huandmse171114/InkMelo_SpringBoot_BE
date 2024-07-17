@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.inkmelo.cart.Cart;
@@ -45,6 +46,7 @@ public class UserService {
 	private final CartRepository cartRepository;
 	private final SendEmailService sendEmailService;
 	private final ShipmentRepository shipmentRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	public User loadUserByUsername(String username) {
 		Optional<User> userOptional = repository.findByUsername(username);
@@ -214,9 +216,7 @@ public class UserService {
     }
 
     public void updatePassword(User user, String newPassword) throws MessagingException {
-        BCryptPasswordEncoder pwdEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = pwdEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
 
         user.setResetPassword(null);
         user.setResetPasswordExpiry(null);
