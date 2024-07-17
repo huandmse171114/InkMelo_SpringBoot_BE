@@ -93,7 +93,7 @@ public class OrderService {
 		});
 		
 		// lay redirect url de chuyen sang trang thanh toan cua vnpay
-		String paymentUrl = vnpayService.getPaymentUrl(req, order.getTotalPrice(), orderDB.getId(), orderDTO.redirectUrl());
+		String paymentUrl = vnpayService.getPaymentUrl(req, order.getOrderPrice(), orderDB.getId(), orderDTO.redirectUrl());
 		System.out.println(paymentUrl);
 		
 		return paymentUrl;
@@ -181,7 +181,7 @@ public class OrderService {
 		Page<Order> pageOrders;
 		
 		Pageable paging = PageRequest.of(page, size);
-		
+	
 		books = bookRepository.findAllByTitleContainingIgnoreCase(bookTitle);
 		
 		if (!books.isEmpty()) {
@@ -227,7 +227,7 @@ public class OrderService {
 					orders, 
 					DEFAULT_PAGE, 
 					DEFALT_SIZE, 
-					null);
+					HttpStatus.OK);
 			
 		}else {
 			throw new NoBookPackageFoundException("Không tìm thấy gói sách phù hợp.");
