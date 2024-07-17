@@ -3,6 +3,7 @@ package com.inkmelo.payment;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -167,7 +168,32 @@ public class PaymentService {
 				
 			} else {
 				emailService.sendPaymentConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
+				
+				List<String> resourceLinks = new ArrayList<>();
+
+				order.getOrderDetails().forEach(detail -> {
+
+				  BookPackage bookPackage = detail.getBookPackage();
+
+				  bookPackage.getItems().forEach(item -> {
+
+				     if(item.getSource() != null) {
+				       resourceLinks.add(item.getSource());
+				     }
+
+				  });
+
+				});
+
+				emailService.sendResourceLinksEmail(
+				  order.getCustomer().getEmail(), 
+				  "Resource links",
+				  "Your order payment succeeded",
+				  resourceLinks
+				);
 			}
+			
+			
 			
 //			xoa cart detail sau khi thanh toan
 			order.getOrderDetails().forEach(detail -> {

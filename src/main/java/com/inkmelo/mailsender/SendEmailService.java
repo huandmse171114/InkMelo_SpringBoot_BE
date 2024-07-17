@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Service
@@ -133,5 +134,25 @@ public class SendEmailService {
         helper.addInline("logoImage", resource);
 
         javaMailSender.send(mimeMessage);
+    }
+    
+    public void sendResourceLinksEmail(String to, String subject, String text, List<String> resourceLinks) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(buildEmailContent(text, resourceLinks), true);
+        javaMailSender.send(message);
+    }
+
+    private String buildEmailContent(String text, List<String> resourceLinks) {
+        StringBuilder content = new StringBuilder(text);
+        content.append("<h3>Resource Links:</h3>");
+        content.append("<ul>");
+        for (String link : resourceLinks) {
+            content.append("<li><a href=\"").append(link).append("\">").append(link).append("</a></li>");
+        }
+        content.append("</ul>");
+        return content.toString();
     }
 }
