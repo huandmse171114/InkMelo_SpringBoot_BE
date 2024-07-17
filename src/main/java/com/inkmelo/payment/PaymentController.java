@@ -10,6 +10,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class PaymentController {
 		if (redirectUrl.isEmpty()) {
 			return "vnpay_return";			
 		}else {
-			return new RedirectView(redirectUrl);
+			return new RedirectView("/payment-success.html");
 		}
 		
 	}
