@@ -71,7 +71,6 @@ public class BookPackageMappingService {
 				.description(bookPackage.getDescription())
 				.price(bookPackage.getPrice())
 				.modeId(bookPackage.getMode())
-				.stock(bookPackage.getStock())
 				.book(bookMappingService
 						.bookToBookOrderResponseDTO(bookPackage.getBook()))
 				.items(bookPackage.getItems().stream()

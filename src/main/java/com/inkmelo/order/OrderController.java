@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCategoryFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
@@ -68,8 +69,8 @@ public class OrderController {
 				@PathVariable(name = "username") String username,
 				@RequestParam(required = false, defaultValue = "0") Integer page,
 				@RequestParam(required = false, defaultValue = "5") Integer size,
-				@RequestParam(required = false, defaultValue = "2024-03-21") String fromDate,
-				@RequestParam(required = false, defaultValue = "2024-07-14") String toDate
+				@RequestParam(required = false, defaultValue = "2024-01-01") String fromDate,
+				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate
 			) {
 		if (fromDate == null) fromDate = "";
 		if (toDate == null) toDate = "";
@@ -113,6 +114,16 @@ public class OrderController {
 	@ExceptionHandler(DateTimeParseException.class)
 	public ResponseEntity<?> handleDateTimeParseExceptionn(
 			DateTimeParseException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				"Định dạng ngày không hợp lệ (yyy-MM-dd).", 
+				HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(NoCartDetailFoundException.class)
+	public ResponseEntity<?> handleNoCartDetailFoundException(
+			NoCartDetailFoundException ex
 			) {
 		
 		return Utils.generateMessageResponseEntity(
