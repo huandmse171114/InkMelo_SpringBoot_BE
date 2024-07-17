@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inkmelo.exception.NoBookFoundException;
+import com.inkmelo.exception.NoBookPackageFoundException;
 import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
@@ -35,14 +37,11 @@ public class OrderController {
 				HttpServletRequest req,
 				@PathVariable("username") String username,
 				@Valid @RequestBody OrderCreateBodyDTO orderDTO
-			) {
+			) throws Exception {
 		String paymentUrl = "";
-		try {
-			paymentUrl = service.saveOrder(req, orderDTO, username);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println(orderDTO.totalPrice());
+		paymentUrl = service.saveOrder(req, orderDTO, username);
+		
 		
 		var response = new HashMap<String, Object>();
 		response.put("paymentUrl", paymentUrl);
@@ -66,6 +65,8 @@ public class OrderController {
 		if (fromDate == null) fromDate = "";
 		if (toDate == null) toDate = "";
 		if (username == null) username = "";
+		if (bookTitle == null) bookTitle = "";
+		if (bookPackageTitle == null) bookPackageTitle = "";
 		
 		return service.findAllOrders(username, fromDate, toDate, page, size, bookTitle, bookPackageTitle);
 	}
@@ -95,6 +96,26 @@ public class OrderController {
 	@ExceptionHandler(NoOrderFoundException.class)
 	public ResponseEntity<?> handleNoOrderFoundException(
 			NoOrderFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoBookPackageFoundException.class)
+	public ResponseEntity<?> handleNoBookPackageFoundException(
+			NoBookPackageFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(NoBookFoundException.class)
+	public ResponseEntity<?> handleNoBookFoundException(
+			NoBookFoundException ex
 			) {
 		
 		return Utils.generateMessageResponseEntity(
@@ -142,5 +163,14 @@ public class OrderController {
 				HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<?> handleException(
+			Exception ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.BAD_REQUEST);
+	}
 	
 }
