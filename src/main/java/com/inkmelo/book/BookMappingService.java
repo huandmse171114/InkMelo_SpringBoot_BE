@@ -124,7 +124,7 @@ public class BookMappingService {
 
     public Book bookCreateBodyDTOToBook(BookCreateBodyDTO bookDTO) 
             throws NoGenreFoundException, NoPublisherFoundException {
-        List<Genre> genres = genreRepository.findAllByStatusAndIdIn(GenreStatus.ACTIVE, bookDTO.genreIds());
+        List<Genre> genres = genreRepository.findAllByStatusAndIdInOrderByIdAsc(GenreStatus.ACTIVE, bookDTO.genreIds());
 
         if (genres.isEmpty()) {
             throw new NoGenreFoundException("Tạo mới sách thất bại. Thể loại sách không tồn tại.");

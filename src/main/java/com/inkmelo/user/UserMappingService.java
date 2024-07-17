@@ -15,26 +15,6 @@ import lombok.RequiredArgsConstructor;
 public class UserMappingService {
 	private final PasswordEncoder passwordEncoder;
 
-    public UserMappingService() {
-        this.passwordEncoder = new BCryptPasswordEncoder();
-    }
-
-    public User userCreateBodyDTOToUser(UserCreateBodyDTO userDTO) {
-        return User.builder()
-                .username(userDTO.username())
-                .password(passwordEncoder.encode(userDTO.password()))
-                .email(userDTO.email())
-                .fullname(userDTO.fullname())
-                .role(userDTO.role() == null ? 
-                        UserRole.CUSTOMER : userDTO.role())
-                .createdAt(Date.valueOf(LocalDate.now()))
-                .lastChangedBy(SecurityContextHolder.getContext()
-                        .getAuthentication().getName())
-                .lastUpdatedTime(Date.valueOf(LocalDate.now()))
-                .status(UserStatus.ACTIVE)
-                .build();
-    }
-
     public UserAdminResponseDTO userToUserAdminResponseDTO(User user) {
         return UserAdminResponseDTO.builder()
                 .id(user.getId())

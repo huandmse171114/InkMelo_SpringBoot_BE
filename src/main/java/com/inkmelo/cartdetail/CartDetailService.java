@@ -59,7 +59,7 @@ public class CartDetailService {
 		
 		if (page == null & size == null) {
 			
-			var cartDetails = repository.findAllByCartAndStatus(cart, status);
+			var cartDetails = repository.findAllByCartAndStatusOrderByIdAsc(cart, status);
 			
 			if (cartDetails.isEmpty()) throw new NoCartDetailFoundException("Giỏ hàng của bạn hiện đang rỗng.");
 			
@@ -75,7 +75,7 @@ public class CartDetailService {
 			
 			Pageable paging = PageRequest.of(page, size);
 			
-			Page<CartDetail> pageCartDetails = repository.findAllByCartAndStatus(cart, status, paging);
+			Page<CartDetail> pageCartDetails = repository.findAllByCartAndStatusOrderByIdAsc(cart, status, paging);
 			
 			var cartDetails = pageCartDetails.getContent();
 			
