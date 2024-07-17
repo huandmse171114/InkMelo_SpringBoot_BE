@@ -92,7 +92,7 @@ public class OrderService {
 			String fromDateStr, String toDateStr) {
 //		Kiem tra nguoi dung co ton tai hay khong
 		Customer customer = getCustomer(username);
-		
+		System.out.println(customer.getEmail());
 		LocalDate fromDate;
 		LocalDate toDate;
 		
@@ -105,14 +105,20 @@ public class OrderService {
 			LocalDate todayDate = LocalDate.now();
 //			Neu nguoi dung khong nhap ngay cu the, lay ngay dau tien trong thang
 			fromDate = todayDate.withDayOfMonth(1);
+			System.out.println(fromDate.toString());
+		}else {
+			fromDate = LocalDate.parse(fromDateStr);			
+			System.out.println(fromDate.toString());
 		}
+		
 		
 		if (toDateStr.isEmpty()) {
 			toDate = LocalDate.now();
+			System.out.println(toDate.toString());
+		}else {
+			toDate = LocalDate.parse(toDateStr);
+			System.out.println(toDate.toString());
 		}
-		
-		fromDate = LocalDate.parse(fromDateStr);
-		toDate = LocalDate.parse(toDateStr);
 		
 		Page<Order> pageOrders = repository
 				.findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(

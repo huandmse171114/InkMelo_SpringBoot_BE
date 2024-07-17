@@ -28,8 +28,6 @@ public class OrderMappingService {
 		
 		return Order.builder()
 				.orderPrice(orderDTO.totalPrice())
-				.shippingFee(orderDTO.shippingFee())
-				.totalPrice(orderDTO.totalPrice() + orderDTO.shippingFee())
 				.quantity(orderDTO.quantity())
 				.receiverName(shipment.getReceiverName())
 				.contactNumber(shipment.getContactNumber())
@@ -60,6 +58,7 @@ public class OrderMappingService {
 						.map(detail -> detailMapping
 								.orderDetailToOrderDetailResponseDTO(detail))
 						.toList())
+				.createdAt(order.getCreatedAt())
 				.build();
 	}
 }

@@ -99,6 +99,7 @@ public class PaymentService {
 			List<Integer> itemQuantity = new LinkedList<>();
 			List<String> itemNames = new LinkedList<>();
 			
+			isHavingPaperBook = false;
 			details.forEach(detail -> {
 				int mode = detail.getBookPackage().getMode();
 				
@@ -158,6 +159,8 @@ public class PaymentService {
 				order.setExpectedDaysToDelivery((order.getExpectedDeliveryTime().getTime() - currentDate) / 
 						(1000 * 60 * 60 * 24) );
 				order.setGhbOrderCode(orderResponse.getData().getOrder_code());
+				order.setShippingFee(orderResponse.getData().getTotal_fee());
+				order.setTotalPrice(order.getOrderPrice() + order.getShippingFee());
 				orderRepository.save(order);
 				
 				emailService.sendOrderSuccessfulEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG", orderResponse.getData().getOrder_code());
