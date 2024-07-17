@@ -13,15 +13,15 @@ import com.inkmelo.bookpackage.BookPackage;
 
 public interface CartDetailRepository extends JpaRepository<CartDetail, Integer> {
 	
-	List<CartDetail> findAllByCartAndStatus(Cart cart, CartDetailStatus status);
+	List<CartDetail> findAllByCartAndStatusOrderByIdAsc(Cart cart, CartDetailStatus status);
 	
-	Page<CartDetail> findAllByCartAndStatus(Cart cart, CartDetailStatus status, Pageable pageable);
+	Page<CartDetail> findAllByCartAndStatusOrderByIdAsc(Cart cart, CartDetailStatus status, Pageable pageable);
 	
 	Optional<CartDetail> findByBookPackageAndCartAndStatus(BookPackage bookPackage, Cart cart, CartDetailStatus status);
 	
 	Optional<CartDetail> findByBookPackageAndCart(BookPackage bookPackage, Cart cart);
 	
-	List<CartDetail> findAllByIdIn(Collection<Integer> id);
+	List<CartDetail> findAllByIdInOrderByIdAsc(Collection<Integer> id);
 	
-	List<CartDetail> findAllByStatusAndIdIn(CartDetailStatus status, Collection<Integer> id);
+	List<CartDetail> findAllByStatusAndIdInOrderByIdAsc(CartDetailStatus status, Collection<Integer> id);
 }

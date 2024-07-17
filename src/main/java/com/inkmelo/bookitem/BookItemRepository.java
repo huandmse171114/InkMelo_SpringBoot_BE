@@ -12,27 +12,27 @@ import com.inkmelo.book.Book;
 
 public interface BookItemRepository extends JpaRepository<BookItem, Integer> {
 
-	List<BookItem> findAllByStatus(BookItemStatus status);
+	List<BookItem> findAllByStatusOrderByIdAsc(BookItemStatus status);
 	
-	List<BookItem> findAllByStatusAndTypeAndBookIn(BookItemStatus status, BookItemType type, Collection<Book> books);
+	List<BookItem> findAllByStatusAndTypeAndBookInOrderByIdAsc(BookItemStatus status, BookItemType type, Collection<Book> books);
 	
-	Page<BookItem> findAllByStatusAndTypeAndBookIn(BookItemStatus status, BookItemType type, Collection<Book> books, Pageable pageable);
+	Page<BookItem> findAllByStatusAndTypeAndBookInOrderByIdAsc(BookItemStatus status, BookItemType type, Collection<Book> books, Pageable pageable);
 	
-	List<BookItem> findAllByStatusAndBookIn(BookItemStatus status, Collection<Book> books);
+	List<BookItem> findAllByStatusAndBookInOrderByIdAsc(BookItemStatus status, Collection<Book> books);
 	
-	Page<BookItem> findAllByStatusAndBookIn(BookItemStatus status, Collection<Book> books, Pageable pageable);
+	Page<BookItem> findAllByStatusAndBookInOrderByIdAsc(BookItemStatus status, Collection<Book> books, Pageable pageable);
 	
-	List<BookItem> findAllByBookIn(Collection<Book> books);
+	List<BookItem> findAllByBookInOrderByIdAsc(Collection<Book> books);
 	
-	Page<BookItem> findAllByBookIn(Collection<Book> books, Pageable pageable);
+	Page<BookItem> findAllByBookInOrderByIdAsc(Collection<Book> books, Pageable pageable);
 	
-	List<BookItem> findAllByTypeAndBookIn(BookItemType type, Collection<Book> books);
+	List<BookItem> findAllByTypeAndBookInOrderByIdAsc(BookItemType type, Collection<Book> books);
 	
-	Page<BookItem> findAllByTypeAndBookIn(BookItemType type, Collection<Book> books, Pageable pageable);
+	Page<BookItem> findAllByTypeAndBookInOrderByIdAsc(BookItemType type, Collection<Book> books, Pageable pageable);
 	
-	Optional<BookItem> findByBookAndType(Book book, BookItemType type);
+	Optional<BookItem> findByBookAndTypeOrderByIdAsc(Book book, BookItemType type);
 	
-	List<BookItem> findAllByIdIn(Collection<Integer> id);
+	List<BookItem> findAllByIdInOrderByIdAsc(Collection<Integer> id);
 	
 	
 	

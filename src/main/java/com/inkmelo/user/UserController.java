@@ -134,7 +134,7 @@ public class UserController {
 //	    return Utils.generateMessageResponseEntity("Password has been reset successfully.", HttpStatus.OK);
 //	}
 	@Operation(summary = "Request password reset", description = "This endpoint sends a password reset OTP to the user's email.")
-	@PostMapping("/reset-password/{email}")
+	@PostMapping("/store/api/v1/users/reset-password/{email}")
     public ResponseEntity<?> requestPasswordReset(@PathVariable String email) throws MessagingException {
         try {
             service.updateResetPassword(email);
@@ -145,7 +145,7 @@ public class UserController {
     }
 
     @Operation(summary = "Reset password", description = "This endpoint resets the user's password using the provided OTP.")
-    @PostMapping("/reset-password-confirm/{OTP}")
+    @PostMapping("/store/api/v1/users/reset-password-confirm/{OTP}")
     public ResponseEntity<?> resetPassword(@PathVariable String OTP, @RequestParam String newPassword) throws MessagingException {
         try {
             User user = service.getByResetPassword(OTP);

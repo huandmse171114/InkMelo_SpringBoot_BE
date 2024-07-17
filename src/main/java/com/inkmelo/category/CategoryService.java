@@ -41,7 +41,7 @@ public ResponseEntity<?> findAllCategory(Integer page, Integer size, String keyw
 			
 //		Get categories, no paging
 		if (page == null & size == null) {
-			var categories = repository.findAllByNameContainingIgnoreCase(keyword);
+			var categories = repository.findAllByNameContainingIgnoreCaseOrderByIdAsc(keyword);
 			
 			if (categories.isEmpty()) {
 				throw new NoCategoryExistException("Dữ liệu về danh mục hiện đang rỗng.");
@@ -65,7 +65,7 @@ public ResponseEntity<?> findAllCategory(Integer page, Integer size, String keyw
 			
 			Pageable paging = PageRequest.of(page, size);
 			
-			var pageCategories = repository.findAllByNameContainingIgnoreCase(keyword, paging);
+			var pageCategories = repository.findAllByNameContainingIgnoreCaseOrderByIdAsc(keyword, paging);
 			
 			return getCategoryAdminResponseDTO(pageCategories);
 		}
@@ -78,7 +78,7 @@ public ResponseEntity<?> findAllCategory(Integer page, Integer size, String keyw
 		
 //		Get categories, no paging
 		if (page == null & size == null) {
-			var categories = repository.findAllByStatusAndNameContainingIgnoreCase(status, keyword);
+			var categories = repository.findAllByStatusAndNameContainingIgnoreCaseOrderByIdAsc(status, keyword);
 			
 			if (categories.isEmpty()) {
 				throw new NoCategoryExistException("Dữ liệu về danh mục hiện đang rỗng.");
@@ -101,7 +101,7 @@ public ResponseEntity<?> findAllCategory(Integer page, Integer size, String keyw
 			
 			Pageable paging = PageRequest.of(page, size);
 			
-			var pageCategories = repository.findAllByStatusAndNameContainingIgnoreCase(status, keyword, paging);
+			var pageCategories = repository.findAllByStatusAndNameContainingIgnoreCaseOrderByIdAsc(status, keyword, paging);
 			
 			return getCategoryResponseDTO(pageCategories);
 		}

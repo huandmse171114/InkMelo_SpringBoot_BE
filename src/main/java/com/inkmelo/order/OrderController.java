@@ -1,8 +1,5 @@
 package com.inkmelo.order;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 
@@ -17,18 +14,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inkmelo.exception.NoCartDetailFoundException;
-import com.inkmelo.exception.NoCategoryFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
 import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.utils.Utils;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Order", description = "Order Management APIs")
 public class OrderController {
 	private final OrderService service;
 	
@@ -56,8 +54,8 @@ public class OrderController {
 	
 	@GetMapping("/admin/api/v1/orders")
 	public ResponseEntity<?> getAllOrders(
-				@RequestParam(name = "page", required = false) Integer page,
-				@RequestParam(name = "size", required = false) Integer size,
+				@RequestParam(name = "page", defaultValue = "0") Integer page,
+				@RequestParam(name = "size", defaultValue = "5") Integer size,
 				@RequestParam(name = "username", required = false) String username,
 				@RequestParam(required = false, defaultValue = "2024-01-01") String fromDate,
 				@RequestParam(required = false, defaultValue = "2024-12-24") String toDate

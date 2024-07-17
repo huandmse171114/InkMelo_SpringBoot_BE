@@ -115,7 +115,7 @@ public class BookPackageMappingService {
 		}
 		
 		Book book = bookOption.get();
-		List<BookItem> bookItems = bookItemRepository.findAllByIdIn(bookPackageDTO.itemIds());
+		List<BookItem> bookItems = bookItemRepository.findAllByIdInOrderByIdAsc(bookPackageDTO.itemIds());
 		
 		
 		if (bookItems.size() < bookPackageDTO.itemIds().size()) {

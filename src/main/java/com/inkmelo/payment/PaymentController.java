@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Payment", description = "Payment Management APIs")
 public class PaymentController {
 	private final PaymentService service;
 	

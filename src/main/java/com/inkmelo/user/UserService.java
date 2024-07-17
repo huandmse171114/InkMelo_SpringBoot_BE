@@ -134,7 +134,7 @@ public class UserService {
 	}
 
 	public List<UserAdminResponseDTO> findAllUsers() {
-		var users = repository.findAll();
+		var users = repository.findAllByOrderByIdAsc();
 		
 		if (users.isEmpty()) {
 			throw new NoUserExistException("User data is empty.");

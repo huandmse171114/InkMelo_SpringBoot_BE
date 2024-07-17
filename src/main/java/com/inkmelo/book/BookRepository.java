@@ -10,28 +10,28 @@ import com.inkmelo.genre.Genre;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
 	
-	List<Book> findAllByTitleContainingIgnoreCase(String titleKeyword);
+	List<Book> findAllByTitleContainingIgnoreCaseOrderByIdAsc(String titleKeyword);
 	
-	List<Book> findAllByTitleContainingIgnoreCaseAndGenres(String title, List<Genre> genres);
+	List<Book> findAllByTitleContainingIgnoreCaseAndGenresOrderByIdAsc(String title, List<Genre> genres);
 	
-	List<Book> findAllByAuthorContainingIgnoreCase(String authorKeyword);
+	List<Book> findAllByAuthorContainingIgnoreCaseOrderByIdAsc(String authorKeyword);
 	
-	List<Book> findAllByAuthorContainingIgnoreCaseAndGenres(String author, List<Genre> genres);
+	List<Book> findAllByAuthorContainingIgnoreCaseAndGenresOrderByIdAsc(String author, List<Genre> genres);
 	
-	List<Book> findAllByStatus(BookStatus status);
+	List<Book> findAllByStatusOrderByIdAsc(BookStatus status);
 	
-	List<Book> findAllByStatusAndTitleContainingIgnoreCase(BookStatus status, String name);
+	List<Book> findAllByStatusAndTitleContainingIgnoreCaseOrderByIdAsc(BookStatus status, String name);
 	
-	List<Book> findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(BookStatus status, String title, String author);
+	List<Book> findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(BookStatus status, String title, String author);
 	
-	Page<Book> findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(BookStatus status, String title, String author, Pageable pageable);
+	Page<Book> findAllByStatusAndTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(BookStatus status, String title, String author, Pageable pageable);
 	
-	List<Book> findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author);
+	List<Book> findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(String title, String author);
 	
-	Page<Book> findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(String title, String author, Pageable pageable);
+	Page<Book> findAllByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByIdAsc(String title, String author, Pageable pageable);
 	
-	Page<Book> findAllByStatus(BookStatus status, Pageable pageable);
+	Page<Book> findAllByStatusOrderByIdAsc(BookStatus status, Pageable pageable);
 	
-	List<Book> findAllByGenres(List<Genre> genres);
+	List<Book> findAllByGenresOrderByIdAsc(List<Genre> genres);
 
 }
