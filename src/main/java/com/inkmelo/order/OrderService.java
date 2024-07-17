@@ -206,9 +206,9 @@ public class OrderService {
 				
 				if (!username.isEmpty()) {
 					Customer customer = getCustomer(username);
-					pageOrders = repository.findAllByCustomerAndIdIn(customer, orderIds, paging);
+					pageOrders = repository.findAllByCustomerAndStatusAndIdIn(customer, OrderStatus.PAYMENT_FINISHED, orderIds, paging);
 				}else {
-					pageOrders = repository.findAllByIdIn(orderIds, paging);
+					pageOrders = repository.findAllByStatusAndIdIn(OrderStatus.PAYMENT_FINISHED, orderIds, paging);
 				}
 			}
 			
@@ -223,10 +223,10 @@ public class OrderService {
 			}
 			
 			return Utils.generatePagingListResponseEntity(
-					DEFALT_SIZE, 
-					orders, 
-					DEFAULT_PAGE, 
-					DEFALT_SIZE, 
+					pageOrders.getTotalElements(), 
+					response, 
+					pageOrders.getTotalPages(), 
+					pageOrders.getNumber(), 
 					HttpStatus.OK);
 			
 		}else {

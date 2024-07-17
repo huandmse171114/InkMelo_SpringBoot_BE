@@ -18,6 +18,7 @@ import com.inkmelo.exception.NoBookPackageFoundException;
 import com.inkmelo.exception.NoCartDetailFoundException;
 import com.inkmelo.exception.NoCustomerFoundException;
 import com.inkmelo.exception.NoOrderFoundException;
+import com.inkmelo.exception.NoPaymentFoundException;
 import com.inkmelo.exception.NoUserFoundException;
 import com.inkmelo.utils.Utils;
 
@@ -163,6 +164,17 @@ public class OrderController {
 				HttpStatus.BAD_REQUEST);
 	}
 	
+	
+	@ExceptionHandler(NoPaymentFoundException.class)
+	public ResponseEntity<?> handleNoPaymentFoundException(
+			NoPaymentFoundException ex
+			) {
+		
+		return Utils.generateMessageResponseEntity(
+				ex.getMessage(), 
+				HttpStatus.NOT_FOUND);
+	}
+	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> handleException(
 			Exception ex
@@ -172,5 +184,4 @@ public class OrderController {
 				ex.getMessage(), 
 				HttpStatus.BAD_REQUEST);
 	}
-	
 }

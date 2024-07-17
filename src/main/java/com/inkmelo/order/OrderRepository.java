@@ -33,8 +33,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	
 	Page<Order> findAllByCustomer(Customer customer, Pageable pageable);
 	
-	Page<Order> findAllByCustomerAndIdIn(Customer customer, Collection<Integer> ids, Pageable pageable);
+	Page<Order> findAllByCustomerAndStatusAndIdIn(Customer customer, OrderStatus status, Collection<Integer> ids, Pageable pageable);
 	
-	Page<Order> findAllByIdIn(Collection<Integer> ids, Pageable pageable);
+	Page<Order> findAllByStatusAndIdIn(OrderStatus status, Collection<Integer> ids, Pageable pageable);
 
 	}
