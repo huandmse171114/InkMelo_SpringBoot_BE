@@ -39,7 +39,9 @@ public class OrderMappingService {
 		Shipment shipment = shipmentOptional.get();
 		
 		return Order.builder()
-				.orderPrice(orderDTO.totalPrice())
+				.totalPrice(orderDTO.totalPrice())
+				.orderPrice(orderDTO.totalPrice() - orderDTO.shippingFee())
+				.shippingFee(orderDTO.shippingFee())
 				.quantity(orderDTO.quantity())
 				.receiverName(shipment.getReceiverName())
 				.contactNumber(shipment.getContactNumber())

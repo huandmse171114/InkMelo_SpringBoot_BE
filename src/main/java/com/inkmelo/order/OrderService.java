@@ -93,7 +93,7 @@ public class OrderService {
 		});
 		
 		// lay redirect url de chuyen sang trang thanh toan cua vnpay
-		String paymentUrl = vnpayService.getPaymentUrl(req, order.getOrderPrice(), orderDB.getId(), orderDTO.redirectUrl());
+		String paymentUrl = vnpayService.getPaymentUrl(req, order.getTotalPrice(), orderDB.getId(), orderDTO.redirectUrl());
 		System.out.println(paymentUrl);
 		
 		return paymentUrl;
