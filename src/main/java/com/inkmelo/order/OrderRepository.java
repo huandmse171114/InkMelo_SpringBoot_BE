@@ -1,5 +1,6 @@
 package com.inkmelo.order;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.sql.Date;
@@ -29,5 +30,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	Optional<Order> findByIdAndCustomerIdAndStatus(Integer orderId, Integer customerId, OrderStatus status);
 	
 	Page<Order> findAllByCustomerAndStatusAndCreatedAtBetweenOrderByCreatedAtDesc(Customer customer, OrderStatus status, LocalDate startDate, LocalDate endDate, Pageable pageable);
+	
+	Page<Order> findAllByCustomer(Customer customer, Pageable pageable);
+	
+	Page<Order> findAllByCustomerAndIdIn(Customer customer, Collection<Integer> ids, Pageable pageable);
+	
+	Page<Order> findAllByIdIn(Collection<Integer> ids, Pageable pageable);
 
 	}

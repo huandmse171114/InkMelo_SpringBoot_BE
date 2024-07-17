@@ -33,5 +33,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 	Page<Book> findAllByStatusOrderByIdAsc(BookStatus status, Pageable pageable);
 	
 	List<Book> findAllByGenresOrderByIdAsc(List<Genre> genres);
+	
+	List<Book> findAllByTitleContainingIgnoreCase(String title);
 
 }
