@@ -46,4 +46,6 @@ public interface BookPackageRepository extends JpaRepository<BookPackage, Intege
 	
 	List<BookPackage> findAllByModeAndCategoryAndBookInOrderByIdAsc(int value, Category category, Collection<Book> booksByTitle);
 
+	List<BookPackage> findAllByOrderById();
+
 }

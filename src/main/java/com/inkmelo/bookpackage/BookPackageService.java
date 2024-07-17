@@ -160,7 +160,7 @@ public class BookPackageService {
 			bookPackages = findAllByCategoryAndGenre(null, categoryId, genreId);
 //		Case 11: not support case will return all data
 		}else {
-			bookPackages = repository.findAll();
+			bookPackages = repository.findAllByOrderById();
 		}
 		
 		var response = getAdminResponse(bookPackages);
