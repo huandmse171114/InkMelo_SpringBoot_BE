@@ -68,6 +68,9 @@ public class PaymentService {
 		
 		Order order = orderOptional.get();
 		
+		System.out.println("contact number 2");
+		System.out.println(order.getContactNumber());
+		
 		if (vnp_ResponseCode.equals("00")) {
 			order.setStatus(OrderStatus.PAYMENT_FINISHED);	
 			
@@ -139,6 +142,8 @@ public class PaymentService {
 			
 			if (isHavingPaperBook) {
 //			Tao don tren Giao Hang Nhanh
+				System.out.println("Contact number 3");
+				System.out.println(order.getContactNumber());
 				String ghnOrderResponse = ghnApis.createOrder(
 						order.getShipmentDistrictId(), 
 						order.getShipmentWardCode(), 
