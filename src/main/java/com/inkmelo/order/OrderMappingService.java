@@ -45,6 +45,9 @@ public class OrderMappingService {
 		
 		Shipment shipment = shipmentOptional.get();
 		
+		System.out.println("Contact number 1");
+		System.out.println(shipment.getContactNumber());
+		
 		return Order.builder()
 				.totalPrice(orderDTO.totalPrice())
 				.orderPrice(orderDTO.totalPrice() - orderDTO.shippingFee())
