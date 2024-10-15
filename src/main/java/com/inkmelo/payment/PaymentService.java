@@ -171,6 +171,7 @@ public class PaymentService {
 				
 				emailService.sendOrderSuccessfulEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG", orderResponse.getData().getOrder_code());
 				
+				
 			} else {
 				emailService.sendPaymentConfirmEmail(order.getCustomer().getEmail(), "Đơn hàng của bạn đã thanh toán thành công", "XÁC NHẬN THANH TOÁN THÀNH CÔNG");
 				
