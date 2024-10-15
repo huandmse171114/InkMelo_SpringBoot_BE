@@ -46,7 +46,7 @@ import com.inkmelo.user.UserStatus;
 import lombok.RequiredArgsConstructor;
 
 @Component
-@Profile(value = "devv")
+@Profile(value = "dev")
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 	
