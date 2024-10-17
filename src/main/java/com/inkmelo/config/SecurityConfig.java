@@ -77,15 +77,16 @@ public class SecurityConfig {
 	SecurityFilterChain productSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
-        		.requestMatchers(
-        				"/",
-        				"/swagger-ui/**",
-        				"/v3/api-docs/**",
-        				"/store/api/v1/auth/sign-in",
-        				"/store/api/v1/users/register",
-        				"/store/api/v1/**",
-        				"/store/api/v1/payment/vnpay/response",
-        				"/payment-success.html").permitAll()
+//        		.requestMatchers(
+//        				"/",
+//        				"/swagger-ui/**",
+//        				"/v3/api-docs/**",
+//        				"/store/api/v1/auth/sign-in",
+//        				"/store/api/v1/users/register",
+//        				"/store/api/v1/**",
+//        				"/store/api/v1/payment/vnpay/response",
+//        				"/payment-success.html",
+//        				"/store/api/v1/books-by-genre/{genreId}").permitAll()
 //        		.requestMatchers("/admin/api/v1/**").hasAuthority(UserRole.ADMIN.toString())
 //        		.requestMatchers(
 //        				"/admin/api/v1/books/**",
@@ -93,7 +94,7 @@ public class SecurityConfig {
 //        				"/admin/api/v1/book-packages/**",
 //        				"/admin/api/v1/orders/**",
 //						"/admin/api/v1/publishers/**").hasAuthority(UserRole.MANAGER.toString())
-                .anyRequest().authenticated());
+                .anyRequest().permitAll());
 		http.sessionManagement(
 		        session ->
 		                session.sessionCreationPolicy(

@@ -4,6 +4,9 @@ package com.inkmelo.book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 import com.inkmelo.genre.Genre;
 
@@ -35,5 +38,8 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 	List<Book> findAllByGenresOrderByIdAsc(List<Genre> genres);
 	
 	List<Book> findAllByTitleContainingIgnoreCase(String title);
+	
+	@Query("SELECT b FROM Book b JOIN b.genres g WHERE g.id = :genreId")
+    Page<Book> findBooksByGenre(@Param("genreId") Integer genreId, Pageable pageable);
 
 }

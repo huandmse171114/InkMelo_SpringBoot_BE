@@ -12,23 +12,21 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.inkmelo.category.CategoryAdminResponseDTO;
-import com.inkmelo.category.CategoryStatus;
 import com.inkmelo.exception.NoBookExistException;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoGenreFoundException;
 import com.inkmelo.exception.NoPublisherFoundException;
+import com.inkmelo.genre.Genre;
 import com.inkmelo.genre.GenreRepository;
-import com.inkmelo.genre.GenreStatus;
 import com.inkmelo.publisher.PublisherRepository;
 import com.inkmelo.utils.Utils;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -287,6 +285,23 @@ public class BookService {
 		
 		return mappingService.bookToBookAdminResponseDTO(book.get());
 	}
+	
+	public Page<ListBookDTO> getBooksByGenre(Integer genreId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Book> booksPage = repository.findBooksByGenre(genreId, pageable);
+        
+        // Chuyển đổi từ Book sang BookDTO
+        return booksPage.map(this::convertToBookDTO);
+    }
+
+    private ListBookDTO convertToBookDTO(Book book) {
+        return new ListBookDTO(
+        		book.getId(),             // Đảm bảo book.getId() không trả về null
+                book.getTitle(),          // Đảm bảo book.getTitle() không trả về null
+                book.getBookCoverImg(),   // Đảm bảo book.getBookCoverImg() không trả về null
+                book.getISBN()            // Đảm bảo book.getISBN() không trả về null
+        );
+    }
 	
 }
 
