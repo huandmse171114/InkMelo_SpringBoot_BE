@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -24,6 +27,8 @@ import com.inkmelo.exception.NoBookExistException;
 import com.inkmelo.exception.NoBookFoundException;
 import com.inkmelo.exception.NoGenreFoundException;
 import com.inkmelo.exception.NoPublisherFoundException;
+import com.inkmelo.genre.Genre;
+import com.inkmelo.genre.GenreService;
 import com.inkmelo.utils.MessageResponseDTO;
 import com.inkmelo.utils.PagingListResposneDTO;
 import com.inkmelo.utils.Utils;
@@ -39,6 +44,8 @@ import jakarta.validation.Valid;
 @Tag(name = "Book", description = "Book Management APIs")
 @RestController
 public class BookController {
+	
+	private GenreService genreService;
 	
 	private BookService service;
 
@@ -169,6 +176,15 @@ public class BookController {
 				"Xóa cuốn sách với mã số " + id + " thành công!", 
 				HttpStatus.OK);
 	}
+	
+	@GetMapping("store/api/v1/books-by-genre/{genreId}")
+	public ResponseEntity<Page<ListBookDTO>> getBooksByGenre(
+            @PathVariable Integer genreId,
+            @RequestParam(defaultValue = "0") int page, 
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ListBookDTO> books = service.getBooksByGenre(genreId, page, size);
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
 	
 //	====================================== Exception Handler ===================================
 	

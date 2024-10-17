@@ -3,6 +3,7 @@ package com.inkmelo.genre;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -195,4 +196,8 @@ public class GenreService {
 				pageGenres.getNumber(), 
 				HttpStatus.OK);
 	}
+	
+    public Genre findById(Integer genreId) {
+        return repository.getById(genreId);
+    }
 }

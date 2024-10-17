@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inkmelo.bookitem.BookItem;
 import com.inkmelo.bookpackage.BookPackage;
 import com.inkmelo.bookrating.BookRating;
@@ -108,6 +109,7 @@ public class Book {
 	private Publisher publisher;
 	
 	@ManyToMany
+	@JsonBackReference
 	@JoinTable(
 			name = "book_genre",
 			joinColumns = @JoinColumn(name = "book_id", nullable = false),
@@ -116,7 +118,6 @@ public class Book {
 	private List<Genre> genres;
 	
 	@OneToMany(mappedBy = "book")
-	@JsonBackReference
 	private List<BookItem> items;
 	
 }
